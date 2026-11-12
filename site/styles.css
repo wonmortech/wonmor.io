@@ -16,13 +16,13 @@ button{font:inherit;color:inherit}
 .wm-skip:focus{left:8px}
 :focus-visible{outline:2px solid var(--wm-cyan);outline-offset:3px;border-radius:6px}
 
-.wm-svgmark{display:block;width:100%;height:auto;overflow:visible}
+.wm-svgmark,.wm-svglock,.wm-svgword{display:block;width:100%;height:auto;overflow:visible}
 
 .wm-nav{position:fixed;inset:0 0 auto;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:18px var(--wm-gut);color:var(--wm-navfg,#fff);transition:color .2s,background-color .3s}
 .wm-nav.wm-solidnav{background:rgba(7,8,13,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--wm-line)}
 .wm-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:19px;letter-spacing:-.02em}
-.wm-logo [data-mark]{width:30px}
-.wm-nav [data-mark] path{fill:currentColor}
+.wm-logo [data-lockup]{width:128px;display:block}
+
 .wm-nav nav{display:flex;gap:clamp(12px,2.4vw,28px);font-size:14px;font-weight:700}
 .wm-nav nav a{text-decoration:none;opacity:.8}
 .wm-nav nav a:hover{opacity:1}
@@ -57,7 +57,7 @@ button{font:inherit;color:inherit}
 .wm-ava::after{content:"";position:absolute;inset:-3px;border-radius:50%;background:#f6f7fa;z-index:-1}
 .wm-ava-in{position:absolute;inset:0;border-radius:50%;background:var(--wm-blue);z-index:0}
 .wm-ava [data-mark]{width:52px;position:relative;z-index:1}
-.wm-prof-name{font-weight:800;font-size:22px;letter-spacing:-.02em}
+.wm-prof-name{width:112px;color:#10121c}
 .wm-prof-bio{margin-top:18px;font-weight:700;font-size:15px}
 .wm-prof-link{color:#2c56d6;font-weight:700;font-size:14px}
 .wm-prof-btns{display:flex;gap:8px;margin-top:16px}
@@ -95,7 +95,7 @@ button{font:inherit;color:inherit}
 
 .wm-locks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .wm-lock{aspect-ratio:4/3;border-radius:22px;display:flex;align-items:center;justify-content:center;gap:4%;padding:8%}
-.wm-lock [data-mark]{width:24%;flex:none;transform:translateY(8%)}
+.wm-lock [data-lockup]{width:78%}
 .wm-wm{font-weight:700;letter-spacing:-.02em;font-size:clamp(30px,4vw,56px);line-height:1}
 .wm-lock-dark{background:var(--wm-ink);border:1px solid var(--wm-line)}
 .wm-lock-light{background:var(--wm-paper);color:var(--wm-navy)}
@@ -112,7 +112,7 @@ button{font:inherit;color:inherit}
 @media (max-width:900px){.wm-variants{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:480px){.wm-variants{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
-.wm-swatches{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.wm-swatches{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
 .wm-sw{aspect-ratio:3/4;border:1px solid var(--wm-line);border-radius:18px;background:var(--c);color:var(--t);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:16px;cursor:pointer;text-align:left;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
 .wm-sw:hover{transform:translateY(-4px)}
 .wm-sw b{font-size:16px}
@@ -121,11 +121,14 @@ button{font:inherit;color:inherit}
 .wm-sw-iri{background:linear-gradient(135deg,#6FD3FF,#FF8AD8 45%,#FFE27A 70%,#6FD3FF)}
 @media (max-width:900px){.wm-swatches{grid-template-columns:repeat(3,1fr)}}
 
-.wm-type{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:end}
-.wm-type-big{font-weight:700;letter-spacing:-.04em;font-size:clamp(80px,15vw,220px);line-height:.85}
-.wm-type-meta p{font-size:16px;color:#c5cbd8}
-.wm-glyphs{font-size:22px!important;letter-spacing:.02em;color:var(--wm-white)!important;margin-top:14px}
-@media (max-width:900px){.wm-type{grid-template-columns:1fr}}
+.wm-word-hero{max-width:1100px;padding:clamp(24px,5vw,64px) 0}
+.wm-rules{list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:24px}
+.wm-rules li{border:1px solid var(--wm-line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:10px;background:#0b0d16}
+.wm-rules b{font-family:var(--wm-mono);font-size:22px;color:var(--wm-blue)}
+.wm-rules li:nth-child(2) b{color:#FFD23F}
+.wm-rules span{color:#c5cbd8;font-size:15px}
+@media (max-width:900px){.wm-rules{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.wm-rules{grid-template-columns:1fr}}
 
 .wm-viewer-wrap{position:relative;border-radius:26px;overflow:hidden;background:radial-gradient(90% 80% at 50% 30%,#2a63ff,#1238d6 60%,#0b1f8f);aspect-ratio:16/9}
 .wm-viewer{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y}

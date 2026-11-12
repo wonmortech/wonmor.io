@@ -82,3 +82,74 @@ export function markShapes(THREE) {
   };
   return [toShape(CAP_UNION), toShape(W)];
 }
+
+// ---------- wordmark ----------
+// Rules taken from the reference construction:
+//  1. one stroke weight T for every letter, matched to the arm of the mark;
+//  2. letter spacing S = T / 2, the same 10 : 5 ratio as crown gap to arm;
+//  3. the crown top sits on the x-height, the W tip drops below the baseline;
+//  4. the letter w is the mark's own W, scaled to the x-height.
+// Units are mark units; baseline at y = 0, x-height at y = -X.
+export const WM = { X: 80.6, T: 16.5, S: 8.25, GAP: 12 };
+const f = (n) => +n.toFixed(2);
+
+// Same rule as the mark: two V, offset so their inner arms meet at the x-height.
+function letterW(x0) {
+  const { X, T } = WM;
+  const c = X * 0.5;
+  const hw = T / Math.sin(Math.atan2(X, c));
+  const o = 2 * c - 2 * hw;
+  const apex = -X * hw / c;
+  const v = (dx) => rounded([[dx, -X], [dx + hw, -X], [dx + c, apex], [dx + 2 * c - hw, -X], [dx + 2 * c, -X], [dx + c, 0]], [2, 2, 1.5, 2, 2, 1]);
+  return { d: v(x0) + v(x0 + o), w: o + 2 * c };
+}
+function letterO(x0) {
+  const ro = (WM.X / 2) * 1.04;
+  const ri = ro - WM.T * 1.04;
+  const cx = x0 + ro;
+  const cy = -WM.X / 2;
+  const ring = (r, s) => `M${f(cx - r)} ${f(cy)}A${f(r)} ${f(r)} 0 1 ${s} ${f(cx + r)} ${f(cy)}A${f(r)} ${f(r)} 0 1 ${s} ${f(cx - r)} ${f(cy)}Z`;
+  return { d: ring(ro, 1) + ring(ri, 0), w: ro * 2, round: true };
+}
+function letterN(x0, a = WM.X * 0.86) {
+  const { X, T } = WM;
+  const r = a / 2, ri = r - T, cy = -X + r;
+  return {
+    d: `M${f(x0)} 0V${f(-X)}H${f(x0 + r)}A${f(r)} ${f(r)} 0 0 1 ${f(x0 + a)} ${f(cy)}V0H${f(x0 + a - T)}V${f(cy)}A${f(ri)} ${f(ri)} 0 0 0 ${f(x0 + r)} ${f(-X + T)}H${f(x0 + T)}V0Z`,
+    w: a,
+  };
+}
+function letterM(x0, a = WM.X * 0.78) {
+  const { X, T } = WM;
+  const r = a / 2, ri = r - T, cy = -X + r;
+  const y1 = cy - Math.sqrt(r * r - (r - T) * (r - T));
+  const b = x0 + a - T;
+  return {
+    d: `M${f(x0)} 0V${f(-X)}H${f(x0 + r)}A${f(r)} ${f(r)} 0 0 1 ${f(b)} ${f(y1)}V${f(-X)}H${f(b + r)}A${f(r)} ${f(r)} 0 0 1 ${f(b + a)} ${f(cy)}V0H${f(b + a - T)}V${f(cy)}A${f(ri)} ${f(ri)} 0 0 0 ${f(b + r)} ${f(-X + T)}H${f(x0 + a)}V0H${f(b)}V${f(cy)}A${f(ri)} ${f(ri)} 0 0 0 ${f(x0 + r)} ${f(-X + T)}H${f(x0 + T)}V0Z`,
+    w: 2 * a - T,
+  };
+}
+function letterR(x0) {
+  const { X, T } = WM;
+  const ro = X * 0.4, ri = ro - T, cy = -X + ro;
+  const c = Math.cos(Math.PI / 6), s = Math.sin(Math.PI / 6);
+  const cx = x0 + ro;
+  return {
+    d: `M${f(x0)} 0V${f(-X)}H${f(cx)}A${f(ro)} ${f(ro)} 0 0 1 ${f(cx + ro * c)} ${f(cy - ro * s)}L${f(cx + ri * c)} ${f(cy - ri * s)}A${f(ri)} ${f(ri)} 0 0 0 ${f(cx)} ${f(-X + T)}H${f(x0 + T)}V0Z`,
+    w: ro * (1 + c),
+  };
+}
+
+// Optical spacing: straight sides get the full S, round or diagonal neighbours less.
+const BUILD = [['w', letterW, 0.35], ['o', letterO, 0.6], ['n', letterN, 0.8], ['m', letterM, 0.6], ['o', letterO, 0.6], ['r', letterR, 0]];
+export const WORD = (() => {
+  let x = 0;
+  const letters = BUILD.map(([ch, fn, after]) => {
+    const g = fn(x);
+    const out = { ch, d: g.d, x0: x, x1: x + g.w };
+    x += g.w + WM.S * (after * 2);
+    return out;
+  });
+  return { letters, width: letters[letters.length - 1].x1, X: WM.X };
+})();
+export const WORD_PATH = WORD.letters.map((l) => l.d).join('');

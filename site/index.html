@@ -20,9 +20,9 @@
 <a class="wm-skip" href="#wm-main">Skip to content</a>
 
 <header class="wm-nav">
-  <a class="wm-logo" href="/" aria-label="wonmor home"><span data-mark data-fill="#1F5BFF"></span><span>wonmor</span></a>
+  <a class="wm-logo" href="/" aria-label="wonmor home"><span data-lockup data-mk="#1F5BFF" data-text="currentColor"></span></a>
   <nav aria-label="Sections">
-    <a href="#mark">Mark</a><a href="#lockup">Lockup</a><a href="#color">Colour</a><a href="#type">Type</a><a href="#three">3D</a>
+    <a href="#mark">Mark</a><a href="#lockup">Lockup</a><a href="#color">Colour</a><a href="#type">Wordmark</a><a href="#three">3D</a>
   </nav>
 </header>
 
@@ -34,7 +34,7 @@
     <div class="wm-phone-in">
       <div class="wm-prof">
         <div class="wm-ava"><i class="wm-ava-in"></i><span data-mark data-fill="#F7F9FC"></span></div>
-        <div class="wm-prof-name">wonmor</div>
+        <div class="wm-prof-name" data-word></div>
       </div>
       <p class="wm-prof-bio">One diamond. One W.</p>
       <p class="wm-prof-link">wonmor.io</p>
@@ -71,9 +71,9 @@
   <section id="lockup" class="wm-sec wm-reveal">
     <h2 class="wm-h2"><span>02</span>Lockup</h2>
     <div class="wm-locks">
-      <div class="wm-lock wm-lock-dark"><span data-mark data-fill="#1F5BFF"></span><span class="wm-wm">wonmor</span></div>
-      <div class="wm-lock wm-lock-light"><span data-mark data-fill="#1F5BFF"></span><span class="wm-wm">wonmor</span></div>
-      <div class="wm-lock wm-lock-blue"><span data-mark data-fill="#F7F9FC"></span><span class="wm-wm">wonmor</span></div>
+      <div class="wm-lock wm-lock-dark"><span data-lockup data-mk="#1F5BFF" data-text="#F7F9FC"></span></div>
+      <div class="wm-lock wm-lock-light"><span data-lockup data-mk="#1F5BFF" data-text="#15163F"></span></div>
+      <div class="wm-lock wm-lock-blue"><span data-lockup data-mk="#F7F9FC" data-text="#F7F9FC"></span></div>
     </div>
     <div class="wm-variants">
       <div class="wm-var wm-v1"><span data-mark data-fill="#1F5BFF"></span><small>Primary</small></div>
@@ -92,21 +92,20 @@
       <button type="button" class="wm-sw" data-copy="#15163F" style="--c:#15163F;--t:#fff"><b>Navy</b><span>#15163F</span></button>
       <button type="button" class="wm-sw" data-copy="#07080D" style="--c:#07080D;--t:#fff"><b>Ink</b><span>#07080D</span></button>
       <button type="button" class="wm-sw" data-copy="#EEF2F8" style="--c:#EEF2F8;--t:#07080D"><b>Paper</b><span>#EEF2F8</span></button>
-      <button type="button" class="wm-sw wm-sw-iri" data-copy="#FF8AD8 #FFE27A #6FD3FF" style="--t:#07080D"><b>Iridescent</b><span>light sweep only</span></button>
     </div>
-    <p class="wm-note">Click a swatch to copy. Iridescence is a material effect, never a flat brand colour.</p>
+    <p class="wm-note">Click a swatch to copy.</p>
   </section>
 
   <section id="type" class="wm-sec wm-reveal">
-    <h2 class="wm-h2"><span>04</span>Type</h2>
-    <div class="wm-type">
-      <div class="wm-type-big">wonmor</div>
-      <div class="wm-type-meta">
-        <p><b>Plus Jakarta Sans</b> Bold 700, lowercase, tracking −2 %.</p>
-        <p class="wm-glyphs">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz 0123456789</p>
-        <p class="wm-note">Open source (SIL OFL 1.1), self-hosted.</p>
-      </div>
-    </div>
+    <h2 class="wm-h2"><span>04</span>Wordmark</h2>
+    <div class="wm-word-hero" data-lockup data-mk="#1F5BFF" data-text="#F7F9FC"></div>
+    <ol class="wm-rules">
+      <li><b>10</b><span>One stroke weight. Every letter uses the width of the mark&rsquo;s arm.</span></li>
+      <li><b>5</b><span>Letter spacing is half the stroke, the same gap that splits the crown from the V.</span></li>
+      <li><b>x</b><span>The crown sits on the x-height, the tip of the W drops below the baseline.</span></li>
+      <li><b>w</b><span>The letter w is built like the mark: two V whose inner arms meet at the top.</span></li>
+    </ol>
+    <p class="wm-note">The wordmark is drawn, not typed. Interface text uses Plus Jakarta Sans (SIL OFL 1.1), self-hosted.</p>
   </section>
 
   <section id="three" class="wm-sec wm-reveal">
@@ -119,7 +118,7 @@
 </main>
 
 <footer class="wm-foot">
-  <span class="wm-logo"><span data-mark data-fill="#1F5BFF"></span><span>wonmor</span></span>
+  <span class="wm-logo"><span data-lockup data-mk="#1F5BFF" data-text="currentColor"></span></span>
   <span>&copy; 2026 wonmor · wonmor.io</span>
 </footer>
 </body>

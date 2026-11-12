@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import { PATHS, MARK_W, MARK_H } from './geometry.js';
+import { PATHS, MARK_W, MARK_H, WORD, WORD_PATH, WM } from './geometry.js';
 
 const C = {
   ink: '#07080D', paper: '#EEF2F8', blue: '#1F5BFF', blueDeep: '#1238D6', cyan: '#6FD3FF',
@@ -25,6 +25,18 @@ function markSVG({ fill = C.blue, cap, outline, cls = '' } = {}) {
     : `<path d="${PATHS.capUnion}" fill="${cap || fill}"/><path d="${PATHS.w}" fill="${fill}"/>`;
   return `<svg class="wm-svgmark ${cls}" viewBox="-2 -2 ${MARK_W + 4} ${MARK_H + 4}" aria-hidden="true">${s}</svg>`;
 }
+// Lockup in mark units: crown top on the x-height, W tip below the baseline.
+const LOCK_W = MARK_W + WM.GAP + WORD.width;
+function lockupSVG({ mark = C.blue, cap, text = C.white, cls = '' } = {}) {
+  return `<svg class="wm-svglock ${cls}" viewBox="-2 -2 ${LOCK_W + 4} ${MARK_H + 4}" role="img" aria-label="wonmor"><path d="${PATHS.capUnion}" fill="${cap || mark}"/><path d="${PATHS.w}" fill="${mark}"/><path transform="translate(${MARK_W + WM.GAP} ${WM.X})" d="${WORD_PATH}" fill="${text}"/></svg>`;
+}
+document.querySelectorAll('[data-lockup]').forEach((n) => {
+  const o = n.dataset;
+  n.innerHTML = lockupSVG({ mark: o.mk, cap: o.cap, text: o.text });
+});
+document.querySelectorAll('[data-word]').forEach((n) => {
+  n.innerHTML = `<svg class="wm-svgword" viewBox="-2 ${-WM.X - 2} ${WORD.width + 4} ${WM.X + 4}" role="img" aria-label="wonmor"><path d="${WORD_PATH}" fill="currentColor"/></svg>`;
+});
 document.querySelectorAll('[data-mark]').forEach((n) => {
   const o = n.dataset;
   n.innerHTML = markSVG({ fill: o.fill, cap: o.cap, outline: 'outline' in o });
@@ -61,10 +73,34 @@ defs.innerHTML = `
     <stop offset="0" stop-color="#8FD9FF"/><stop offset=".35" stop-color="#3E7BFF"/><stop offset="1" stop-color="${C.blue}"/>
   </linearGradient>
   <linearGradient id="gIri" gradientUnits="userSpaceOnUse" x1="-160" y1="0" x2="0" y2="60">
-    <stop offset="0" stop-color="#6FD3FF" stop-opacity="0"/>
-    <stop offset=".3" stop-color="#FF8AD8"/><stop offset=".5" stop-color="#FFE27A"/>
-    <stop offset=".7" stop-color="#6FD3FF"/><stop offset="1" stop-color="#6FD3FF" stop-opacity="0"/>
+    <stop offset="0" stop-color="#ff3b6b" stop-opacity="0"/>
+    <stop offset=".44" stop-color="#ff3b6b" stop-opacity="0"/><stop offset=".47" stop-color="#ffb13b"/>
+    <stop offset=".5" stop-color="#f6ff6b"/><stop offset=".53" stop-color="#4dc3ff"/>
+    <stop offset=".56" stop-color="#8a5bff" stop-opacity="0"/>
+    <stop offset="1" stop-color="#8a5bff" stop-opacity="0"/>
   </linearGradient>
+  <filter id="fChromeL" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.03" numOctaves="2" seed="7" result="n"/>
+    <feOffset id="wm-chrome-off-l" in="n" dx="0" dy="0" result="no"/>
+    <feColorMatrix in="no" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="g"/>
+    <feComponentTransfer in="g" result="c">
+      <feFuncR type="table" tableValues="0.32 0.98 0.55 1 0.42 0.9 0.6"/>
+      <feFuncG type="table" tableValues="0.36 0.99 0.6 1 0.48 0.93 0.66"/>
+      <feFuncB type="table" tableValues="0.46 1 0.72 1 0.62 0.98 0.8"/>
+    </feComponentTransfer>
+    <feComposite in="c" in2="SourceAlpha" operator="in"/>
+  </filter>
+  <filter id="fChromeD" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.008 0.022" numOctaves="2" seed="3" result="n"/>
+    <feOffset id="wm-chrome-off-d" in="n" dx="0" dy="0" result="no"/>
+    <feColorMatrix in="no" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="g"/>
+    <feComponentTransfer in="g" result="c">
+      <feFuncR type="table" tableValues="0.01 0.03 0.1 0.62 0.08 0.02 0.04"/>
+      <feFuncG type="table" tableValues="0.02 0.05 0.24 0.8 0.18 0.04 0.06"/>
+      <feFuncB type="table" tableValues="0.06 0.2 0.85 1 0.62 0.14 0.18"/>
+    </feComponentTransfer>
+    <feComposite in="c" in2="SourceAlpha" operator="in"/>
+  </filter>
   <linearGradient id="gDarkV" x1="0" y1="0" x2="1" y2="1">
     <stop offset="0" stop-color="#101436"/><stop offset=".6" stop-color="#16206a"/><stop offset="1" stop-color="#2346d8"/>
   </linearGradient>
@@ -112,8 +148,8 @@ const shadow = el('ellipse', { cx: 0, cy: 230, rx: 150, ry: 22, fill: '#06123f',
 const badge = el('circle', { cx: 0, cy: 0, r: 0, fill: C.black }, root);
 const wipe = el('circle', { cx: 0, cy: 0, r: 0, fill: C.blue }, root);
 
-const big = el('text', { class: 'wm-word', x: 0, y: 0, 'text-anchor': 'middle', fill: C.white, opacity: 0, 'font-size': 520 }, root);
-big.textContent = 'wonmor';
+const big = el('g', { opacity: 0 }, root);
+el('path', { d: WORD_PATH, fill: C.white, transform: `scale(3.4) translate(${-WORD.width / 2} ${WM.X / 2})` }, big);
 
 // the diamond (dA) and the V copy that slides out of it (dB)
 function diamond(id) {
@@ -151,6 +187,9 @@ const mark = el('g', { id: 'wm-mark', opacity: 0 }, root);
 const mIn = el('g', { transform: `translate(${-MARK_W / 2} ${-MARK_H / 2})` }, mark);
 const mCap = el('path', { d: PATHS.capUnion, fill: 'url(#gCap)' }, mIn);
 const mW = el('path', { d: PATHS.w, fill: 'url(#gBlue)' }, mIn);
+const mChrome = el('g', { opacity: 0, filter: 'url(#fChromeL)' }, mIn);
+el('path', { d: PATHS.capUnion, fill: '#fff' }, mChrome);
+el('path', { d: PATHS.w, fill: '#fff' }, mChrome);
 const mIri = el('g', { opacity: 0, style: 'mix-blend-mode:screen' }, mIn);
 el('path', { d: PATHS.capUnion, fill: 'url(#gIri)' }, mIri);
 el('path', { d: PATHS.w, fill: 'url(#gIri)' }, mIri);
@@ -169,12 +208,12 @@ el('path', { d: PATHS.w, fill: 'url(#pHatch)', stroke: '#2a2a33', 'stroke-width'
 
 const dot = el('circle', { cx: 0, cy: 0, r: 0, fill: C.blue }, root);
 
-// wordmark (letters measured after the font loads)
+// constructed wordmark, origin on the baseline at the first letter
 const word = el('g', { id: 'wm-word', opacity: 0 }, root);
-const wordFill = el('text', { class: 'wm-word', x: 0, y: 0, 'font-size': 100, fill: C.white }, word);
-wordFill.textContent = 'wonmor';
+const wordFill = el('path', { d: WORD_PATH, fill: C.white }, word);
 const letters = [];
 const wordAnchors = el('g', { opacity: 0 }, word);
+const wordGuides = el('g', { opacity: 0 }, word);
 
 // cursor (px-sized, counter-scaled)
 const cursor = el('g', { opacity: 0 }, root);
@@ -189,7 +228,7 @@ function navTone() {
 addEventListener('scroll', navTone, { passive: true });
 
 // ---------- layout ----------
-let W = 1, H = 1, K = 1, tw100 = 300;
+let W = 1, H = 1, K = 1;
 function layout() {
   const r = stage.getBoundingClientRect();
   W = r.width; H = r.height; K = Math.min(W, H) / 1000;
@@ -200,13 +239,11 @@ function layout() {
 }
 
 // Lockup: mark of height h (content units) left, wordmark right, centred as a whole.
+// Mark and letters share one unit, so the stroke weight matches by construction.
 function lock(h) {
-  const F = 1.55 * h;
-  const mw = (MARK_W / MARK_H) * h;
-  const gap = 0.34 * h;
-  const tw = (tw100 * F) / 100;
-  const total = mw + gap + tw;
-  return { markX: -total / 2 + mw / 2, markS: h / MARK_H, textX: -total / 2 + mw + gap, baseline: 0.23 * h, ts: F / 100, total };
+  const u = h / MARK_H;
+  const total = LOCK_W * u;
+  return { markX: -total / 2 + (MARK_W / 2) * u, markS: u, textX: -total / 2 + (MARK_W + WM.GAP) * u, baseline: (WM.X - MARK_H / 2) * u, ts: u, total };
 }
 
 // ---------- 3D ----------
@@ -248,7 +285,7 @@ function build() {
   };
   const cur = (t, x, y, dur = 0.4) => tl.to(cursor, { x, y, duration: dur, ease: 'power2.inOut' }, t);
   const ds = 2.2;
-  const fitH = (max, frac) => Math.min(max, (frac * W / K) / ((MARK_W / MARK_H) + 0.34 + 0.0155 * tw100));
+  const fitH = (max, frac) => Math.min(max, (frac * W / K) / (LOCK_W / MARK_H));
   const L1 = lock(fitH(240, 0.94));
   const L2 = lock(fitH(74, 0.8));
   const L3 = lock(fitH(88, 0.86));
@@ -272,7 +309,8 @@ function build() {
   tl.set(mark, { x: 0, y: 0, scale: ds, svgOrigin: '0 0' }, 0);
   tl.set(mCap, { fill: 'url(#gCap)', opacity: 1 }, 0);
   tl.set(mW, { fill: 'url(#gBlue)', opacity: 1 }, 0);
-  tl.set([mIri, mOut, mWire, mStitch, mHatch], { opacity: 0 }, 0);
+  tl.set([mIri, mOut, mWire, mStitch, mHatch, mChrome], { opacity: 0 }, 0);
+  tl.set(mChrome, { attr: { filter: 'url(#fChromeL)' } }, 0);
   tl.set(cursor, { x: 60, y: -170 }, 0);
   bgTo(0, C.ink);
   chapter(0, '01  One diamond');
@@ -323,19 +361,22 @@ function build() {
   show(4.38, mark);
   tl.fromTo(mark, { opacity: 0.4 }, { opacity: 1, duration: 0.12 }, 4.38);
   hide(4.5, cursor);
-  // S7 scale down + iridescent sweep
+  // S7 silver chrome, scale down, holographic band runs along the arms
+  tl.fromTo(mChrome, { opacity: 0 }, { opacity: 1, duration: 0.18, immediateRender: false }, 4.4);
+  tl.fromTo('#wm-chrome-off-l', { attr: { dx: 0, dy: 0 } }, { attr: { dx: -140, dy: 30 }, duration: 1.2, ease: 'none', immediateRender: false }, 4.4);
   tl.to(mark, { scale: 1.1, duration: 0.9, ease: 'expo.out' }, 4.55);
-  tl.to(mIri, { opacity: 0.85, duration: 0.25 }, 4.7);
-  tl.fromTo('#gIri', { attr: { x1: -170, x2: -10 } }, { attr: { x1: 170, x2: 330 }, duration: 0.9, ease: 'power1.inOut' }, 4.7);
-  tl.to(mIri, { opacity: 0, duration: 0.25 }, 5.35);
-  // S8 light background
+  tl.to(mIri, { opacity: 0.55, duration: 0.2 }, 4.7);
+  tl.fromTo('#gIri', { attr: { x1: -170, x2: -10 } }, { attr: { x1: 170, x2: 330 }, duration: 0.9, ease: 'power1.inOut', immediateRender: false }, 4.7);
+  tl.to(mIri, { opacity: 0, duration: 0.2 }, 5.4);
+  // S8 light background: dark liquid chrome with a blue swirl, settling into navy
   bgTo(5.6, C.paper);
   flash(5.6, '#bfe6ff');
   tl.set(mark, { scale: 1.7 }, 5.6);
-  tl.set(mCap, { fill: C.blue }, 5.6);
-  tl.set(mW, { fill: '#1a2a8a' }, 5.6);
-  tl.to(mCap, { fill: '#0f1232', duration: 0.5 }, 6.05);
-  tl.to(mW, { fill: '#121845', duration: 0.5 }, 6.05);
+  tl.set(mChrome, { attr: { filter: 'url(#fChromeD)' }, opacity: 1 }, 5.6);
+  tl.fromTo('#wm-chrome-off-d', { attr: { dx: 60, dy: -10 } }, { attr: { dx: -90, dy: 20 }, duration: 1, ease: 'sine.inOut', immediateRender: false }, 5.6);
+  tl.set(mCap, { fill: '#0f1232' }, 5.6);
+  tl.set(mW, { fill: '#121845' }, 5.6);
+  tl.to(mChrome, { opacity: 0, duration: 0.45 }, 6.1);
   // S9 outline + wordmark construction
   chapter(6.6, '04  Wordmark');
   bgTo(6.6, C.ink);
@@ -349,11 +390,12 @@ function build() {
   tl.set(wordFill, { opacity: 0 }, 6.75);
   tl.call(() => letters.forEach((l) => l.setAttribute('opacity', 0)), null, 6.75);
   show(7.0, wordAnchors);
+  tl.fromTo(wordGuides, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, 6.9);
   letters.forEach((l, i) => {
     tl.fromTo(l, { opacity: 0 }, { opacity: 1, duration: 0.18, ease: 'none', immediateRender: false }, 7.0 + i * 0.3);
-    cur(7.0 + i * 0.3, L1.textX + (l._x + 20) * L1.ts, -40 + (i % 2) * 60, 0.28);
+    cur(7.0 + i * 0.3, L1.textX + ((l._x0 + l._x1) / 2) * L1.ts, L1.baseline - (i % 2 ? 0.2 : 0.8) * WM.X * L1.ts, 0.28);
   });
-  tl.set(wordAnchors, { opacity: 0 }, 9.1);
+  tl.set([wordAnchors, wordGuides], { opacity: 0 }, 9.1);
   // S10 outline -> solid white lockup, scale down
   chapter(9.1, '05  Lockup');
   hide(9.12, cursor, mOut);
@@ -378,8 +420,8 @@ function build() {
   chapter(11.4, '06  In the world');
   bgTo(11.4, C.ink);
   hide(11.4, word);
-  tl.set(big, { opacity: 1, x: 260, y: 170 }, 11.4);
-  tl.to(big, { x: -260, duration: 1.1, ease: 'none' }, 11.4);
+  tl.set(big, { opacity: 1, x: 420, y: 60 }, 11.4);
+  tl.to(big, { x: -420, duration: 1.1, ease: 'none' }, 11.4);
   tl.set(mark, { x: 0, y: 0, scale: 1.5 }, 11.4);
   tl.set([mCap, mW], { fill: C.blue }, 11.4);
   tl.set([mCap, mW], { opacity: 0 }, 11.9);
@@ -412,14 +454,14 @@ function build() {
   bgTo(15.5, C.blue);
   show(15.5, shadow);
   if (three) {
-    tl.set(st, { markScale: 170, markRotY: 1.45, markRotX: -0.18, markY: -10, markOpacity: 1 }, 15.5);
+    tl.set(st, { finish: 'glass', markScale: 170, markRotY: 1.45, markRotX: -0.18, markY: -10, markOpacity: 1 }, 15.5);
     mode(15.5, 'mark');
     tl.to(st, { markRotY: 0.35, duration: 0.6, ease: 'power2.out' }, 15.5);
     tl.to(st, { markY: 10, duration: 0.6, ease: 'sine.inOut' }, 15.5);
     // S17 big 3D on dark
     bgTo(16.1, C.ink);
     hide(16.1, shadow);
-    tl.set(st, { markScale: 300, markRotY: 0.3, markRotX: -0.08, markY: 0 }, 16.1);
+    tl.set(st, { finish: 'satin', markScale: 300, markRotY: 0.3, markRotX: -0.08, markY: 0 }, 16.1);
     tl.to(st, { markRotY: -0.12, duration: 0.55 }, 16.1);
     mode(16.66, 'none');
   } else {
@@ -482,21 +524,45 @@ function build() {
   return tl;
 }
 
+// Outline letters for the construction scene. Each letter is a wide stroke under an
+// ink fill, so overlapping parts (the two V of w) read as one contour.
 function buildLetters() {
   letters.forEach((l) => l.remove());
   letters.length = 0;
   wordAnchors.innerHTML = '';
-  tw100 = wordFill.getComputedTextLength() || 300;
-  const txt = wordFill.textContent;
-  for (let i = 0; i < txt.length; i++) {
-    const x = wordFill.getStartPositionOfChar(i).x;
-    const l = el('text', { class: 'wm-word', x, y: 0, 'font-size': 100, fill: 'none', stroke: '#d6dcea', 'stroke-width': 1.1, 'vector-effect': 'non-scaling-stroke', opacity: 0 }, word);
-    l.textContent = txt[i];
-    l._x = x;
-    letters.push(l);
-    el('rect', { x: x - 2, y: -74, width: 4, height: 4, fill: i % 2 ? C.yellow : '#3c7bff' }, wordAnchors);
-    el('rect', { x: x + 24, y: -2, width: 4, height: 4, fill: '#fff', stroke: '#2f6bff', 'stroke-width': 0.6 }, wordAnchors);
-  }
+  wordGuides.innerHTML = '';
+  const { X, T } = WM;
+  const line = (d, stroke, w = 0.9, dash) => el('path', { d, fill: 'none', stroke, 'stroke-width': w, 'vector-effect': 'non-scaling-stroke', ...(dash ? { 'stroke-dasharray': dash } : {}) }, wordGuides);
+  const label = (x, y, txt, fill) => { const t = el('text', { x, y, 'font-size': 9, fill, class: 'wm-mono', 'text-anchor': 'middle' }, wordGuides); t.textContent = txt; };
+  const mx = -(MARK_W + WM.GAP);
+  line(`M${mx - 30} ${-X}H${WORD.width + 30}`, 'rgba(111,160,255,.45)', 0.8, '4 4');
+  line(`M${mx - 30} 0H${WORD.width + 30}`, 'rgba(111,160,255,.45)', 0.8, '4 4');
+  line(`M${mx - 30} ${-X + 22}H${mx + MARK_W}`, 'rgba(255,210,63,.4)', 0.8, '2 3');
+  line(`M${mx + 21.4} ${-X + 60}L${mx + 36.9} ${-X + 48.9}`, '#3c7bff', 1.6);
+  label(mx + 40, -X + 66, '10', '#6aa0ff');
+  const wl = WORD.letters[0];
+  const hw = T / Math.sin(Math.atan2(X, X * 0.5));
+  line(`M${wl.x0 + X * 0.25} ${-X * 0.5}l${hw * 0.89} ${-hw * 0.45}`, '#3c7bff', 1.6);
+  label(wl.x0 + X * 0.25 + 4, -X * 0.5 + 16, '10', '#6aa0ff');
+  line(`M${mx - 10} ${-X + 22}V${-X + 30}`, C.yellow, 1.4);
+  label(mx - 22, -X + 29, '5', C.yellow);
+  WORD.letters.slice(0, -1).forEach((l, i) => {
+    if (i % 2) return;
+    const n = WORD.letters[i + 1];
+    line(`M${l.x1} ${-X * 0.5}H${n.x0}`, C.yellow, 1.4);
+    label((l.x1 + n.x0) / 2, -X * 0.5 - 6, '5', C.yellow);
+  });
+  WORD.letters.forEach((L, i) => {
+    const g = el('g', { opacity: 0 }, word);
+    el('path', { d: L.d, fill: 'none', stroke: '#d6dcea', 'stroke-width': 2.2, 'vector-effect': 'non-scaling-stroke', 'stroke-linejoin': 'round' }, g);
+    el('path', { d: L.d, fill: C.ink }, g);
+    g._x0 = L.x0; g._x1 = L.x1;
+    letters.push(g);
+    el('rect', { x: L.x0 - 2.5, y: -X - 2.5, width: 5, height: 5, fill: i % 2 ? C.yellow : '#3c7bff' }, wordAnchors);
+    el('rect', { x: L.x1 - 2.5, y: -2.5, width: 5, height: 5, fill: '#fff', stroke: '#2f6bff', 'stroke-width': 0.8 }, wordAnchors);
+  });
+  word.appendChild(wordAnchors);
+  word.appendChild(wordGuides);
 }
 
 let master = null;
