@@ -142,3 +142,5 @@ button{font:inherit;color:inherit}
 .wm-foot .wm-logo{color:var(--wm-white)}
 
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.wm-reveal{opacity:1;transform:none;transition:none}}
+.wm-rec .wm-nav,.wm-rec .wm-hud{display:none}
+.wm-rec body{overflow:hidden}

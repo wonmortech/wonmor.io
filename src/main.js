@@ -9,6 +9,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const params = new URLSearchParams(location.search);
 const SHOT = params.has('shot') ? parseFloat(params.get('shot')) : null;
+const REC = params.has('rec');
 
 const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, attrs = {}, parent) => {
@@ -453,6 +454,7 @@ function build() {
   hide(15.5, mark);
   bgTo(15.5, C.blue);
   show(15.5, shadow);
+  hide(16.1, shadow);
   if (three) {
     tl.set(st, { finish: 'glass', markScale: 170, markRotY: 1.45, markRotX: -0.18, markY: -10, markOpacity: 1 }, 15.5);
     mode(15.5, 'mark');
@@ -460,7 +462,6 @@ function build() {
     tl.to(st, { markY: 10, duration: 0.6, ease: 'sine.inOut' }, 15.5);
     // S17 big 3D on dark
     bgTo(16.1, C.ink);
-    hide(16.1, shadow);
     tl.set(st, { finish: 'satin', markScale: 300, markRotY: 0.3, markRotX: -0.08, markY: 0 }, 16.1);
     tl.to(st, { markRotY: -0.12, duration: 0.55 }, 16.1);
     mode(16.66, 'none');
@@ -573,6 +574,21 @@ async function start() {
   await init3D();
   layout();
   master = build();
+  if (REC) {
+    // Frame-exact recording: the recorder seeks the timeline and renders each frame.
+    document.documentElement.classList.add('wm-rec');
+    master.pause(0, false);
+    if (three) three.stop();
+    window.__wmRec = {
+      duration: master.duration(),
+      seek(t) {
+        master.pause(t, false);
+        if (three) { three.state.spin = t * 0.9; three.state.time = t; if (three.state.mode !== 'none') three.render(); }
+      },
+    };
+    document.documentElement.dataset.ready = '1';
+    return;
+  }
   if (SHOT !== null) {
     master.pause(SHOT, false);
     if (three) three.render();
