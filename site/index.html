@@ -2,79 +2,125 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>wonmor</title>
-<meta name="description" content="wonmor — something new is on the way.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>wonmor — brand system</title>
+<meta name="description" content="wonmor brand system: two diamonds, two V, one W. Mark, wordmark, colour, type and motion.">
 <link rel="canonical" href="https://wonmor.io/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wonmor.io/">
 <meta property="og:title" content="wonmor">
-<meta property="og:description" content="Something new is on the way.">
-<meta name="theme-color" content="#0b0b0f" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta property="og:description" content="Two diamonds. Two V. One W.">
+<meta name="theme-color" content="#07080D">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<style>
-:root{
-  --wm-bg:#f6f4ef; --wm-fg:#16151a; --wm-mute:#6c6a73; --wm-line:#16151a1f;
-  --wm-a:#ff5a36; --wm-b:#6d4cff; --wm-c:#12b39a;
-}
-@media (prefers-color-scheme: dark){
-  :root{ --wm-bg:#0b0b0f; --wm-fg:#f3f1ec; --wm-mute:#9a98a3; --wm-line:#f3f1ec1a; }
-}
-*{box-sizing:border-box;margin:0}
-html,body{height:100%}
-body{
-  background:var(--wm-bg); color:var(--wm-fg);
-  font:400 16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  display:grid; grid-template-rows:auto 1fr auto; min-height:100svh; overflow-x:hidden;
-}
-.wm-top,.wm-foot{display:flex;justify-content:space-between;align-items:center;padding:24px clamp(16px,4vw,48px);font-size:13px;color:var(--wm-mute)}
-.wm-mark{display:flex;align-items:center;gap:10px;color:var(--wm-fg);font-weight:600;letter-spacing:-.01em;font-size:15px}
-.wm-dot{width:10px;height:10px;border-radius:50%;background:var(--wm-a);animation:wm-pulse 2.4s ease-out infinite}
-@keyframes wm-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--wm-a) 55%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
-.wm-hero{position:relative;display:grid;place-items:center;padding:0 clamp(16px,4vw,48px);isolation:isolate}
-.wm-orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.wm-orb{position:absolute;width:42vmax;height:42vmax;border-radius:50%;filter:blur(70px);opacity:.38;will-change:transform}
-.wm-orb:nth-child(1){background:var(--wm-a);left:-8vmax;top:-6vmax;animation:wm-drift1 22s ease-in-out infinite alternate}
-.wm-orb:nth-child(2){background:var(--wm-b);right:-10vmax;top:10vmax;animation:wm-drift2 26s ease-in-out infinite alternate}
-.wm-orb:nth-child(3){background:var(--wm-c);left:25vmax;bottom:-18vmax;animation:wm-drift3 30s ease-in-out infinite alternate}
-@media (prefers-color-scheme: dark){.wm-orb{opacity:.24}}
-@keyframes wm-drift1{to{transform:translate(12vmax,8vmax) scale(1.1)}}
-@keyframes wm-drift2{to{transform:translate(-14vmax,6vmax) scale(.9)}}
-@keyframes wm-drift3{to{transform:translate(-8vmax,-10vmax) scale(1.15)}}
-.wm-center{text-align:center;max-width:880px}
-.wm-word{font-weight:700;letter-spacing:-.065em;line-height:.9;font-size:clamp(72px,19vw,232px);display:inline-flex}
-.wm-word span{display:inline-block;opacity:0;transform:translateY(.35em);animation:wm-rise .9s cubic-bezier(.2,.8,.2,1) forwards}
-.wm-word span:nth-child(1){animation-delay:.05s}.wm-word span:nth-child(2){animation-delay:.11s}
-.wm-word span:nth-child(3){animation-delay:.17s}.wm-word span:nth-child(4){animation-delay:.23s}
-.wm-word span:nth-child(5){animation-delay:.29s}.wm-word span:nth-child(6){animation-delay:.35s}
-@keyframes wm-rise{to{opacity:1;transform:none}}
-.wm-line{margin:28px auto 0;color:var(--wm-mute);font-size:clamp(17px,2.2vw,21px);max-width:32ch;opacity:0;animation:wm-fade 1s .6s forwards}
-@keyframes wm-fade{to{opacity:1}}
-.wm-chip{display:inline-flex;align-items:center;gap:8px;margin-top:36px;padding:8px 16px;border:1px solid var(--wm-line);border-radius:999px;font-size:13px;color:var(--wm-fg);background:color-mix(in srgb,var(--wm-bg) 70%,transparent);opacity:0;animation:wm-fade 1s .8s forwards}
-.wm-chip i{width:6px;height:6px;border-radius:50%;background:var(--wm-c)}
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation:none!important}
-  .wm-word span,.wm-line,.wm-chip{opacity:1;transform:none}
-}
-</style>
+<link rel="preload" href="/assets/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<script type="module" src="/assets/app.js"></script>
 </head>
 <body>
-<header class="wm-top">
-  <div class="wm-mark"><span class="wm-dot" aria-hidden="true"></span>wonmor</div>
-  <span>wonmor.io</span>
+<a class="wm-skip" href="#wm-main">Skip to content</a>
+
+<header class="wm-nav">
+  <a class="wm-logo" href="/" aria-label="wonmor home"><span data-mark data-fill="#1F5BFF"></span><span>wonmor</span></a>
+  <nav aria-label="Sections">
+    <a href="#mark">Mark</a><a href="#lockup">Lockup</a><a href="#color">Colour</a><a href="#type">Type</a><a href="#three">3D</a>
+  </nav>
 </header>
-<main class="wm-hero">
-  <div class="wm-orbs" aria-hidden="true"><div class="wm-orb"></div><div class="wm-orb"></div><div class="wm-orb"></div></div>
-  <div class="wm-center">
-    <h1 class="wm-word" aria-label="wonmor"><span>w</span><span>o</span><span>n</span><span>m</span><span>o</span><span>r</span></h1>
-    <p class="wm-line">Something new is on the way.</p>
-    <div class="wm-chip"><i aria-hidden="true"></i>Coming soon</div>
+
+<section id="wm-stage" class="wm-stage" aria-label="wonmor brand motion">
+  <div id="wm-bg" class="wm-layer"></div>
+  <canvas id="wm-3d" class="wm-layer" aria-hidden="true"></canvas>
+  <svg id="wm-svg" class="wm-layer" aria-hidden="true"></svg>
+  <div id="wm-phone" class="wm-phone" aria-hidden="true"><div class="wm-phone-box">
+    <div class="wm-phone-in">
+      <div class="wm-prof">
+        <div class="wm-ava"><i class="wm-ava-in"></i><span data-mark data-fill="#F7F9FC"></span></div>
+        <div class="wm-prof-name">wonmor</div>
+      </div>
+      <p class="wm-prof-bio">Two diamonds. One W.</p>
+      <p class="wm-prof-link">wonmor.io</p>
+      <div class="wm-prof-btns"><span class="wm-btn-p">Follow</span><span class="wm-btn-s">Message</span></div>
+      <div class="wm-prof-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div></div>
+  <div id="wm-flash" class="wm-layer wm-flash"></div>
+  <div class="wm-hud">
+    <span id="wm-chapter" class="wm-chapter">01  Two diamonds</span>
+    <div class="wm-track" aria-hidden="true"><i id="wm-bar"></i></div>
+    <button id="wm-toggle" type="button" aria-pressed="false">Pause</button>
+    <button id="wm-replay" type="button">Replay</button>
   </div>
+</section>
+
+<main id="wm-main">
+  <section class="wm-sec wm-intro wm-reveal">
+    <p class="wm-kicker">Brand system · 2026</p>
+    <h1>Two diamonds.<br>Two <em>V</em>. One <em>W</em>.</h1>
+    <p class="wm-lead">The wonmor mark starts as a pair of cut diamonds. Each diamond splits into a crown and a V. Slide them together until the inner arms meet, and the crowns become one and the two V become a W.</p>
+  </section>
+
+  <section id="mark" class="wm-sec wm-reveal">
+    <h2 class="wm-h2"><span>01</span>Construction</h2>
+    <ol class="wm-steps">
+      <li><div class="wm-step" data-step="1"></div><b>Two diamonds</b><span>One grid, 100 × 100 each.</span></li>
+      <li><div class="wm-step" data-step="2"></div><b>Split the girdle</b><span>A crown on top, a V below.</span></li>
+      <li><div class="wm-step" data-step="3"></div><b>Cut the V</b><span>The notch drops to 62 % of the height.</span></li>
+      <li><div class="wm-step" data-step="4"></div><b>Merge</b><span>Offset 64: inner arms coincide, the crowns join, W appears.</span></li>
+    </ol>
+  </section>
+
+  <section id="lockup" class="wm-sec wm-reveal">
+    <h2 class="wm-h2"><span>02</span>Lockup</h2>
+    <div class="wm-locks">
+      <div class="wm-lock wm-lock-dark"><span data-mark data-fill="#1F5BFF"></span><span class="wm-wm">wonmor</span></div>
+      <div class="wm-lock wm-lock-light"><span data-mark data-fill="#1F5BFF"></span><span class="wm-wm">wonmor</span></div>
+      <div class="wm-lock wm-lock-blue"><span data-mark data-fill="#F7F9FC"></span><span class="wm-wm">wonmor</span></div>
+    </div>
+    <div class="wm-variants">
+      <div class="wm-var wm-v1"><span data-mark data-fill="#1F5BFF"></span><small>Primary</small></div>
+      <div class="wm-var wm-v2"><span data-mark data-outline data-fill="#2A2D44"></span><small>Outline</small></div>
+      <div class="wm-var wm-v3"><span data-mark data-fill="#0B0B12"></span><small>Mono</small></div>
+      <div class="wm-var wm-v4"><span data-mark data-fill="#F7F9FC"></span><small>Reverse</small></div>
+      <div class="wm-var wm-v5"><i class="wm-badge"><span data-mark data-fill="#1F5BFF"></span></i><small>Badge</small></div>
+    </div>
+  </section>
+
+  <section id="color" class="wm-sec wm-reveal">
+    <h2 class="wm-h2"><span>03</span>Colour</h2>
+    <div class="wm-swatches">
+      <button type="button" class="wm-sw" data-copy="#1F5BFF" style="--c:#1F5BFF;--t:#fff"><b>Electric</b><span>#1F5BFF</span></button>
+      <button type="button" class="wm-sw" data-copy="#6FD3FF" style="--c:#6FD3FF;--t:#07080D"><b>Cyan glint</b><span>#6FD3FF</span></button>
+      <button type="button" class="wm-sw" data-copy="#15163F" style="--c:#15163F;--t:#fff"><b>Navy</b><span>#15163F</span></button>
+      <button type="button" class="wm-sw" data-copy="#07080D" style="--c:#07080D;--t:#fff"><b>Ink</b><span>#07080D</span></button>
+      <button type="button" class="wm-sw" data-copy="#EEF2F8" style="--c:#EEF2F8;--t:#07080D"><b>Paper</b><span>#EEF2F8</span></button>
+      <button type="button" class="wm-sw wm-sw-iri" data-copy="#FF8AD8 #FFE27A #6FD3FF" style="--t:#07080D"><b>Iridescent</b><span>light sweep only</span></button>
+    </div>
+    <p class="wm-note">Click a swatch to copy. Iridescence is a material effect, never a flat brand colour.</p>
+  </section>
+
+  <section id="type" class="wm-sec wm-reveal">
+    <h2 class="wm-h2"><span>04</span>Type</h2>
+    <div class="wm-type">
+      <div class="wm-type-big">wonmor</div>
+      <div class="wm-type-meta">
+        <p><b>Plus Jakarta Sans</b> Bold 700, lowercase, tracking −2 %.</p>
+        <p class="wm-glyphs">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz 0123456789</p>
+        <p class="wm-note">Open source (SIL OFL 1.1), self-hosted.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="three" class="wm-sec wm-reveal">
+    <h2 class="wm-h2"><span>05</span>In 3D</h2>
+    <div class="wm-viewer-wrap">
+      <canvas id="wm-viewer" class="wm-viewer" aria-label="3D wonmor mark, drag to rotate"></canvas>
+      <span class="wm-hint">Drag to rotate</span>
+    </div>
+  </section>
 </main>
+
 <footer class="wm-foot">
-  <span>&copy; 2026 wonmor</span>
-  <span>wonmor.io</span>
+  <span class="wm-logo"><span data-mark data-fill="#1F5BFF"></span><span>wonmor</span></span>
+  <span>&copy; 2026 wonmor · wonmor.io</span>
 </footer>
 </body>
 </html>
