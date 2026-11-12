@@ -1,0 +1,16 @@
+services:
+  wonmor-site:
+    image: caddy:2-alpine
+    container_name: wonmor-site
+    restart: unless-stopped
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./site:/srv:ro
+    networks:
+      - edge
+
+# dtwin edge Caddy shu tarmoqda: wonmor.io -> wonmor-site:80
+networks:
+  edge:
+    external: true
+    name: dtwin-prod_default

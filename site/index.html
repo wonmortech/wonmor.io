@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wonmor</title>
+<meta name="description" content="wonmor — something new is on the way.">
+<link rel="canonical" href="https://wonmor.io/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wonmor.io/">
+<meta property="og:title" content="wonmor">
+<meta property="og:description" content="Something new is on the way.">
+<meta name="theme-color" content="#0b0b0f" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{
+  --wm-bg:#f6f4ef; --wm-fg:#16151a; --wm-mute:#6c6a73; --wm-line:#16151a1f;
+  --wm-a:#ff5a36; --wm-b:#6d4cff; --wm-c:#12b39a;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --wm-bg:#0b0b0f; --wm-fg:#f3f1ec; --wm-mute:#9a98a3; --wm-line:#f3f1ec1a; }
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{
+  background:var(--wm-bg); color:var(--wm-fg);
+  font:400 16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  display:grid; grid-template-rows:auto 1fr auto; min-height:100svh; overflow-x:hidden;
+}
+.wm-top,.wm-foot{display:flex;justify-content:space-between;align-items:center;padding:24px clamp(16px,4vw,48px);font-size:13px;color:var(--wm-mute)}
+.wm-mark{display:flex;align-items:center;gap:10px;color:var(--wm-fg);font-weight:600;letter-spacing:-.01em;font-size:15px}
+.wm-dot{width:10px;height:10px;border-radius:50%;background:var(--wm-a);animation:wm-pulse 2.4s ease-out infinite}
+@keyframes wm-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--wm-a) 55%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
+.wm-hero{position:relative;display:grid;place-items:center;padding:0 clamp(16px,4vw,48px);isolation:isolate}
+.wm-orbs{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.wm-orb{position:absolute;width:42vmax;height:42vmax;border-radius:50%;filter:blur(70px);opacity:.38;will-change:transform}
+.wm-orb:nth-child(1){background:var(--wm-a);left:-8vmax;top:-6vmax;animation:wm-drift1 22s ease-in-out infinite alternate}
+.wm-orb:nth-child(2){background:var(--wm-b);right:-10vmax;top:10vmax;animation:wm-drift2 26s ease-in-out infinite alternate}
+.wm-orb:nth-child(3){background:var(--wm-c);left:25vmax;bottom:-18vmax;animation:wm-drift3 30s ease-in-out infinite alternate}
+@media (prefers-color-scheme: dark){.wm-orb{opacity:.24}}
+@keyframes wm-drift1{to{transform:translate(12vmax,8vmax) scale(1.1)}}
+@keyframes wm-drift2{to{transform:translate(-14vmax,6vmax) scale(.9)}}
+@keyframes wm-drift3{to{transform:translate(-8vmax,-10vmax) scale(1.15)}}
+.wm-center{text-align:center;max-width:880px}
+.wm-word{font-weight:700;letter-spacing:-.065em;line-height:.9;font-size:clamp(72px,19vw,232px);display:inline-flex}
+.wm-word span{display:inline-block;opacity:0;transform:translateY(.35em);animation:wm-rise .9s cubic-bezier(.2,.8,.2,1) forwards}
+.wm-word span:nth-child(1){animation-delay:.05s}.wm-word span:nth-child(2){animation-delay:.11s}
+.wm-word span:nth-child(3){animation-delay:.17s}.wm-word span:nth-child(4){animation-delay:.23s}
+.wm-word span:nth-child(5){animation-delay:.29s}.wm-word span:nth-child(6){animation-delay:.35s}
+@keyframes wm-rise{to{opacity:1;transform:none}}
+.wm-line{margin:28px auto 0;color:var(--wm-mute);font-size:clamp(17px,2.2vw,21px);max-width:32ch;opacity:0;animation:wm-fade 1s .6s forwards}
+@keyframes wm-fade{to{opacity:1}}
+.wm-chip{display:inline-flex;align-items:center;gap:8px;margin-top:36px;padding:8px 16px;border:1px solid var(--wm-line);border-radius:999px;font-size:13px;color:var(--wm-fg);background:color-mix(in srgb,var(--wm-bg) 70%,transparent);opacity:0;animation:wm-fade 1s .8s forwards}
+.wm-chip i{width:6px;height:6px;border-radius:50%;background:var(--wm-c)}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important}
+  .wm-word span,.wm-line,.wm-chip{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<header class="wm-top">
+  <div class="wm-mark"><span class="wm-dot" aria-hidden="true"></span>wonmor</div>
+  <span>wonmor.io</span>
+</header>
+<main class="wm-hero">
+  <div class="wm-orbs" aria-hidden="true"><div class="wm-orb"></div><div class="wm-orb"></div><div class="wm-orb"></div></div>
+  <div class="wm-center">
+    <h1 class="wm-word" aria-label="wonmor"><span>w</span><span>o</span><span>n</span><span>m</span><span>o</span><span>r</span></h1>
+    <p class="wm-line">Something new is on the way.</p>
+    <div class="wm-chip"><i aria-hidden="true"></i>Coming soon</div>
+  </div>
+</main>
+<footer class="wm-foot">
+  <span>&copy; 2026 wonmor</span>
+  <span>wonmor.io</span>
+</footer>
+</body>
+</html>

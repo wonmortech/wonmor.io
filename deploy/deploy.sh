@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Faqat toza origin/main deploy qilinadi: site/ -> /opt/wonmor-site -> health.
+set -euo pipefail
+
+HOST="${1:-dtwin}"
+REMOTE_DIR="${REMOTE_DIR:-/opt/wonmor-site}"
+URL="${URL:-https://wonmor.io}"
+
+fail() { echo "deploy to'xtatildi: $*" >&2; exit 1; }
+cd "$(dirname "$0")/.."
+
+git fetch --quiet origin main
+[ -z "$(git status --porcelain)" ] || fail "commit qilinmagan o'zgarish bor"
+SHA="$(git rev-parse HEAD)"
+[ "$SHA" = "$(git rev-parse origin/main)" ] || fail "faqat origin/main (HEAD $(git rev-parse --short HEAD))"
+
+STAGE="$(mktemp -d)"; trap 'rm -rf "$STAGE"' EXIT
+mkdir -p "$STAGE/site" "$STAGE/deploy"
+git archive HEAD site deploy/docker-compose.yml deploy/Caddyfile | tar -xf - -C "$STAGE"
+printf '%s\n' "$SHA" > "$STAGE/site/version.txt"
+
+tar -czf - -C "$STAGE" site deploy \
+  | ssh "$HOST" "set -e; mkdir -p '$REMOTE_DIR'; cd '$REMOTE_DIR'
+rm -rf site.new; mkdir site.new
+tar --no-same-owner -xzf - -C site.new
+mv site.new/deploy/docker-compose.yml site.new/deploy/Caddyfile .
+rm -rf site.prev; [ -d site ] && mv site site.prev
+mv site.new/site site; rm -rf site.new
+# ./site bind-mount: papka almashgani uchun konteyner qayta yaratiladi
+docker compose up -d --force-recreate --remove-orphans
+echo '$SHA' > REVISION"
+
+for _ in $(seq 1 20); do
+  if curl -fsS "$URL/version.txt" 2>/dev/null | grep -q "$SHA"; then echo "deploy tayyor: $SHA -> $URL"; exit 0; fi
+  sleep 3
+done
+fail "$URL/version.txt $SHA ni qaytarmadi (rollback: ssh $HOST 'cd $REMOTE_DIR && rm -rf site && mv site.prev site')"
