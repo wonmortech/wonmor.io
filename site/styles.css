@@ -144,3 +144,12 @@ button{font:inherit;color:inherit}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.wm-reveal{opacity:1;transform:none;transition:none}}
 .wm-rec .wm-nav,.wm-rec .wm-hud{display:none}
 .wm-rec body{overflow:hidden}
+
+/* pre-rendered brand film hero */
+.wm-film-stage{background:#0A0B10}
+.wm-film{object-fit:cover;background:#0A0B10}
+.wm-film-ctl{position:absolute;right:var(--wm-gut);bottom:22px;z-index:5;display:flex;gap:10px}
+.wm-film-ctl button{color:#fff;background:rgba(10,11,16,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:6px 14px;min-height:36px;font:700 12px/1 "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer}
+.wm-film-ctl button:hover{background:rgba(255,255,255,.14)}
+.wm-film-ctl button:focus-visible{outline:2px solid #1F5BFF;outline-offset:2px}
+body:has(#wm-film) .wm-nav{--wm-navfg:#fff;background:linear-gradient(rgba(10,11,16,.55),rgba(10,11,16,0))}

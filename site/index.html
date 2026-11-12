@@ -12,6 +12,8 @@
 <meta property="og:description" content="One diamond. One V. One W.">
 <meta name="theme-color" content="#07080D">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:image" content="https://wonmor.io/film/wonmor_16x9.jpg">
+<meta property="og:video" content="https://wonmor.io/film/wonmor_16x9.mp4">
 <link rel="preload" href="/assets/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/styles.css">
 <script type="module" src="/assets/app.js"></script>
@@ -26,28 +28,13 @@
   </nav>
 </header>
 
-<section id="wm-stage" class="wm-stage" aria-label="wonmor brand motion">
-  <div id="wm-bg" class="wm-layer"></div>
-  <canvas id="wm-3d" class="wm-layer" aria-hidden="true"></canvas>
-  <svg id="wm-svg" class="wm-layer" aria-hidden="true"></svg>
-  <div id="wm-phone" class="wm-phone" aria-hidden="true"><div class="wm-phone-box">
-    <div class="wm-phone-in">
-      <div class="wm-prof">
-        <div class="wm-ava"><i class="wm-ava-in"></i><span data-mark data-fill="#F7F9FC"></span></div>
-        <div class="wm-prof-name" data-word></div>
-      </div>
-      <p class="wm-prof-bio">One diamond. One W.</p>
-      <p class="wm-prof-link">wonmor.io</p>
-      <div class="wm-prof-btns"><span class="wm-btn-p">Follow</span><span class="wm-btn-s">Message</span></div>
-      <div class="wm-prof-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    </div>
-  </div></div>
-  <div id="wm-flash" class="wm-layer wm-flash"></div>
-  <div class="wm-hud">
-    <span id="wm-chapter" class="wm-chapter">01  One diamond</span>
-    <div class="wm-track" aria-hidden="true"><i id="wm-bar"></i></div>
-    <button id="wm-toggle" type="button" aria-pressed="false">Pause</button>
-    <button id="wm-replay" type="button">Replay</button>
+<section id="wm-stage" class="wm-stage wm-film-stage" aria-label="wonmor brand film">
+  <video id="wm-film" class="wm-layer wm-film" muted playsinline loop autoplay preload="auto" poster="/film/wonmor_16x9.jpg" aria-label="wonmor brand film: one diamond becomes a V, the V doubles into the W">
+    <source src="/film/wonmor_16x9.mp4" type="video/mp4">
+  </video>
+  <div class="wm-film-ctl">
+    <button id="wm-play" type="button" aria-pressed="false">Pause</button>
+    <button id="wm-sound" type="button" aria-pressed="false">Sound on</button>
   </div>
 </section>
 
