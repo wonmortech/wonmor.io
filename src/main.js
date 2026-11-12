@@ -30,11 +30,11 @@ document.querySelectorAll('[data-mark]').forEach((n) => {
   n.innerHTML = markSVG({ fill: o.fill, cap: o.cap, outline: 'outline' in o });
 });
 
-// construction steps: 1 two diamonds, 2 split, 3 V notch, 4 merged W
+// construction steps: 1 one diamond, 2 split, 3 V notch, 4 the V doubles into W
 const stepSVG = {
-  1: `<g transform="translate(6 10)">${['0', '120'].map((x) => `<path transform="translate(${x} 0)" d="${PATHS.diamond}"/>`).join('')}</g>`,
-  2: `<g transform="translate(6 10)">${['0', '120'].map((x) => `<g transform="translate(${x} 0)"><path d="${PATHS.cap}"/><path d="${PATHS.vOuter}"/><path class="wm-dim" d="M-6 26H106"/></g>`).join('')}</g>`,
-  3: `<g transform="translate(6 10)">${['0', '120'].map((x) => `<g transform="translate(${x} 0)"><path d="${PATHS.cap}"/><path d="${PATHS.v}"/></g>`).join('')}</g>`,
+  1: `<g transform="translate(66 10)"><path d="${PATHS.diamond}"/></g>`,
+  2: `<g transform="translate(66 10)"><path d="${PATHS.cap}"/><path d="${PATHS.vOuter}"/><path class="wm-dim" d="M-6 26H106"/></g>`,
+  3: `<g transform="translate(66 10)"><path d="${PATHS.cap}"/><path d="${PATHS.v}"/></g>`,
   4: `<g transform="translate(34 10)"><g class="wm-ghost"><path d="${PATHS.cap}"/><path d="${PATHS.v}"/><g transform="translate(64 0)"><path d="${PATHS.cap}"/><path d="${PATHS.v}"/></g></g><g class="wm-solid"><path d="${PATHS.capUnion}"/><path d="${PATHS.w}"/></g></g>`,
 };
 document.querySelectorAll('[data-step]').forEach((n) => {
@@ -115,7 +115,7 @@ const wipe = el('circle', { cx: 0, cy: 0, r: 0, fill: C.blue }, root);
 const big = el('text', { class: 'wm-word', x: 0, y: 0, 'text-anchor': 'middle', fill: C.white, opacity: 0, 'font-size': 520 }, root);
 big.textContent = 'wonmor';
 
-// two diamonds
+// the diamond (dA) and the V copy that slides out of it (dB)
 function diamond(id) {
   const g = el('g', { id, opacity: 0 }, root);
   const inner = el('g', { transform: 'translate(-50 -50)' }, g);
@@ -127,6 +127,7 @@ function diamond(id) {
   const outline = el('path', { d: PATHS.diamond, ...S }, inner);
   const cap = el('path', { d: PATHS.cap, ...S, opacity: 0 }, inner);
   const vout = el('path', { d: PATHS.vOuter, ...S, opacity: 0 }, inner);
+  const vcut = el('path', { d: PATHS.v, ...S, opacity: 0 }, inner);
   const split = el('path', { d: 'M-6 26H106', stroke: '#fff', 'stroke-width': 0.7, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1', 'stroke-dashoffset': 1 }, inner);
   const notch = el('path', { d: 'M18 30L50 62L82 30', stroke: '#fff', 'stroke-width': 0.8, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1', 'stroke-dashoffset': 1, 'stroke-linejoin': 'round' }, inner);
   const vline = el('path', { d: 'M-16 22V30', stroke: C.yellow, 'stroke-width': 0.8, fill: 'none', opacity: 0 }, inner);
@@ -140,7 +141,7 @@ function diamond(id) {
   const handle = el('g', { opacity: 0 }, inner);
   el('path', { d: 'M18 0 A10 10 0 0 0 8 10', fill: 'none', stroke: '#6aa0ff', 'stroke-width': 0.6, 'stroke-dasharray': '1.5 1' }, handle);
   el('circle', { cx: 9, cy: 3, r: 2, fill: '#fff', stroke: '#2f6bff', 'stroke-width': 0.5 }, handle);
-  return { g, sel, outline, cap, vout, split, notch, vline, lab, dim, anchors, handle };
+  return { g, sel, outline, cap, vout, vcut, split, notch, vline, lab, dim, anchors, handle };
 }
 const dA = diamond('wm-dA');
 const dB = diamond('wm-dB');
@@ -234,78 +235,89 @@ function build() {
     return dur ? tl.to(bg, { backgroundColor: color, duration: dur, ease: 'none' }, t) : tl.set(bg, { backgroundColor: color }, t);
   };
   const chapter = (t, txt) => tl.call(() => { chapterEl.textContent = txt; }, null, t);
-  const mode = (t, m) => tl.call(() => { if (three) { three.state.mode = m; m === 'none' ? three.stop() : three.start(); } }, null, t);
+  const mode = (t, m) => tl.call(() => {
+    if (!three) return;
+    three.state.mode = m;
+    canvas.style.visibility = m === 'none' ? 'hidden' : 'visible';
+    if (m === 'none') three.stop();
+    else { three.render(); if (!master || !master.paused()) three.start(); }
+  }, null, t);
   const flash = (t, color = '#fff') => {
     tl.set('#wm-flash', { backgroundColor: color, opacity: 0.9 }, t);
     tl.to('#wm-flash', { opacity: 0, duration: 0.22, ease: 'power1.out' }, t + 0.02);
   };
   const cur = (t, x, y, dur = 0.4) => tl.to(cursor, { x, y, duration: dur, ease: 'power2.inOut' }, t);
   const ds = 2.2;
-  const L1 = lock(240);
-  const L2 = lock(74);
-  const L3 = lock(88);
+  const fitH = (max, frac) => Math.min(max, (frac * W / K) / ((MARK_W / MARK_H) + 0.34 + 0.0155 * tw100));
+  const L1 = lock(fitH(240, 0.94));
+  const L2 = lock(fitH(74, 0.8));
+  const L3 = lock(fitH(88, 0.86));
 
   // reset state at t=0
+  const dz = 2.8;
   tl.set([dA.g, dB.g, mark, word, big, cursor, fabric, notebook, strings, shadow, phone, '#wm-flash'], { opacity: 0 }, 0);
   tl.set([badge, wipe, dot], { attr: { r: 0 } }, 0);
-  tl.set(dA.g, { x: -160, y: 0, scale: ds, svgOrigin: '0 0' }, 0);
-  tl.set(dB.g, { x: 160, y: 0, scale: ds, svgOrigin: '0 0' }, 0);
-  [dA, dB].forEach((d) => {
-    tl.set([d.outline], { opacity: 1 }, 0);
-    tl.set([d.cap, d.vout, d.sel, d.vline, d.lab, d.dim, d.anchors, d.handle], { opacity: 0 }, 0);
-    tl.set([d.split, d.notch], { attr: { 'stroke-dashoffset': 1 } }, 0);
-    tl.set(d.cap, { y: 0 }, 0);
-  });
+  tl.set([dA.g, dB.g], { x: 0, y: 0, scale: dz, svgOrigin: '0 0' }, 0);
+  tl.set(dA.outline, { opacity: 1 }, 0);
+  tl.set([dA.cap, dA.vout, dA.sel, dA.vline, dA.lab, dA.dim, dA.anchors, dA.handle], { opacity: 0 }, 0);
+  tl.set([dA.split, dA.notch], { attr: { 'stroke-dashoffset': 1 } }, 0);
+  tl.set([dA.notch], { opacity: 1 }, 0);
+  tl.set(dA.cap, { y: 0 }, 0);
+  tl.set(dA.vcut, { opacity: 0 }, 0);
+  tl.call(() => { dA.lab.textContent = '4.4'; }, null, 0.01);
+  // the copy that slides out of the V: crown + V only, no guides
+  tl.set([dB.outline, dB.sel, dB.split, dB.notch, dB.vline, dB.lab, dB.dim, dB.anchors, dB.handle], { opacity: 0 }, 0);
+  tl.set(dB.vout, { opacity: 0 }, 0);
+  tl.set([dB.cap, dB.vcut], { opacity: 1 }, 0);
   tl.set(mark, { x: 0, y: 0, scale: ds, svgOrigin: '0 0' }, 0);
   tl.set(mCap, { fill: 'url(#gCap)', opacity: 1 }, 0);
   tl.set(mW, { fill: 'url(#gBlue)', opacity: 1 }, 0);
   tl.set([mIri, mOut, mWire, mStitch, mHatch], { opacity: 0 }, 0);
-  tl.set(cursor, { x: 40, y: -120 }, 0);
+  tl.set(cursor, { x: 60, y: -170 }, 0);
   bgTo(0, C.ink);
-  chapter(0, '01  Two diamonds');
+  chapter(0, '01  One diamond');
   if (three) {
-    tl.set(st, { gemX: 160, gemScale: 220, gemOpacity: 1 }, 0);
+    tl.set(st, { gemCount: 1, gemX: 0, gemScale: 300, gemOpacity: 1 }, 0);
     mode(0, 'gems');
   }
 
-  // S1 gems + selection
-  show(0.12, dA.sel, dB.sel, cursor);
-  cur(0.2, 250, -170, 0.9);
-  // S2 gems -> flat outlines
+  // S1 one gem + selection box
+  show(0.12, dA.sel, cursor);
+  cur(0.2, 190, -190, 0.9);
+  // S2 gem -> flat outline
   if (three) tl.to(st, { gemOpacity: 0, duration: 0.28 }, 1.2);
-  tl.to([dA.g, dB.g], { opacity: 1, duration: 0.25 }, 1.22);
+  tl.to(dA.g, { opacity: 1, duration: 0.25 }, 1.22);
   mode(1.55, 'none');
-  hide(1.5, dA.sel, dB.sel);
+  hide(1.5, dA.sel);
   chapter(1.5, '02  Construction');
-  // S3 split
-  cur(1.55, -150, -100, 0.45);
-  tl.to([dA.split, dB.split], { attr: { 'stroke-dashoffset': 0 }, duration: 0.45, ease: 'power1.inOut' }, 1.7);
-  [dA, dB].forEach((d) => {
-    tl.set(d.outline, { opacity: 0 }, 2.2);
-    tl.set([d.cap, d.vout], { opacity: 1 }, 2.2);
-    tl.set(d.cap, { y: 4 }, 2.2);
-    tl.to(d.cap, { y: 0, duration: 0.3, ease: 'power3.out' }, 2.22);
-    tl.to(d.split, { opacity: 0, duration: 0.2 }, 2.25);
-    show(2.25, d.vline, d.lab, d.dim);
-    tl.call(() => { d.lab.textContent = '5'; }, null, 2.5);
-  });
-  tl.call(() => { dA.lab.textContent = '4.4'; dB.lab.textContent = '4.4'; }, null, 2.24);
-  // S4 V notch
-  cur(2.6, -110, -50, 0.35);
-  show(2.62, dA.anchors, dB.anchors);
-  tl.to([dA.notch, dB.notch], { attr: { 'stroke-dashoffset': 0 }, duration: 0.55, ease: 'power1.inOut' }, 2.7);
-  [dA, dB].forEach((d) => tl.call(() => d.vout.setAttribute('d', PATHS.v), null, 3.2));
-  tl.call(() => { [dA, dB].forEach((d) => d.vout.setAttribute('d', PATHS.vOuter)); }, null, 0.01);
-  tl.to([dA.notch, dB.notch], { opacity: 0, duration: 0.15 }, 3.22);
-  tl.set([dA.notch, dB.notch], { opacity: 1 }, 0);
+  // S3 split crown from pavilion
+  cur(1.55, -170, -70, 0.45);
+  tl.to(dA.split, { attr: { 'stroke-dashoffset': 0 }, duration: 0.45, ease: 'power1.inOut' }, 1.7);
+  tl.set(dA.outline, { opacity: 0 }, 2.2);
+  tl.set([dA.cap, dA.vout], { opacity: 1 }, 2.2);
+  tl.set(dA.split, { opacity: 1 }, 0);
+  tl.set(dA.cap, { y: 4 }, 2.2);
+  tl.to(dA.cap, { y: 0, duration: 0.3, ease: 'power3.out' }, 2.22);
+  tl.to(dA.split, { opacity: 0, duration: 0.2 }, 2.25);
+  show(2.25, dA.vline, dA.lab, dA.dim);
+  tl.call(() => { dA.lab.textContent = '5'; }, null, 2.5);
+  tl.call(() => { dA.lab.textContent = '4.4'; }, null, 2.24);
+  // S4 cut the V notch
+  cur(2.6, -90, -60, 0.35);
+  show(2.62, dA.anchors);
+  tl.to(dA.notch, { attr: { 'stroke-dashoffset': 0 }, duration: 0.55, ease: 'power1.inOut' }, 2.7);
+  tl.set(dA.vout, { opacity: 0 }, 3.2);
+  tl.set(dA.vcut, { opacity: 1 }, 3.2);
+  tl.to(dA.notch, { opacity: 0, duration: 0.15 }, 3.22);
   // S5 round corners
-  show(3.25, dA.handle, dB.handle);
-  cur(3.25, -255, -105, 0.3);
-  hide(3.55, dA.handle, dB.handle, dA.vline, dB.vline, dA.lab, dB.lab, dA.dim, dB.dim, dA.anchors, dB.anchors);
-  // S6 merge -> W
-  chapter(3.6, '03  Two V become W');
-  tl.to(dA.g, { x: -32 * ds, duration: 0.75, ease: 'power3.inOut' }, 3.6);
-  tl.to(dB.g, { x: 32 * ds, duration: 0.75, ease: 'power3.inOut' }, 3.6);
+  show(3.25, dA.handle);
+  cur(3.25, -95, -135, 0.3);
+  hide(3.55, dA.handle, dA.vline, dA.lab, dA.dim, dA.anchors);
+  // S6 the V splits into two and they lock into W
+  chapter(3.6, '03  One V becomes W');
+  show(3.6, dB.g);
+  tl.to(dA.g, { x: -32 * ds, scale: ds, duration: 0.75, ease: 'power3.inOut' }, 3.6);
+  tl.to(dB.g, { x: 32 * ds, scale: ds, duration: 0.75, ease: 'power3.inOut' }, 3.6);
   cur(3.6, 30, 150, 0.7);
   hide(4.38, dA.g, dB.g);
   show(4.38, mark);
@@ -454,14 +466,14 @@ function build() {
   tl.to(wipe, { attr: { r: 1600 }, duration: 0.22, ease: 'power2.in' }, 18.3);
   bgTo(18.52, C.blue);
   tl.set(wipe, { attr: { r: 0 } }, 18.53);
-  chapter(18.52, '01  Two diamonds');
+  chapter(18.52, '01  One diamond');
   if (three) {
-    tl.set(st, { gemX: 190, gemScale: 330, gemOpacity: 1 }, 18.52);
+    tl.set(st, { gemX: 0, gemScale: 420, gemOpacity: 1 }, 18.52);
     mode(18.52, 'gems');
-    tl.to(st, { gemX: 175, gemScale: 300, duration: 0.8, ease: 'sine.inOut' }, 18.52);
+    tl.to(st, { gemScale: 380, duration: 0.8, ease: 'sine.inOut' }, 18.52);
     // S24 back to dark, small gems (loops into S1)
     bgTo(19.32, C.ink, 0.15);
-    tl.to(st, { gemX: 160, gemScale: 220, duration: 0.45, ease: 'power2.out' }, 19.32);
+    tl.to(st, { gemScale: 300, duration: 0.45, ease: 'power2.out' }, 19.32);
   } else {
     bgTo(19.32, C.ink, 0.15);
   }

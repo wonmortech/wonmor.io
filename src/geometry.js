@@ -1,5 +1,5 @@
 // wonmor mark geometry. Unit grid: one diamond is 100 wide, 100 tall.
-// Diamond = cap (trapezoid) + girdle band + V. Two diamonds offset by 64
+// Diamond = cap (trapezoid) + girdle band + V. Two copies of the V offset by 64
 // make the inner V arms coincide, so the union reads as one crown over a W.
 
 export const OFFSET = 64;

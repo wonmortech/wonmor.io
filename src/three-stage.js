@@ -51,7 +51,7 @@ export function createStage(canvas, { interactive = false } = {}) {
 
   const state = {
     mode: interactive ? 'mark' : 'gems',
-    gemX: 1.6, gemScale: 1, gemOpacity: 1, spin: 0,
+    gemCount: 1, gemX: 0, gemScale: 1, gemOpacity: 1, spin: 0,
     markRotY: 0.4, markRotX: -0.12, markScale: 1, markY: 0, markOpacity: 1,
   };
 
@@ -89,6 +89,7 @@ export function createStage(canvas, { interactive = false } = {}) {
       const s = u2w(state.gemScale);
       gemA.scale.setScalar(s); gemB.scale.setScalar(s);
       gemA.position.x = -u2w(state.gemX); gemB.position.x = u2w(state.gemX);
+      gemB.visible = state.gemCount > 1;
       gemA.rotation.set(0.32, state.spin, 0.08);
       gemB.rotation.set(0.32, -state.spin + 0.6, -0.08);
       gemMat.opacity = 0.88 * state.gemOpacity;
