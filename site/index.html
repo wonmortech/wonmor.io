@@ -33,7 +33,7 @@ body{
 .wm-dot{width:10px;height:10px;border-radius:50%;background:var(--wm-a);animation:wm-pulse 2.4s ease-out infinite}
 @keyframes wm-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--wm-a) 55%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
 .wm-hero{position:relative;display:grid;place-items:center;padding:0 clamp(16px,4vw,48px);isolation:isolate}
-.wm-orbs{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.wm-orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
 .wm-orb{position:absolute;width:42vmax;height:42vmax;border-radius:50%;filter:blur(70px);opacity:.38;will-change:transform}
 .wm-orb:nth-child(1){background:var(--wm-a);left:-8vmax;top:-6vmax;animation:wm-drift1 22s ease-in-out infinite alternate}
 .wm-orb:nth-child(2){background:var(--wm-b);right:-10vmax;top:10vmax;animation:wm-drift2 26s ease-in-out infinite alternate}
