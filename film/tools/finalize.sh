@@ -9,9 +9,9 @@ for f in 9x16 16x9; do
   # master with sound (high quality)
   ffmpeg -v error -y -i "$src" -i "$OUT/audio/wonmor_sound.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest "$OUT/release/wonmor_film_$f.mp4"
   # web: smaller, sound kept (muted autoplay, toggle in UI)
-  if [ "$f" = 9x16 ]; then sc="720:1280"; else sc="1280:720"; fi
+  if [ "$f" = 9x16 ]; then sc="1080:1920"; else sc="1920:1080"; fi
   ffmpeg -v error -y -i "$src" -i "$OUT/audio/wonmor_sound.wav" -map 0:v -map 1:a -vf "scale=$sc:flags=lanczos" \
-    -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -profile:v high -movflags +faststart -c:a aac -b:a 128k -shortest "../site/film/wonmor_$f.mp4"
+    -c:v libx264 -preset slow -crf 24 -tune film -x264-params aq-mode=3:aq-strength=1.0 -pix_fmt yuv420p -profile:v high -movflags +faststart -c:a aac -b:a 128k -shortest "../site/film/wonmor_$f.mp4"
   ffmpeg -v error -y -ss 11.5 -i "$src" -frames:v 1 -vf "scale=$sc:flags=lanczos" -q:v 3 "../site/film/wonmor_$f.jpg"
 done
 # key frames for the Figma storyboard (one per shot, 9x16)
