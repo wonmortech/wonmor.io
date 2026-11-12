@@ -38,12 +38,8 @@ write('lockup_white.svg', lockupSvg(COLORS.white, COLORS.white));
 write('lockup_on-paper.svg', lockupSvg(COLORS.blue, COLORS.ink, COLORS.paper));
 write('lockup_on-ink.svg', lockupSvg(COLORS.blue, COLORS.white, COLORS.ink));
 
+// No standalone wordmark: the mark is the w, so the word only ever appears next to it.
 const WMK = wordmark();
-{
-  const s = 4, pad = 60;
-  const b = bbox(WMK.letters.flatMap((l) => l.contours));
-  write('wordmark_ink.svg', svg(Math.round(b.w * s + pad * 2), Math.round(b.h * s + pad * 2), `<path fill="${COLORS.ink}" transform="translate(${pad - b.x0 * s} ${pad - b.y0 * s}) scale(${s})" d="${WMK.letters.map((l) => svgPath(l.contours)).join('')}"/>`));
-}
 {
   const R = 500, m = markFinal(), b = bbox(m), s = (R * 1.1) / b.w;
   write('badge_ink.svg', svg(R * 2, R * 2, `<circle cx="${R}" cy="${R}" r="${R}" fill="${COLORS.ink}"/><path fill="${COLORS.blue}" transform="translate(${R - b.w * s / 2} ${R - b.h * s / 2 + 10}) scale(${s})" d="${svgPath(m, 3)}"/>`));

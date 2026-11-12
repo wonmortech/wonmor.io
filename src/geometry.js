@@ -88,21 +88,11 @@ export function markShapes(THREE) {
 //  1. one stroke weight T for every letter, matched to the arm of the mark;
 //  2. letter spacing S = T / 2, the same 10 : 5 ratio as crown gap to arm;
 //  3. the crown top sits on the x-height, the W tip drops below the baseline;
-//  4. the letter w is the mark's own W, scaled to the x-height.
+//  4. the mark itself is the w: the lockup reads mark + "onmor", never a second w.
 // Units are mark units; baseline at y = 0, x-height at y = -X.
-export const WM = { X: 80.6, T: 16.5, S: 8.25, GAP: 12 };
+export const WM = { X: 80.6, T: 16.5, S: 8.25, GAP: 5.8 };
 const f = (n) => +n.toFixed(2);
 
-// Same rule as the mark: two V, offset so their inner arms meet at the x-height.
-function letterW(x0) {
-  const { X, T } = WM;
-  const c = X * 0.5;
-  const hw = T / Math.sin(Math.atan2(X, c));
-  const o = 2 * c - 2 * hw;
-  const apex = -X * hw / c;
-  const v = (dx) => rounded([[dx, -X], [dx + hw, -X], [dx + c, apex], [dx + 2 * c - hw, -X], [dx + 2 * c, -X], [dx + c, 0]], [2, 2, 1.5, 2, 2, 1]);
-  return { d: v(x0) + v(x0 + o), w: o + 2 * c };
-}
 function letterO(x0) {
   const ro = (WM.X / 2) * 1.04;
   const ri = ro - WM.T * 1.04;
@@ -141,7 +131,7 @@ function letterR(x0) {
 }
 
 // Optical spacing: straight sides get the full S, round or diagonal neighbours less.
-const BUILD = [['w', letterW, 0.35], ['o', letterO, 0.6], ['n', letterN, 0.8], ['m', letterM, 0.6], ['o', letterO, 0.6], ['r', letterR, 0]];
+const BUILD = [['o', letterO, 0.6], ['n', letterN, 0.8], ['m', letterM, 0.6], ['o', letterO, 0.6], ['r', letterR, 0]];
 export const WORD = (() => {
   let x = 0;
   const letters = BUILD.map(([ch, fn, after]) => {

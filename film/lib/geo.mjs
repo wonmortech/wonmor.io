@@ -88,7 +88,7 @@ function glyphContours(cmds) {
 }
 
 // Letters in units where x-height = 100, baseline y = 0, y down.
-export function wordmark(text = 'wonmor', tracking = -0.03) {
+export function wordmark(text = 'onmor', tracking = -0.03) {
   const f = getFont();
   const size = 1000;
   const xh = f.tables.os2.sxHeight || 520;
@@ -111,14 +111,15 @@ export function wordmark(text = 'wonmor', tracking = -0.03) {
   return { letters, width: letters[letters.length - 1].x1, xHeight: 100 };
 }
 
-// Horizontal lockup, x-height = 100: mark height 1.18 x-height centred on the x band, gap 0.42 mark height.
+// Horizontal lockup, x-height = 100. The mark IS the letter w: mark + "onmor".
+// Crown top on the x-height, W tip below the baseline (mark height 1.24 x-height), gap = one letter space.
 export function lockup() {
   const wm = wordmark();
-  const mh = 118;
+  const mh = 124;
   const ms = mh / MARK_H;
   const mw = MARK_W * ms;
-  const gap = mh * 0.42;
-  const top = -50 - mh / 2;
+  const gap = 7.2;
+  const top = -100;
   const mark = transform(markFinal(), ms, 0, top);
   const letters = wm.letters.map((l) => ({ ...l, contours: transform(l.contours, 1, mw + gap, 0), x0: l.x0 + mw + gap, x1: l.x1 + mw + gap }));
   return { mark, letters, markW: mw, markH: mh, width: mw + gap + wm.width, top, bottom: top + mh };

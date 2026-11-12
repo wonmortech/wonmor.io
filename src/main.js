@@ -36,7 +36,7 @@ document.querySelectorAll('[data-lockup]').forEach((n) => {
   n.innerHTML = lockupSVG({ mark: o.mk, cap: o.cap, text: o.text });
 });
 document.querySelectorAll('[data-word]').forEach((n) => {
-  n.innerHTML = `<svg class="wm-svgword" viewBox="-2 ${-WM.X - 2} ${WORD.width + 4} ${WM.X + 4}" role="img" aria-label="wonmor"><path d="${WORD_PATH}" fill="currentColor"/></svg>`;
+  n.innerHTML = lockupSVG({ mark: 'currentColor', text: 'currentColor', cls: 'wm-svgword' });
 });
 document.querySelectorAll('[data-mark]').forEach((n) => {
   const o = n.dataset;

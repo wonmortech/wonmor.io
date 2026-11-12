@@ -118,6 +118,9 @@ def area(name, loc, rot, size, energy, color=(1, 1, 1)):
     return o
 
 
+GLOSSY_ONLY_STRIPS = SHOT.startswith("avatar")
+
+
 def strip(name, loc, rot, w, h, strength, color=(1, 1, 1)):
     """Emissive softbox seen only in reflections and refractions."""
     bpy.ops.mesh.primitive_plane_add(size=1, location=loc)
@@ -133,7 +136,15 @@ def strip(name, loc, rot, w, h, strength, color=(1, 1, 1)):
     e.inputs["Color"].default_value = (*color, 1)
     e.inputs["Strength"].default_value = strength
     out = nt.nodes.new("ShaderNodeOutputMaterial")
-    nt.links.new(e.outputs[0], out.inputs[0])
+    if GLOSSY_ONLY_STRIPS:
+        # light only through reflections: diffuse surfaces (backdrops) stay dark
+        lp = nt.nodes.new("ShaderNodeLightPath")
+        mx = nt.nodes.new("ShaderNodeMixShader")
+        nt.links.new(lp.outputs["Is Glossy Ray"], mx.inputs[0])
+        nt.links.new(e.outputs[0], mx.inputs[2])
+        nt.links.new(mx.outputs[0], out.inputs[0])
+    else:
+        nt.links.new(e.outputs[0], out.inputs[0])
     o.data.materials.append(m)
     o.visible_camera = False
     o.visible_shadow = False
@@ -708,9 +719,144 @@ def shot_notebook():
     render_frames(1, lambda f, n: None)
 
 
+# ---------------------------------------------------------------- profile pictures (square, circle-safe)
+AV = int(opt("--res", "2048"))
+
+
+def micro_rough(m, base, amp, scale=900.0):
+    """Roughness breakup so large faces read as a real finish, not CG-perfect."""
+    nt = m.node_tree
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = scale
+    nz.inputs["Detail"].default_value = 6
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value = base - amp
+    mr.inputs["To Max"].default_value = base + amp
+    nt.links.new(nz.outputs["Fac"], mr.inputs["Value"])
+    nt.links.new(mr.outputs["Result"], bsdf(m).inputs["Roughness"])
+    return nz
+
+
+def brushed(m, strength=0.04):
+    """Fine horizontal brushing on aluminium: anisotropy + stretched-noise bump."""
+    nt = m.node_tree
+    b = bsdf(m)
+    if "Anisotropic" in b.inputs:
+        b.inputs["Anisotropic"].default_value = 0.0  # radial tangent swirls around the origin; keep brushing in the bump
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    mp = nt.nodes.new("ShaderNodeMapping")
+    mp.inputs["Scale"].default_value = (2.0, 900.0, 900.0)
+    nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 3.0
+    nz.inputs["Detail"].default_value = 8
+    nt.links.new(mp.outputs[0], nz.inputs["Vector"])
+    bp = bump_from(nt, nz.outputs["Fac"], strength, 0.0004)
+    nt.links.new(bp.outputs[0], b.inputs["Normal"])
+
+
+def backdrop(color, rough=0.9, y=0.55):
+    bpy.ops.mesh.primitive_plane_add(size=12, location=(0, y, 0), rotation=(math.radians(90), 0, 0))
+    o = bpy.context.object
+    o.name = "Backdrop"
+    m = mat("Backdrop", color=color, rough=rough)
+    nt = m.node_tree
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 260
+    nz.inputs["Detail"].default_value = 10
+    bp = bump_from(nt, nz.outputs["Fac"], 0.08, 0.0006)
+    nt.links.new(bp.outputs[0], bsdf(m).inputs["Normal"])
+    o.data.materials.append(m)
+    return o
+
+
+def avatar_render(name, o, yaw=-13.0, pitch=7.0):
+    o.rotation_euler = (math.radians(90 + pitch), 0, math.radians(yaw))
+    d = ROOT / "out" / "avatar"
+    d.mkdir(parents=True, exist_ok=True)
+    bpy.context.scene.render.filepath = str(d / f"{name}_{AV}.png")
+    if SAVE_BLEND:
+        bpy.ops.wm.save_as_mainfile(filepath=str(d / f"{name}.blend"))
+    bpy.ops.render.render(write_still=True)
+    print(f"[{name}] done", flush=True)
+
+
+def avatar_cam():
+    # 85 mm portrait lens; mark (1.64 wide) fills ~58 % of the frame, safe inside the circle crop.
+    camera((0, -6.1, 0.0), (0, 0, 0), lens=85)
+    bpy.context.scene.camera.data.sensor_width = 36
+
+
+def shot_avatar_blue():
+    """Satin white ceramic mark on brand-blue studio paper: soft key, real contact shadow."""
+    reset((AV, AV))
+    set_world(srgb("#0B1A4A"), 0.25)
+    backdrop(srgb("#1F5BFF"), y=0.95)
+    front = mat("Ceramic", color=srgb("#F4F6FA"), rough=0.32, coat=0.35, coat_rough=0.18, spec=0.5)
+    micro_rough(front, 0.32, 0.05)
+    side = mat("CeramicSide", color=srgb("#E9EDF4"), rough=0.36, coat=0.3, coat_rough=0.2)
+    o = mark_object(0.24, 0.022, front, side, side, seg=8)
+    o.location = (0, 0.0, 0.04)
+    area("Key", (-2.6, -3.2, 2.8), (52, 0, -38), 3.6, 380)
+    area("Fill", (3.0, -3.6, -0.4), (88, 0, 40), 4.0, 90, (0.85, 0.9, 1.0))
+    area("Top", (0.0, -0.6, 3.2), (12, 0, 0), 2.4, 110)
+    strip("EdgeL", (-3.2, -1.2, 0.4), (0, -72, 10), 0.4, 3.0, 6.0)
+    avatar_cam()
+    avatar_render("wonmor_avatar_blue", o)
+
+
+def shot_avatar_dark():
+    """Blue anodised, brushed aluminium mark with diamond-cut bright chamfers, on ink."""
+    reset((AV, AV))
+    set_world(srgb("#050608"), 0.05)
+    backdrop(srgb("#0B0C11"), rough=0.7, y=0.95)
+    sp = bpy.data.lights.new("Pool", "SPOT")
+    sp.energy = 260
+    sp.spot_size = math.radians(48)
+    sp.spot_blend = 1.0
+    sp.color = (0.78, 0.85, 1.0)
+    sp.shadow_soft_size = 0.6
+    so = bpy.data.objects.new("Pool", sp)
+    bpy.context.collection.objects.link(so)
+    so.location = (0.4, -3.0, 2.6)
+    so.rotation_euler = (Vector((0, 0.95, 0.25)) - so.location).to_track_quat("-Z", "Y").to_euler()
+    front = mat("Anodised", color=srgb("#3A78FF"), metallic=1.0, rough=0.3, coat=0.2, coat_rough=0.12)
+    brushed(front)
+    side = mat("Chamfer", color=srgb("#C9D6F2"), metallic=1.0, rough=0.08)
+    o = mark_object(0.18, 0.036, front, side, side, seg=3)
+    o.location = (0, 0.0, 0.04)
+    strip("Soft", (0, -6.5, 1.2), (82, 0, 0), 7.0, 3.4, 5.5, (0.82, 0.88, 1.0))
+    strip("Low", (0, -6.0, -2.2), (-70, 0, 0), 5.0, 1.0, 0.5, (0.4, 0.55, 1.0))
+    strip("EdgeL", (-3.4, -1.4, 0.8), (0, -70, 15), 0.4, 3.4, 30.0)
+    strip("EdgeR", (3.4, -1.0, 0.2), (0, 70, -10), 0.4, 3.4, 16.0)
+    strip("EdgeTop", (0, -1.6, 3.0), (-60, 0, 0), 4.0, 0.3, 20.0)
+    area("Key", (-2.2, -3.0, 3.0), (50, 0, -35), 2.6, 130)
+    area("Back", (0, 0.4, 2.6), (-40, 0, 0), 2.0, 60, (0.5, 0.65, 1.0))
+    avatar_cam()
+    avatar_render("wonmor_avatar_dark", o)
+
+
+def shot_avatar_paper():
+    """Glossy brand-blue lacquer mark on warm-white paper, daylight."""
+    reset((AV, AV))
+    set_world(srgb("#DDE3EE"), 0.35)
+    backdrop(srgb("#DCE2EC"), y=0.95)
+    front = mat("Lacquer", color=srgb("#1F5BFF"), rough=0.2, coat=1.0, coat_rough=0.03)
+    micro_rough(front, 0.2, 0.04)
+    side = mat("LacquerSide", color=srgb("#1849D8"), rough=0.24, coat=0.8, coat_rough=0.05)
+    o = mark_object(0.22, 0.02, front, side, side, seg=8)
+    o.location = (0, 0.0, 0.04)
+    area("Window", (-3.0, -2.6, 3.0), (50, 0, -45), 3.6, 300, (1.0, 0.98, 0.95))
+    area("Fill", (3.0, -3.6, 0.0), (88, 0, 40), 4.0, 60)
+    strip("Refl", (0, -6.0, 1.8), (75, 0, 0), 3.0, 1.2, 3.0)
+    avatar_cam()
+    avatar_render("wonmor_avatar_paper", o)
+
+
 SHOTS = {
     "gem": shot_gem, "glassblue": shot_glassblue, "float": shot_float, "dark3d": shot_dark3d,
     "metal": shot_metal, "phone": shot_phone, "hoodie": shot_hoodie, "embroidery": shot_embroidery,
     "notebook": shot_notebook,
+    "avatar_blue": shot_avatar_blue, "avatar_dark": shot_avatar_dark, "avatar_paper": shot_avatar_paper,
 }
 SHOTS[SHOT]()
