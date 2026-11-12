@@ -201,7 +201,7 @@ export function build(fmt) {
     scale: kf([18.13, 1.08, E.soft], [18.93, 0.96, E.hold]), frame: kf([18.13, 0, E.lin], [18.93, 23, E.hold]) });
 
   // ---------- film grain (adjustment)
-  L({ type: 'grain', name: 'Grain', w: Wd, h: Hd, amount: 0.07, tiles: 6 });
+  L({ type: 'grain', name: 'Grain', w: Wd, h: Hd, amount: 0.035, tiles: 6 });
 
   // Snap every cut and key to a frame start so motion-blur sub-samples never straddle a cut.
   const q = (t) => Math.round(t * FPS) / FPS;
