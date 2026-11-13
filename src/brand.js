@@ -31,7 +31,7 @@ export function stepSVG(n) {
   const s = {
     1: p(PATHS.diamond),
     2: two,
-    3: `<g class="wm-cmp-ghost" opacity=".45">${two}</g><g class="wm-cmp-front" transform="translate(${B.o} 0)">${two}</g>`,
+    3: `<g class="wm-cmp-ghost" opacity=".5">${two}</g><g class="wm-cmp-front" transform="translate(${B.o} 0)">${two}</g>`,
     4: p(PATHS.crown) + p(PATHS.chev),
   }[n];
   const dx = n < 3 ? B.o / 2 : 0;
