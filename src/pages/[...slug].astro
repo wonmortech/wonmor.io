@@ -110,7 +110,7 @@ const meta = kind === 'home'
 
   {kind === 'post' && post && (
     <NewsArticle locale={locale} title={post.data.title} description={post.data.description} date={post.data.date} category={post.data.category}
-      links={post.data.links} related={news.filter((n) => n.id !== post!.id).slice(0, 2).map(card)}>
+      links={post.data.links}>
       <Content />
     </NewsArticle>
   )}
@@ -136,8 +136,7 @@ const meta = kind === 'home'
   )}
 
   {kind === 'rpost' && rpost && (
-    <ResearchArticle locale={locale} post={lite(rpost)} headings={rheadings} source={rpost.data.source} reproduce={rpost.data.reproduce}
-      more={rposts.filter((r) => r.id !== rpost!.id && r.data.area === rpost!.data.area).slice(0, 3).map(lite)}>
+    <ResearchArticle locale={locale} post={lite(rpost)} headings={rheadings} source={rpost.data.source} reproduce={rpost.data.reproduce}>
       <RContent />
     </ResearchArticle>
   )}

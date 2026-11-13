@@ -25,7 +25,7 @@ for (const p of posts) counts[p.area] = (counts[p.area] ?? 0) + 1;
 
   <section class="ri__strip" aria-labelledby="ri-a">
     <div class="container"><div class="rule-row"><h2 class="t-caption-bold" id="ri-a">{R.areas[locale]}</h2><a class="t-caption link-quiet fg-3" href={href(locale, '/engineering')}>{pageByKey['engineering'].title[locale]}</a></div></div>
-    <ExploreAreas locale={locale} counts={counts} />
+    <ExploreAreas locale={locale} counts={counts} heading={false} />
   </section>
 
   {featured.length > 1 && (
@@ -49,7 +49,6 @@ for (const p of posts) counts[p.area] = (counts[p.area] ?? 0) + 1;
   .ri__strip { margin-top: 48px; }
   @media (min-width: 1024px) { .ri__strip { margin-top: 72px; } }
   .ri__strip :global(.ex) { padding-top: 0; }
-  .ri__strip :global(.ex__h) { display: none; }
   .ri__strip :global(.ex__track) { margin-top: 24px; }
 
   .ri__band { background: var(--theme-background-primary); color: var(--theme-foreground-primary); padding-block: 64px 72px; }

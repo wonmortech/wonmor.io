@@ -170,8 +170,8 @@ const band = [
       <span>{L.title[locale]}</span><span>{L.summary[locale]}</span><span>{L.topic[locale]}</span><span>{L.date[locale]}</span><span></span>
     </div>
     <ul class="nx__list" role="list" aria-labelledby="nx-all" data-nt-body>
-      {news.map((n) => (
-        <li class="nx__item" data-key={n.category} data-date={iso(n.date)} data-title={n.title} data-text={`${n.title} ${n.description}`.toLowerCase()}>
+      {news.map((n, i) => (
+        <li class:list={['nx__item', i < 12 && 'reveal-up']} style={i < 12 ? `--i:${i % 6}` : undefined} data-key={n.category} data-date={iso(n.date)} data-title={n.title} data-text={`${n.title} ${n.description}`.toLowerCase()}>
           <div class="nx__row">
             <a class="nx__rowlink" href={url(n)} aria-labelledby={`nt-${n.slug}`}></a>
             <span class="nx__t" data-pan-cell><span class="nx__pan" id={`nt-${n.slug}`}>{n.title}</span></span>

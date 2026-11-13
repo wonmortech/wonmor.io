@@ -13,8 +13,8 @@ import { pageByKey } from '../../i18n/pages';
 import { areaPageKey, readingMinutes, researchUi as R, type Area } from '../../data/research';
 import { founder } from '../../data/company';
 interface Props { locale: Locale; post: PostLite; headings: { depth: number; slug: string; text: string }[]; source: string[];
-  reproduce?: { repo?: string; commit?: string; note?: string; commands: string[] }; more: PostLite[] }
-const { locale, post, headings, source, reproduce } = Astro.props; // `more` is superseded by the related posts below
+  reproduce?: { repo?: string; commit?: string; note?: string; commands: string[] } }
+const { locale, post, headings, source, reproduce } = Astro.props;
 const areaPg = pageByKey[areaPageKey(post.area as Area)];
 const kindPg = post.kind === 'engineering' ? pageByKey['engineering'] : pageByKey['research'];
 const toc = headings.filter((h) => h.depth === 2);
@@ -108,6 +108,8 @@ const moreHref = href(locale, post.kind === 'engineering' ? kindPg.path : areaPg
   .ra__meta dl > div { display: grid; gap: 2px; padding: 12px 0; border-top: 1px solid var(--theme-border-secondary); }
   .ra__meta dt { color: var(--theme-foreground-primary); }
   .ra__meta dd { color: var(--theme-foreground-tertiary); }
+  /* links in the meta rail sit close together; 32px rows keep each tap target clear of its neighbour */
+  .ra__meta dd a { display: inline-flex; align-items: center; min-height: 32px; }
   .ra__wide { margin-top: 64px; }
   @media (min-width: 1024px) { .ra__wide > * { margin-left: calc((100% - 11 * var(--grid-gutter)) / 12 * 3 + 3 * var(--grid-gutter)); max-width: calc((100% - 11 * var(--grid-gutter)) / 12 * 6 + 5 * var(--grid-gutter)); } }
   .ra__rep { padding: 32px; border-radius: var(--radius-card); background: #141413; color: #faf9f5; display: grid; gap: 16px; }

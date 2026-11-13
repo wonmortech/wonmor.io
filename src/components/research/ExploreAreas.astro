@@ -7,16 +7,17 @@ import AreaIcon from '../ui/AreaIcon.astro';
 import { href, type Locale } from '../../i18n/config';
 import { pageByKey } from '../../i18n/pages';
 import { areaList, areaPageKey, postCount, researchUi as R, type Area } from '../../data/research';
-interface Props { locale: Locale; counts: Record<string, number>; exclude?: Area | 'engineering' }
-const { locale, counts, exclude } = Astro.props;
+/* heading={false}: the caller already titles the strip (research hub), so no inner heading and no landmark of its own. */
+interface Props { locale: Locale; counts: Record<string, number>; exclude?: Area | 'engineering'; heading?: boolean }
+const { locale, counts, exclude, heading = true } = Astro.props;
 const items = [
   ...areaList.map((a) => ({ key: a.key as Area | 'engineering', page: pageByKey[areaPageKey(a.key)] })),
   { key: 'engineering' as const, page: pageByKey['engineering'] },
 ].filter((x) => x.key !== exclude);
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
-<section class="ex container section-lg" data-carousel aria-labelledby="ex-h">
-  <h2 class="t-headline-3 ex__h reveal-fade" id="ex-h">{R.explore[locale]}</h2>
+<div class="ex container section-lg" data-carousel role={heading ? 'region' : undefined} aria-labelledby={heading ? 'ex-h' : undefined}>
+  {heading && <h2 class="t-headline-3 ex__h reveal-fade" id="ex-h">{R.explore[locale]}</h2>}
   <ul class="ex__track" role="list" data-track>
     {items.map((x, i) => (
       <li class="ex__item reveal-up" style={`--i:${i}`} data-slide>
@@ -33,7 +34,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     <span class="ex__num t-caption"><span data-index>01</span> / {pad(items.length)}</span>
     <button type="button" class="ex__btn" data-next aria-label={R.next[locale]}><Icon name="arrow-right" size={16} /></button>
   </div>
-</section>
+</div>
 
 <script>
   import { initCarousels } from '../../scripts/carousel';
