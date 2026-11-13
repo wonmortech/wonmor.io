@@ -1,0 +1,32 @@
+---
+/* One research/engineering post as a list row: date · title + dek · area and type. */
+import { formatDate, href, type Locale } from '../../i18n/config';
+import { pageByKey } from '../../i18n/pages';
+import { areaPageKey, researchUi as R, type Area } from '../../data/research';
+export interface PostLite { slug: string; title: string; description: string; date: Date; kind: 'research' | 'engineering'; area: Area; minutes: number; featured: boolean }
+interface Props { locale: Locale; post: PostLite }
+const { locale, post } = Astro.props;
+const url = href(locale, `/${post.kind}/${post.slug}`);
+---
+<li class="prow">
+  <a class="prow__link" href={url}>
+    <time class="t-caption fg-3 prow__date" datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date, locale)}</time>
+    <span class="prow__main">
+      <span class="prow__title">{post.title}</span>
+      <span class="t-body-4 fg-2">{post.description}</span>
+    </span>
+    <span class="t-caption fg-3 prow__meta">{pageByKey[areaPageKey(post.area)].title[locale]}<br />{R[post.kind][locale]} · {post.minutes} {R.read[locale]}</span>
+  </a>
+</li>
+
+<style>
+  .prow { border-top: 1px solid var(--theme-border-secondary); }
+  .prow__link { display: grid; gap: 8px; padding: 24px 0; text-decoration: none; color: inherit; }
+  @media (min-width: 1024px) {
+    .prow__link { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); align-items: start; }
+    .prow__date { grid-column: 1 / span 2; padding-top: 4px; } .prow__main { grid-column: 3 / span 7; } .prow__meta { grid-column: 10 / span 3; text-align: right; padding-top: 4px; }
+  }
+  .prow__main { display: grid; gap: 6px; }
+  .prow__title { font: 500 clamp(19px, calc(19px + 5 * ((100vw - 390px) / 1530)), 24px)/1.25 var(--sans); letter-spacing: -.012em; transition: color .2s; }
+  @media (hover: hover) { .prow__link:hover .prow__title { color: var(--theme-foreground-quaternary); } }
+</style>

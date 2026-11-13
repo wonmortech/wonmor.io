@@ -1,0 +1,70 @@
+---
+/* /research/<area> and /engineering: header with the area mark, posts, related products, other areas. */
+import AreaMark from './AreaMark.astro';
+import PostRow, { type PostLite } from './PostRow.astro';
+import { href, type Locale } from '../../i18n/config';
+import { pageByKey, type PageDef } from '../../i18n/pages';
+import { areaList, areaPageKey, postCount, researchUi as R, type Area } from '../../data/research';
+import { productMedia } from '../../data/media';
+interface Props { locale: Locale; page: PageDef; posts: PostLite[]; area?: Area }
+const { locale, page, posts, area } = Astro.props;
+const meta = area ? areaList.find((a) => a.key === area)! : undefined;
+const research = pageByKey['research'];
+---
+<article class="ap">
+  <header class="container page-top ap__head">
+    <div>
+      <p class="t-caption fg-3"><a class="link-quiet" href={href(locale, research.path)}>{research.title[locale]}</a></p>
+      <h1 class="t-headline-2 ap__title">{page.title[locale]}</h1>
+      {page.chip && <span class="chip chip--dot">{page.chip[locale]}</span>}
+      <p class="t-sub-3 fg-2 ap__lede">{page.lede[locale]}</p>
+    </div>
+    {meta && <AreaMark area={meta.key} color={meta.color} class="ap__mark" />}
+  </header>
+
+  <section class="container section-lg" aria-label={page.title[locale]}>
+    <div class="rule-row"><h2 class="t-caption-bold">{R.all[locale]}</h2><span class="t-caption fg-3">{postCount(posts.length, locale)}</span></div>
+    {posts.length ? <ol class="ap__list" role="list">{posts.map((p) => <PostRow locale={locale} post={p} />)}</ol> : <p class="t-body-4 fg-3 ap__empty">{R.noPosts[locale]}</p>}
+  </section>
+
+  {meta && meta.products.length > 0 && (
+    <section class="container" aria-labelledby="ap-pr">
+      <div class="rule-row"><h2 class="t-caption-bold" id="ap-pr">{R.related[locale]}</h2></div>
+      <ul class="ap__prods" role="list">
+        {meta.products.map((k) => { const pg = pageByKey[`p-${k}`]; const m = productMedia(k); const img = m.desktop ?? m.poster; return (
+          <li><a class="ap__prod" href={href(locale, pg.path)}>
+            <span class="ap__pimg">{img && <img src={img} alt="" width="1512" height="945" loading="lazy" decoding="async" />}</span>
+            <span class="t-headline-5">{pg.title[locale]}</span><span class="t-body-4 fg-2">{pg.lede[locale]}</span>
+          </a></li>); })}
+      </ul>
+    </section>
+  )}
+
+  <nav class="container section-lg" aria-label={R.allAreas[locale]}>
+    <div class="rule-row"><h2 class="t-caption-bold">{R.allAreas[locale]}</h2></div>
+    <ul class="ap__areas" role="list">
+      {areaList.filter((a) => a.key !== area).map((a) => { const pg = pageByKey[areaPageKey(a.key)]; return (
+        <li><a class="ap__area" href={href(locale, pg.path)}><i style={`--c:${a.color}`}></i>{pg.title[locale]}</a></li>); })}
+    </ul>
+  </nav>
+</article>
+
+<style>
+  .ap__head { display: grid; gap: 40px; align-items: end; }
+  @media (min-width: 1024px) { .ap__head { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); column-gap: var(--grid-gutter); } }
+  .ap__title { margin: 12px 0 16px; }
+  .ap__lede { max-width: 34em; margin-top: 20px; }
+  .ap__head :global(.ap__mark) { width: 100%; }
+  .ap__list { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
+  .ap__empty { margin-top: 24px; }
+  .ap__prods { list-style: none; display: grid; gap: 32px var(--grid-gutter); margin-top: 28px; }
+  @media (min-width: 768px) { .ap__prods { grid-template-columns: repeat(3, 1fr); } }
+  .ap__prod { display: grid; gap: 8px; text-decoration: none; color: inherit; }
+  .ap__pimg { display: block; aspect-ratio: 16 / 10; border-radius: var(--radius-media); overflow: hidden; background: #141413; margin-bottom: 6px; }
+  .ap__pimg img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .8s var(--ease-out-quart); }
+  @media (hover: hover) { .ap__prod:hover img { transform: scale(1.03); } }
+  .ap__areas { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .ap__area { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--theme-border-primary); text-decoration: none; font: 500 15px/1 var(--sans); transition: background-color .2s; }
+  .ap__area i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+  @media (hover: hover) { .ap__area:hover { background: var(--theme-background-secondary); } }
+</style>

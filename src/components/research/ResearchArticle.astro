@@ -1,0 +1,134 @@
+---
+/* Long-form research/engineering post: serif column, sticky contents on the left, meta on the right,
+   then "Reproduce this", sources and more from the same area. */
+import Icon from '../Icon.astro';
+import PostRow, { type PostLite } from './PostRow.astro';
+import { formatDate, href, type Locale } from '../../i18n/config';
+import { pageByKey } from '../../i18n/pages';
+import { areaPageKey, researchUi as R, type Area } from '../../data/research';
+import { founder } from '../../data/company';
+interface Props { locale: Locale; post: PostLite; headings: { depth: number; slug: string; text: string }[]; source: string[];
+  reproduce?: { repo?: string; commit?: string; note?: string; commands: string[] }; more: PostLite[] }
+const { locale, post, headings, source, reproduce, more } = Astro.props;
+const areaPg = pageByKey[areaPageKey(post.area as Area)];
+const kindPg = post.kind === 'engineering' ? pageByKey['engineering'] : pageByKey['research'];
+const toc = headings.filter((h) => h.depth === 2);
+const isUrl = (s: string) => /^https?:\/\//.test(s);
+---
+<article class="ra">
+  <header class="container page-top ra__head">
+    <p class="t-caption fg-3"><a class="link-quiet" href={href(locale, kindPg.path)}>{kindPg.title[locale]}</a> · <a class="link-quiet" href={href(locale, areaPg.path)}>{areaPg.title[locale]}</a></p>
+    <h1 class="ra__title">{post.title}</h1>
+    <p class="ra__dek">{post.description}</p>
+    <p class="t-caption fg-3"><time datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date, locale)}</time> · {post.minutes} {R.read[locale]}</p>
+  </header>
+
+  <div class="container ra__grid">
+    {toc.length > 1 && (
+      <nav class="ra__toc t-caption" aria-labelledby="ra-toc">
+        <p class="t-caption-bold" id="ra-toc">{R.contents[locale]}</p>
+        <ol role="list">{toc.map((h) => <li><a class="link-quiet" href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+      </nav>
+    )}
+    <div class="ra__body prose"><slot /></div>
+    <aside class="ra__meta t-caption" aria-label={R.published[locale]}>
+      <dl>
+        <div><dt>{R.published[locale]}</dt><dd>{formatDate(post.date, locale)}</dd></div>
+        <div><dt>{R.author[locale]}</dt><dd><a class="link-underline" href={href(locale, '/company/founder')}>{founder.name}</a></dd></div>
+        <div><dt>{R.area[locale]}</dt><dd><a class="link-underline" href={href(locale, areaPg.path)}>{areaPg.title[locale]}</a></dd></div>
+        <div><dt>{R.type[locale]}</dt><dd>{R[post.kind][locale]}</dd></div>
+      </dl>
+    </aside>
+  </div>
+
+  {reproduce && reproduce.commands.length > 0 && (
+    <section class="container ra__wide" aria-labelledby="ra-rep">
+      <div class="ra__rep">
+        <h2 class="t-headline-5" id="ra-rep"><Icon name="arrow-right" size={16} />{R.reproduce[locale]}</h2>
+        {reproduce.note && <p class="t-body-4 ra__rep-note">{reproduce.note}</p>}
+        <pre class="ra__cmd"><code>{reproduce.commands.map((c) => `$ ${c}`).join('\n')}</code></pre>
+        <dl class="t-caption ra__rep-meta">
+          {reproduce.repo
+            ? <div><dt>{R.repo[locale]}</dt><dd><a class="link-underline" href={reproduce.repo} target="_blank" rel="noopener">{reproduce.repo.replace('https://github.com/', '')}</a></dd></div>
+            : <div><dt>{R.repo[locale]}</dt><dd>{R.private[locale]}</dd></div>}
+          {reproduce.repo && reproduce.commit && <div><dt>{R.commit[locale]}</dt><dd><a class="link-underline" href={`${reproduce.repo}/commit/${reproduce.commit}`} target="_blank" rel="noopener"><code>{reproduce.commit.slice(0, 7)}</code></a></dd></div>}
+        </dl>
+      </div>
+    </section>
+  )}
+
+  <section class="container ra__wide" aria-labelledby="ra-src">
+    <h2 class="t-caption-bold ra__src-h" id="ra-src">{R.sources[locale]}</h2>
+    <ol class="t-caption ra__src" role="list">
+      {source.map((s) => <li>{isUrl(s) ? <a class="link-underline" href={s} target="_blank" rel="noopener">{s.replace(/^https?:\/\//, '')}</a> : s}</li>)}
+    </ol>
+  </section>
+
+  {more.length > 0 && (
+    <section class="container section-lg" aria-labelledby="ra-more">
+      <div class="rule-row"><h2 class="t-caption-bold" id="ra-more">{R.more[locale]}</h2><a class="t-caption link-quiet fg-3" href={href(locale, areaPg.path)}>{areaPg.title[locale]}</a></div>
+      <ol class="ra__more" role="list">{more.map((p) => <PostRow locale={locale} post={p} />)}</ol>
+    </section>
+  )}
+</article>
+
+<style>
+  .ra__head { display: grid; justify-items: center; text-align: center; gap: 20px; padding-bottom: 56px; }
+  .ra__title { font: 500 clamp(32px, calc(32px + 24 * ((100vw - 390px) / 1530)), 56px)/1.08 var(--serif); font-variation-settings: 'opsz' 48; letter-spacing: -.015em; max-width: 20ch; text-wrap: balance; }
+  .ra__dek { font: 400 clamp(18px, calc(18px + 4 * ((100vw - 390px) / 1530)), 22px)/1.45 var(--sans); color: var(--theme-foreground-secondary); max-width: 36em; text-wrap: pretty; }
+  .ra__grid { display: grid; gap: 40px; }
+  .ra__grid > *, .ra__wide > * { min-width: 0; }
+  @media (min-width: 1024px) {
+    .ra__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); align-items: start; }
+    .ra__toc { grid-column: 1 / span 2; position: sticky; top: 96px; }
+    .ra__body { grid-column: 4 / span 6; grid-row: 1; }
+    .ra__meta { grid-column: 11 / span 2; grid-row: 1; }
+  }
+  .ra__toc ol { list-style: none; display: grid; gap: 10px; margin-top: 14px; padding-left: 12px; border-left: 1px solid var(--theme-border-secondary); }
+  .ra__toc a { color: var(--theme-foreground-secondary); }
+  @media (max-width: 1023px) { .ra__toc { padding: 20px; border-radius: 12px; background: var(--theme-background-secondary); } }
+  .ra__body { max-width: var(--reading-width); width: 100%; margin-inline: auto; }
+  .ra__meta dl > div { display: grid; gap: 2px; padding: 12px 0; border-top: 1px solid var(--theme-border-secondary); }
+  .ra__meta dt { color: var(--theme-foreground-primary); }
+  .ra__meta dd { color: var(--theme-foreground-tertiary); }
+  .ra__wide { margin-top: 64px; }
+  @media (min-width: 1024px) { .ra__wide > * { margin-left: calc((100% - 11 * var(--grid-gutter)) / 12 * 3 + 3 * var(--grid-gutter)); max-width: calc((100% - 11 * var(--grid-gutter)) / 12 * 6 + 5 * var(--grid-gutter)); } }
+  .ra__rep { padding: 32px; border-radius: var(--radius-card); background: #141413; color: #faf9f5; display: grid; gap: 16px; }
+  .ra__rep h2 { display: flex; align-items: center; gap: 10px; }
+  .ra__rep-note { color: rgba(250, 249, 245, .75); }
+  .ra__cmd { font: 400 14px/1.7 var(--mono); background: rgba(250, 249, 245, .06); border: 1px solid rgba(250, 249, 245, .12); border-radius: 10px; padding: 16px 18px; overflow-x: auto; white-space: pre; }
+  .ra__rep-meta { display: grid; gap: 8px; color: rgba(250, 249, 245, .6); }
+  .ra__rep-meta > div { display: flex; gap: 12px; flex-wrap: wrap; } .ra__rep-meta dt { color: #faf9f5; min-width: 7em; }
+  .ra__rep-meta a { color: inherit; }
+  .ra__src-h { padding-top: 16px; border-top: 1px solid var(--theme-border-secondary); }
+  .ra__src { list-style: decimal; padding-left: 1.4em; margin-top: 14px; display: grid; gap: 6px; color: var(--theme-foreground-tertiary); word-break: break-word; }
+  .ra__more { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
+
+  .prose :global(p), .prose :global(li) { font: 400 clamp(17px, calc(17px + 2 * ((100vw - 390px) / 1530)), 19px)/1.62 var(--serif); font-variation-settings: 'opsz' 16; text-wrap: pretty; }
+  .prose :global(p + p) { margin-top: 1.1em; }
+  .prose :global(h2) { font: 700 clamp(21px, calc(21px + 5 * ((100vw - 390px) / 1530)), 26px)/1.25 var(--sans); letter-spacing: -.012em; margin: 2.2em 0 .7em; scroll-margin-top: 96px; }
+  .prose :global(h2:first-child) { margin-top: 0; }
+  .prose :global(h3) { font: 600 19px/1.3 var(--sans); margin: 1.8em 0 .5em; scroll-margin-top: 96px; }
+  .prose :global(:is(ul, ol)) { padding-left: 1.3em; margin: 1em 0; display: grid; gap: .5em; }
+  .prose :global(strong) { font-weight: 600; }
+  .prose :global(a) { text-decoration: underline; text-decoration-thickness: 1.3px; text-underline-offset: .2em; }
+  .prose :global(blockquote) { margin: 1.5em 0; padding-left: 1em; border-left: 3px solid var(--theme-border-primary); color: var(--theme-foreground-secondary); }
+  .prose :global(:not(pre) > code) { font: 400 .86em/1 var(--mono); background: var(--theme-background-secondary); border: 1px solid var(--theme-border-secondary); padding: .12em .35em; border-radius: 4px; }
+  .prose :global(pre) { margin: 1.5em 0; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--theme-border-secondary); overflow-x: auto; font: 400 13.5px/1.65 var(--mono); }
+  .prose :global(pre code) { font: inherit; }
+  .prose :global(table) { width: 100%; border-collapse: collapse; margin: 1.5em 0; font: 400 15px/1.45 var(--sans); display: block; overflow-x: auto; }
+  .prose :global(:is(th, td)) { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--theme-border-secondary); vertical-align: top; }
+  .prose :global(th) { font-weight: 600; }
+
+  /* ```steps diagrams (tools/remark-steps.mjs) */
+  .prose :global(.flow) { margin: 2em 0; padding: 28px 24px; border-radius: var(--radius-card); background: var(--theme-background-secondary); }
+  .prose :global(.flow__list) { list-style: none; padding: 0; margin: 0; display: grid; gap: 22px; position: relative; }
+  .prose :global(.flow__list::before) { content: ''; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; background: var(--theme-border-primary);
+    transform-origin: top; transition: transform 1.4s var(--ease-in-out-quart) .15s; }
+  :global(html.js) .prose :global(.flow:not(.is-in) .flow__list::before) { transform: scaleY(0); }
+  .prose :global(.flow__step) { position: relative; display: grid; gap: 4px; padding-left: 50px; }
+  .prose :global(.flow__node) { position: absolute; left: 0; top: -3px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
+    background: #141413; color: #faf9f5; font: 600 13px/1 var(--sans); }
+  .prose :global(.flow__title) { font: 600 16px/1.35 var(--sans); }
+  .prose :global(.flow__note) { font: 400 16px/1.5 var(--serif); color: var(--theme-foreground-secondary); }
+</style>

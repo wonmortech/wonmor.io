@@ -16,6 +16,10 @@ import ProductPage from '../components/products/ProductPage.astro';
 import AboutPage from '../components/company/AboutPage.astro';
 import FounderPage from '../components/company/FounderPage.astro';
 import TimelinePage from '../components/company/TimelinePage.astro';
+import ResearchIndex from '../components/research/ResearchIndex.astro';
+import AreaPage from '../components/research/AreaPage.astro';
+import ResearchArticle from '../components/research/ResearchArticle.astro';
+import { readingMinutes, type Area } from '../data/research';
 import { locales, defaultLocale, href, formatDate, type Locale } from '../i18n/config';
 import { pages, groups, type PageDef } from '../i18n/pages';
 import { home } from '../i18n/home';
@@ -23,6 +27,7 @@ import { ui } from '../i18n/ui';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
+  const rall = await getCollection('research');
   const out: { params: { slug: string | undefined }; props: Record<string, unknown> }[] = [];
   for (const locale of locales) {
     const pre = locale === defaultLocale ? '' : locale;
@@ -33,6 +38,9 @@ export async function getStaticPaths() {
     for (const page of pages) out.push({ params: { slug: join(page.path) }, props: { kind: 'page', locale, page } });
     for (const entry of all.filter((e) => e.id.endsWith(`/${locale}`))) {
       out.push({ params: { slug: join(`news/${entry.id.split('/')[0]}`) }, props: { kind: 'post', locale, id: entry.id } });
+    }
+    for (const entry of rall.filter((e) => e.id.endsWith(`/${locale}`))) {
+      out.push({ params: { slug: join(`${entry.data.kind}/${entry.id.split('/')[0]}`) }, props: { kind: 'rpost', locale, id: entry.id } });
     }
   }
   return out;
@@ -46,14 +54,23 @@ const card = (n: (typeof news)[number]) => ({ slug: n.id.split('/')[0], ...n.dat
 let post: (typeof news)[number] | undefined, Content: any;
 if (kind === 'post') { post = news.find((n) => n.id === id)!; ({ Content } = await render(post)); }
 
+const rposts = (await getCollection('research', (e) => e.id.endsWith(`/${locale}`)))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const lite = (e: (typeof rposts)[number]) => ({ slug: e.id.split('/')[0], title: e.data.title, description: e.data.description, date: e.data.date,
+  kind: e.data.kind, area: e.data.area as Area, featured: e.data.featured, minutes: readingMinutes(e.body) });
+let rpost: (typeof rposts)[number] | undefined, RContent: any, rheadings: { depth: number; slug: string; text: string }[] = [];
+if (kind === 'rpost') { rpost = rposts.find((n) => n.id === id)!; ({ Content: RContent, headings: rheadings } = await render(rpost)); }
+const areaOf = (k: string) => k.replace(/^research-/, '') as Area;
+
 const meta = kind === 'home'
   ? { title: home.title[locale], description: home.description[locale] }
   : kind === 'news' ? { title: `${groups.news[locale]} · Wonmor`, description: ui.latestNews[locale] }
   : kind === 'search' ? { title: `${ui.search[locale]} · Wonmor`, description: ui.searchPlaceholder[locale] }
   : kind === 'post' ? { title: `${post!.data.title} · Wonmor`, description: post!.data.description }
+  : kind === 'rpost' ? { title: `${rpost!.data.title} · Wonmor`, description: rpost!.data.description }
   : { title: `${page!.title[locale]} · Wonmor`, description: page!.lede[locale] };
 ---
-<Base locale={locale} title={meta.title} description={meta.description} type={kind === 'post' ? 'article' : 'website'} published={post?.data.date} noindex={kind === 'search'}>
+<Base locale={locale} title={meta.title} description={meta.description} type={kind === 'post' || kind === 'rpost' ? 'article' : 'website'} published={post?.data.date ?? rpost?.data.date} noindex={kind === 'search'}>
   {kind === 'home' && (
     <>
       <Manifest lead={home.lead[locale]} statement={home.statement[locale]} />
@@ -91,12 +108,22 @@ const meta = kind === 'home'
   )}
 
   {kind === 'page' && page && (
-    page.key === 'products' ? <ProductsIndex locale={locale} page={page} />
+    page.key === 'research' ? <ResearchIndex locale={locale} page={page} posts={rposts.map(lite)} />
+    : page.key.startsWith('research-') ? <AreaPage locale={locale} page={page} area={areaOf(page.key)} posts={rposts.filter((r) => r.data.area === areaOf(page.key)).map(lite)} />
+    : page.key === 'engineering' ? <AreaPage locale={locale} page={page} posts={rposts.filter((r) => r.data.kind === 'engineering').map(lite)} />
+    : page.key === 'products' ? <ProductsIndex locale={locale} page={page} />
     : page.group === 'products' && page.key.startsWith('p-') ? <ProductPage locale={locale} page={page} />
     : page.key === 'company' ? <AboutPage locale={locale} page={page} />
     : page.key === 'founder' ? <FounderPage locale={locale} page={page} />
     : page.key === 'timeline' ? <TimelinePage locale={locale} page={page} />
     : <SectionPage locale={locale} page={page} />
+  )}
+
+  {kind === 'rpost' && rpost && (
+    <ResearchArticle locale={locale} post={lite(rpost)} headings={rheadings} source={rpost.data.source} reproduce={rpost.data.reproduce}
+      more={rposts.filter((r) => r.id !== rpost!.id && r.data.area === rpost!.data.area).slice(0, 3).map(lite)}>
+      <RContent />
+    </ResearchArticle>
   )}
 
   {kind === 'search' && (

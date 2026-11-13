@@ -23,4 +23,26 @@ const news = defineCollection({
   }),
 });
 
-export const collections = { news };
+/* Research and engineering posts: src/content/research/<slug>/<en|uz|ru>.md.
+   kind decides the URL (/research/<slug> or /engineering/<slug>); area links the post to a research area page. */
+export const areas = ['agents', 'language', 'infrastructure', 'supply-chain', 'interfaces', 'faith-society', 'digital-assets'] as const;
+const research = defineCollection({
+  loader: glob({ pattern: '*/*.md', base: './src/content/research' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+    kind: z.enum(['research', 'engineering']),
+    area: z.enum(areas),
+    featured: z.boolean().default(false),
+    source: z.array(z.string()).min(1),
+    reproduce: z.object({
+      repo: z.string().url().optional(),
+      commit: z.string().optional(),
+      note: z.string().optional(),
+      commands: z.array(z.string()).default([]),
+    }).optional(),
+  }),
+});
+
+export const collections = { news, research };

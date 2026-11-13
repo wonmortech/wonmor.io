@@ -44,6 +44,9 @@ const { locale, title, description, date, category, links, related } = Astro.pro
   .art__title { font: 700 clamp(30px, calc(30px + 18 * ((100vw - 390px) / 1530)), 48px)/1.12 var(--sans); letter-spacing: -.024em; max-width: 22ch; text-wrap: balance; }
   .art__dek { max-width: 36em; }
   .art__grid { display: grid; gap: 40px; padding-bottom: var(--section-spacer-lg); }
+  .art__grid > * { min-width: 0; }
+  .prose :global(pre) { margin: 1.5em 0; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--theme-border-secondary); overflow-x: auto; font: 400 13.5px/1.65 var(--mono); }
+  .prose :global(pre code) { font: inherit; background: none; border: 0; padding: 0; }
   @media (min-width: 1024px) {
     .art__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
     .art__body { grid-column: 4 / span 6; }
