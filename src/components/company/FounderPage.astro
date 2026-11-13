@@ -1,0 +1,94 @@
+---
+/* /company/founder: bio, career, what the work covers, open source, links. Monogram instead of a photo. */
+import Icon from '../Icon.astro';
+import { href, type Locale } from '../../i18n/config';
+import { pageByKey, type PageDef } from '../../i18n/pages';
+import { ui } from '../../i18n/ui';
+import { founder as F } from '../../data/company';
+interface Props { locale: Locale; page: PageDef }
+const { locale } = Astro.props;
+const company = pageByKey['company'];
+---
+<article class="fd">
+  <header class="container page-top fd__head">
+    <div class="fd__mono" aria-hidden="true"><span>NX</span></div>
+    <div>
+      <p class="t-caption fg-3"><a class="link-quiet" href={href(locale, company.path)}>{company.title[locale]}</a></p>
+      <h1 class="t-headline-2 fd__name">{F.name}</h1>
+      <p class="t-sub-3 fg-2">{F.role[locale]}</p>
+    </div>
+  </header>
+
+  <section class="container fd__split reveal-up">
+    <h2 class="sr-only">{F.role[locale]}</h2>
+    <p class="fd__bio">{F.bio[locale]}</p>
+  </section>
+
+  <section class="container section-lg" aria-labelledby="fd-c">
+    <div class="rule-row"><h2 class="t-caption-bold" id="fd-c">{F.careerTitle[locale]}</h2></div>
+    <ol class="fd__career" role="list">
+      {F.career.map((c) => (
+        <li class="fd__job reveal-up">
+          <span class="t-caption fg-3 fd__period">{c.period}</span>
+          <div class="fd__job-main">
+            <h3 class="t-headline-5">{c.org}</h3>
+            <p class="t-caption-bold fg-2">{c.role[locale]}</p>
+            <p class="t-body-4 fg-2">{c.text[locale]}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container section-lg" aria-labelledby="fd-s">
+    <div class="rule-row"><h2 class="t-caption-bold" id="fd-s">{F.skillsTitle[locale]}</h2></div>
+    <dl class="fd__skills">
+      {F.skills.map((s) => (
+        <div class="fd__skill reveal-up"><dt class="t-caption-bold">{s.group[locale]}</dt><dd><ul role="list">{s.items.map((i) => <li class="chip">{i}</li>)}</ul></dd></div>
+      ))}
+    </dl>
+  </section>
+
+  <section class="container fd__two">
+    <div>
+      <div class="rule-row"><h2 class="t-caption-bold">{F.openTitle[locale]}</h2></div>
+      <p class="t-body-2 fd__open">{F.open[locale]} <a class="link-underline" href={href(locale, '/products/bitg')}>bitg</a></p>
+    </div>
+    <div>
+      <div class="rule-row"><h2 class="t-caption-bold">{F.linksTitle[locale]}</h2></div>
+      <ul class="fd__links" role="list">
+        {F.links.map((l) => <li><a class="fd__link" href={l.href} target="_blank" rel="noopener me"><span>{l.label}</span><Icon name="arrow-up-right" size={14} /><span class="sr-only">{ui.external[locale]}</span></a></li>)}
+      </ul>
+    </div>
+  </section>
+</article>
+
+<style>
+  .fd__head { display: grid; gap: 32px; align-items: end; }
+  @media (min-width: 768px) { .fd__head { grid-template-columns: auto 1fr; gap: 48px; } }
+  .fd__mono { position: relative; width: clamp(140px, 18vw, 220px); aspect-ratio: 4 / 5; border-radius: var(--radius-media); overflow: hidden;
+    display: grid; place-items: end start; padding: 16px; background: linear-gradient(160deg, var(--ill-oat), var(--ill-clay)); }
+  .fd__mono::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(20,20,19,.06) 0 1px, transparent 1px 9px); }
+  .fd__mono span { position: relative; z-index: 1; font: 500 clamp(44px, 6vw, 72px)/1 var(--serif); color: #141413; letter-spacing: -.02em; }
+  .fd__name { margin: 12px 0 8px; }
+  .fd__split { padding-block: 56px 0; }
+  .fd__bio { max-width: 34em; font: 400 clamp(22px, calc(22px + 8 * ((100vw - 390px) / 1530)), 30px)/1.4 var(--serif); font-variation-settings: 'opsz' 32; text-wrap: pretty; }
+  @media (min-width: 1024px) { .fd__bio { margin-left: calc((100% - 11 * var(--grid-gutter)) / 12 * 3 + 3 * var(--grid-gutter)); } }
+  .fd__career { list-style: none; margin-top: 8px; }
+  .fd__job { display: grid; gap: 8px; padding: 26px 0; border-bottom: 1px solid var(--theme-border-secondary); }
+  @media (min-width: 1024px) { .fd__job { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
+    .fd__period { grid-column: 1 / span 3; padding-top: 4px; } .fd__job-main { grid-column: 4 / span 7; } }
+  .fd__job-main { display: grid; gap: 6px; }
+  .fd__skills { display: grid; gap: 28px var(--grid-gutter); margin-top: 28px; }
+  @media (min-width: 768px) { .fd__skills { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1280px) { .fd__skills { grid-template-columns: repeat(4, 1fr); } }
+  .fd__skill { display: grid; gap: 12px; align-content: start; }
+  .fd__skill ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .fd__two { display: grid; gap: 56px; padding-bottom: var(--section-spacer-lg); }
+  @media (min-width: 1024px) { .fd__two { grid-template-columns: 1fr 1fr; column-gap: 64px; } }
+  .fd__open { margin-top: 24px; color: var(--theme-foreground-secondary); max-width: 34em; }
+  .fd__links { list-style: none; margin-top: 8px; }
+  .fd__link { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--theme-border-secondary); text-decoration: none; font: 500 18px/1.2 var(--sans); }
+  .fd__link :global(svg) { transition: transform .3s var(--ease-out-quart); }
+  @media (hover: hover) { .fd__link:hover :global(svg) { transform: translate(3px, -3px); } }
+</style>

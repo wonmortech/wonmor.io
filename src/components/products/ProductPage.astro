@@ -1,0 +1,203 @@
+---
+/* One product: real screenshots (or a generated scene), what it does, how it works, numbers, stack, milestones. */
+import Icon from '../Icon.astro';
+import Showcase from './Showcase.astro';
+import ProductScene from './ProductScene.astro';
+import { formatDate, href, type Locale } from '../../i18n/config';
+import { pageByKey, type PageDef } from '../../i18n/pages';
+import { ui } from '../../i18n/ui';
+import { clusters, pageKey } from '../../data/ecosystem';
+import { productMedia, sceneVariant } from '../../data/media';
+import { products, productKeyOf, productUi as U, wrlLabel } from '../../data/products';
+
+interface Props { locale: Locale; page: PageDef }
+const { locale, page } = Astro.props;
+const key = productKeyOf(page.key);
+const p = products[key];
+const media = productMedia(key);
+const host = page.url?.replace(/^https?:\/\//, '');
+const cluster = clusters.find((c) => c.products.includes(key));
+const order = clusters.flatMap((c) => c.products);
+const i = order.indexOf(key);
+const more = [1, 2, 3].map((d) => order[(i + d) % order.length]).map((k) => ({ k, pg: pageByKey[pageKey(k)], m: productMedia(k) }));
+const t = (x: { en: string; uz: string; ru: string }) => x[locale];
+---
+<article class="pp" style={`--acc:${p?.accent ?? cluster?.color ?? '#c9a45c'}`}>
+  <header class="container page-top pp__head">
+    <p class="t-caption fg-3"><a class="link-quiet" href={href(locale, '/products')}>{pageByKey['products'].title[locale]}</a>{cluster && <> · {cluster.label[locale]}</>}</p>
+    <h1 class="pp__title">{page.title[locale]}</h1>
+    <div class="pp__lede-row">
+      <p class="t-sub-3 pp__lede">{page.lede[locale]}</p>
+      <div class="pp__actions">
+        {page.chip && <span class="chip chip--dot">{page.chip[locale]}</span>}
+        {page.url && (
+          <a class="btn btn--primary btn--medium btn--rounded btn--trailing" href={page.url} target="_blank" rel="noopener">
+            {ui.visit[locale]} {host}<Icon name="arrow-up-right" /><span class="sr-only">{ui.external[locale]}</span>
+          </a>
+        )}
+        {p?.repo && (
+          <a class="btn btn--secondary btn--medium btn--rounded btn--trailing" href={p.repo} target="_blank" rel="noopener">
+            <Icon name="github" />GitHub<span class="sr-only">{ui.external[locale]}</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </header>
+
+  <div class="container pp__hero">
+    {sceneVariant[key]
+      ? <ProductScene variant={sceneVariant[key]} accent={p?.accent ?? '#c9a45c'} label={`${page.title[locale]}: ${U.sceneNote[locale]}`} poster={media.poster} />
+      : (media.desktop || media.mobile)
+        ? <Showcase title={page.title[locale]} host={host ?? ''} desktop={media.desktop} mobile={media.mobile} alt={`${U.screenshotOf[locale]} ${host ?? page.title[locale]}`} />
+        : null}
+    {sceneVariant[key] && <p class="t-caption fg-3 pp__scene-note">{U.sceneNote[locale]}</p>}
+  </div>
+
+  {p && (
+    <>
+      <section class="container pp__sec pp__overview reveal-up" aria-labelledby="pp-ov">
+        <h2 class="t-caption-bold pp__eyebrow" id="pp-ov">{U.overview[locale]}</h2>
+        <p class="pp__summary">{t(p.summary)}</p>
+        <dl class="pp__meta t-caption">
+          <div><dt>{U.release[locale]}</dt><dd><a class="link-underline" href={href(locale, '/responsible-release-policy')}>{wrlLabel[p.wrl][locale]}</a></dd></div>
+          {p.since && <div><dt>{U.since[locale]}</dt><dd><time datetime={p.since}>{formatDate(new Date(p.since), locale)}</time></dd></div>}
+          {page.url && <div><dt>{U.site[locale]}</dt><dd><a class="link-underline" href={page.url} target="_blank" rel="noopener">{host}</a></dd></div>}
+          {p.repo && <div><dt>{U.source[locale]}</dt><dd><a class="link-underline" href={p.repo} target="_blank" rel="noopener">{p.repo.replace('https://github.com/', '')}</a></dd></div>}
+        </dl>
+      </section>
+
+      <section class="container pp__sec" aria-labelledby="pp-ft">
+        <div class="rule-row"><h2 class="t-caption-bold" id="pp-ft">{U.features[locale]}</h2></div>
+        <ol class="pp__features" role="list">
+          {p.features.map((f, n) => (
+            <li class="pp__feature reveal-up" style={`transition-delay:${n * 90}ms`}>
+              <span class="pp__num" aria-hidden="true">{String(n + 1).padStart(2, '0')}</span>
+              <h3 class="t-headline-5">{t(f.title)}</h3>
+              <p class="t-body-4 fg-2">{t(f.body)}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="container pp__sec" aria-labelledby="pp-how">
+        <div class="rule-row"><h2 class="t-caption-bold" id="pp-how">{U.how[locale]}</h2></div>
+        <div class="pp__how reveal-up" style={`--n:${p.how.length}`}>
+          <span class="pp__flow" aria-hidden="true"><span></span></span>
+          <ol class="pp__steps" role="list">
+          {p.how.map((s, n) => (
+            <li class="pp__step" style={`--i:${n}`}>
+              <span class="pp__node" aria-hidden="true">{n + 1}</span>
+              <h3 class="pp__step-title">{t(s.title)}</h3>
+              <p class="t-body-4 fg-2">{t(s.body)}</p>
+            </li>
+          ))}
+          </ol>
+        </div>
+      </section>
+
+      {p.facts.length > 0 && (
+        <section class="container pp__sec" aria-labelledby="pp-fx">
+          <div class="rule-row"><h2 class="t-caption-bold" id="pp-fx">{U.facts[locale]}</h2></div>
+          <dl class="pp__facts">
+            {p.facts.map((f) => (
+              <div class="pp__fact reveal-up"><dt class="t-caption fg-2">{t(f.label)}</dt><dd class="pp__fact-v">{f.value}</dd><dd class="t-caption fg-3 pp__fact-src">{f.source}</dd></div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <section class="container pp__sec pp__two" aria-label={`${U.stack[locale]} · ${U.milestones[locale]}`}>
+        <div>
+          <div class="rule-row"><h2 class="t-caption-bold">{U.stack[locale]}</h2></div>
+          <ul class="pp__stack" role="list">{p.stack.map((s) => <li class="chip">{s}</li>)}</ul>
+        </div>
+        {p.milestones.length > 0 && (
+          <div>
+            <div class="rule-row"><h2 class="t-caption-bold">{U.milestones[locale]}</h2></div>
+            <ol class="pp__ms" role="list">
+              {p.milestones.map((m) => (
+                <li><time class="t-caption fg-3" datetime={m.date}>{formatDate(new Date(m.date), locale)}</time><span class="t-body-4">{t(m.text)}</span></li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </section>
+    </>
+  )}
+
+  <section class="container pp__sec pp__more" aria-labelledby="pp-more">
+    <div class="rule-row"><h2 class="t-caption-bold" id="pp-more">{U.more[locale]}</h2><a class="t-caption link-quiet fg-3" href={href(locale, '/products')}>{pageByKey['products'].title[locale]}</a></div>
+    <ul class="pp__more-grid" role="list">
+      {more.map(({ k, pg, m }) => (
+        <li><a class="pp__mcard" href={href(locale, pg.path)}>
+          <span class="pp__mmedia">{(m.desktop ?? m.poster) ? <img src={m.desktop ?? m.poster} alt="" width="1512" height="945" loading="lazy" decoding="async" /> : <span aria-hidden="true">{pg.title[locale].slice(0, 1)}</span>}</span>
+          <span class="t-headline-5">{pg.title[locale]}</span>
+          <span class="t-body-4 fg-2">{pg.lede[locale]}</span>
+        </a></li>
+      ))}
+    </ul>
+    <p class="t-caption fg-3 pp__support">{U.support[locale]}</p>
+  </section>
+</article>
+
+<style>
+  .pp__title { font: 500 var(--fs-display)/1.02 var(--serif); font-variation-settings: 'opsz' 48; letter-spacing: -.015em; margin-top: 16px; }
+  .pp__lede-row { display: grid; gap: 24px; margin-top: 28px; align-items: start; }
+  .pp__lede { color: var(--theme-foreground-secondary); max-width: 36em; }
+  .pp__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  @media (min-width: 1024px) { .pp__lede-row { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--grid-gutter); } .pp__actions { justify-content: flex-end; padding-top: 4px; } }
+  .pp__hero { margin-top: 56px; }
+  .pp__scene-note { margin-top: 12px; }
+  .pp__sec { margin-top: calc(var(--section-spacer-lg) * 1.25); }
+  .pp__overview { display: grid; gap: 24px; padding-top: 24px; border-top: 1px solid var(--theme-border-secondary); }
+  @media (min-width: 1024px) { .pp__overview { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
+    .pp__eyebrow { grid-column: 1 / span 3; } .pp__summary { grid-column: 4 / span 6; } .pp__meta { grid-column: 10 / span 3; } }
+  .pp__summary { font: 400 clamp(22px, calc(22px + 8 * ((100vw - 390px) / 1530)), 30px)/1.35 var(--serif); font-variation-settings: 'opsz' 32; letter-spacing: -.005em; text-wrap: pretty; }
+  .pp__meta > div { display: grid; gap: 2px; padding: 10px 0; border-top: 1px solid var(--theme-border-secondary); }
+  .pp__meta > div:first-child { border-top: 0; padding-top: 4px; }
+  .pp__meta dd { color: var(--theme-foreground-tertiary); }
+
+  .pp__features { list-style: none; display: grid; gap: var(--grid-gutter); margin-top: 28px; }
+  @media (min-width: 900px) { .pp__features { grid-template-columns: repeat(3, 1fr); } }
+  .pp__feature { position: relative; display: grid; gap: 10px; align-content: start; padding: 28px 28px 32px; border-radius: var(--radius-card); background: var(--theme-background-secondary); overflow: hidden; }
+  .pp__feature::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; background: var(--acc); transform: scaleX(0); transform-origin: left; transition: transform 1s var(--ease-rise) .2s; }
+  .pp__feature.is-in::before, html:not(.js) .pp__feature::before { transform: none; }
+  .pp__num { font: 400 13px/1 var(--mono); color: var(--theme-foreground-tertiary); margin-bottom: 18px; }
+
+  .pp__how { position: relative; margin-top: 36px; }
+  .pp__steps { list-style: none; display: grid; gap: 32px; }
+  @media (min-width: 900px) { .pp__steps { grid-template-columns: repeat(var(--n), 1fr); gap: var(--grid-gutter); } }
+  .pp__flow { position: absolute; left: 17px; top: 18px; bottom: 18px; width: 2px; background: var(--theme-border-secondary); overflow: hidden; }
+  .pp__flow span { position: absolute; inset: 0; background: var(--acc); transform: scaleY(0); transform-origin: top; transition: transform 1.6s var(--ease-in-out-quart) .2s; }
+  @media (min-width: 900px) { .pp__flow { left: 18px; right: calc(100% / var(--n) - 18px); top: 17px; bottom: auto; width: auto; height: 2px; }
+    .pp__flow span { transform: scaleX(0); transform-origin: left; } }
+  .pp__how.is-in .pp__flow span { transform: none; }
+  .pp__step { position: relative; display: grid; gap: 8px; align-content: start; padding-left: 56px; }
+  @media (min-width: 900px) { .pp__step { padding-left: 0; padding-top: 56px; padding-right: 16px; } }
+  .pp__node { position: absolute; left: 0; top: 0; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%;
+    background: var(--theme-background-primary); border: 2px solid var(--theme-border-primary); font: 600 14px/1 var(--sans);
+    transition: border-color .4s, background-color .4s, color .4s; transition-delay: calc(.35s + var(--i) * .3s); }
+  .pp__how.is-in .pp__node { border-color: var(--acc); background: var(--acc); color: #fff; }
+  .pp__step-title { font: 600 18px/1.3 var(--sans); letter-spacing: -.01em; }
+
+  .pp__facts { display: grid; gap: var(--grid-gutter); margin-top: 28px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .pp__fact { display: grid; gap: 6px; padding-top: 16px; border-top: 2px solid var(--acc); }
+  .pp__fact dt { order: 2; } .pp__fact-src { order: 3; }
+  .pp__fact-v { order: 1; font: 500 clamp(44px, calc(44px + 28 * ((100vw - 390px) / 1530)), 72px)/1 var(--serif); letter-spacing: -.02em; }
+
+  .pp__two { display: grid; gap: 56px; }
+  @media (min-width: 1024px) { .pp__two { grid-template-columns: 1fr 1fr; gap: var(--grid-gutter); column-gap: 64px; } }
+  .pp__stack { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .pp__ms { list-style: none; display: grid; margin-top: 12px; }
+  .pp__ms li { display: grid; grid-template-columns: 9.5em 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--theme-border-tertiary); }
+  @media (max-width: 520px) { .pp__ms li { grid-template-columns: 1fr; gap: 4px; } }
+
+  .pp__more { padding-bottom: var(--section-spacer-lg); }
+  .pp__more-grid { list-style: none; display: grid; gap: 32px var(--grid-gutter); margin-top: 28px; }
+  @media (min-width: 768px) { .pp__more-grid { grid-template-columns: repeat(3, 1fr); } }
+  .pp__mcard { display: grid; gap: 8px; text-decoration: none; color: inherit; }
+  .pp__mmedia { display: grid; place-items: center; aspect-ratio: 16 / 10; border-radius: var(--radius-media); overflow: hidden; background: #141413; color: rgba(255,255,255,.5); font: 500 56px/1 var(--serif); margin-bottom: 6px; }
+  .pp__mmedia img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .8s var(--ease-out-quart); }
+  @media (hover: hover) { .pp__mcard:hover img { transform: scale(1.03); } }
+  .pp__support { margin-top: 56px; }
+</style>

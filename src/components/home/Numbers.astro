@@ -1,0 +1,47 @@
+---
+/* Numbers band: values count up once when the band scrolls into view. Static numbers without JS. */
+import type { Locale } from '../../i18n/config';
+import { numbers, numbersAsOf, numbersTitle } from '../../data/company';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const fmt = new Intl.NumberFormat(locale === 'uz' ? 'uz-Latn' : locale);
+---
+<section class="container section-lg nums" aria-labelledby="nums-h" data-nums>
+  <div class="rule-row"><h2 class="t-caption-bold" id="nums-h">{numbersTitle[locale]}</h2><span class="t-caption fg-3">{numbersAsOf[locale]}</span></div>
+  <dl class="nums__grid">
+    {numbers.map((n) => (
+      <div class="nums__item" title={n.source}>
+        <dt class="t-caption fg-2">{n.label[locale]}</dt>
+        <dd class="nums__v" data-to={n.value}>{fmt.format(n.value)}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-nums]');
+  if (root && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const els = [...root.querySelectorAll<HTMLElement>('[data-to]')];
+    const fmt = new Intl.NumberFormat(document.documentElement.lang);
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const t0 = performance.now(), dur = 1400;
+      const step = (now: number) => {
+        const p = Math.min(1, (now - t0) / dur), k = 1 - Math.pow(1 - p, 4);
+        els.forEach((el) => (el.textContent = fmt.format(Math.round(+el.dataset.to! * k))));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, { threshold: .4 });
+    io.observe(root);
+  }
+</script>
+
+<style>
+  .nums__grid { display: grid; gap: 32px var(--grid-gutter); margin-top: 32px; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { .nums__grid { grid-template-columns: repeat(5, 1fr); } }
+  .nums__item { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 10px; padding-top: 16px; border-top: 1px solid var(--theme-border-primary); }
+  .nums__v { font: 500 clamp(48px, calc(48px + 32 * ((100vw - 390px) / 1530)), 80px)/1 var(--serif); font-variation-settings: 'opsz' 60;
+    letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
+</style>

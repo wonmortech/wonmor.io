@@ -1,6 +1,6 @@
 ---
-title: bitg OpenSSF Best Practices kumush nishonini oldi
-description: bitg 0.3.1 imzolangan build kelib chiqishi va SBOM attestatsiyalari bilan chiqdi, loyiha OpenSSF kumush darajasining barcha talablariga javob beradi.
+title: bitg OpenSSF Best Practices kumush, keyin oltin nishonini oldi
+description: bitg 0.3.1 imzolangan build kelib chiqishi va SBOM attestatsiyalari bilan chiqdi, loyiha OpenSSF kumush va oltin darajalarining barcha talablariga javob beradi.
 date: 2026-11-13
 category: product
 product: bitg
@@ -12,6 +12,7 @@ links:
 source:
   - "https://github.com/dtwinuz/bitg/releases/tag/v0.3.1"
   - "https://github.com/dtwinuz/bitg/pull/48"
+  - "https://www.bestpractices.dev/projects/16620"
 ---
 
 bitg 0.3.1 2026-yil 13-noyabrda chiqdi. Bu — har bir paketni uni yigʻgan manba kodga solishtirib tekshirish mumkin boʻlgan birinchi reliz.
@@ -24,6 +25,8 @@ bitg 0.3.1 2026-yil 13-noyabrda chiqdi. Bu — har bir paketni uni yigʻgan manb
 
 MSI va macOS `.pkg` paketlarini qayta yigʻish reliz chiqqandan bir necha soat oʻtib `main`ga qoʻshildi va keyingi versiyada chiqadi.
 
-## Kumush va oltin uchun nima kerak
+## Avval kumush, keyin oltin
 
-Loyiha OpenSSF Best Practices kumush darajasi talablarining 100% ini bajaradi. Oltin darajasi — 57%. Qolgan talablar koddan koʻra odamlarga bogʻliq: har bir oʻzgarishni ikki kishi koʻrib chiqishi, barcha maintainerʼlarda ikki bosqichli autentifikatsiya va relizni chiqara oladigan bir nechta odam. Bular ikki kundan koʻproq vaqt oladi.
+Loyiha 12-noyabr kechasi OpenSSF Best Practices kumush darajasi talablarining 100% ini bajardi. Bu post ilk yozilganda oltin darajasi 57% edi: qolgan talablar koddan koʻra odamlarga bogʻliq edi — ikki kishilik koʻrib chiqish, barcha maintainerʼlarda ikki bosqichli autentifikatsiya va relizni chiqara oladigan bir nechta odam.
+
+**Yangilanish, 2026-yil 13-noyabr:** oʻsha kuni ertalab bestpractices.dev dagi loyiha yozuvi **oltin** darajaga yetdi — boshlangʻich, kumush va oltin talablarining barchasi bajarilgan.

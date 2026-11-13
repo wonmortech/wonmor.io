@@ -1,0 +1,81 @@
+---
+/* /company: purpose, how the work is organised, governance (honestly), and links to the rest of the section. */
+import Icon from '../Icon.astro';
+import Collage from '../Collage.astro';
+import { href, type Locale } from '../../i18n/config';
+import { pages, type PageDef } from '../../i18n/pages';
+import { about } from '../../data/company';
+interface Props { locale: Locale; page: PageDef }
+const { locale, page } = Astro.props;
+const children = pages.filter((p) => p.group === 'company' && p.key !== 'company');
+const arts = ['charter', 'research', 'sponsorship', 'careers'] as const;
+---
+<article class="ab">
+  <header class="container page-top ab__head">
+    <h1 class="t-headline-1 ab__title">{page.title[locale]}</h1>
+    <p class="t-sub-2 ab__lede">{page.lede[locale]}</p>
+  </header>
+
+  <section class="container section-lg" aria-labelledby="ab-p">
+    <div class="rule-row"><h2 class="t-caption-bold" id="ab-p">{about.purposeTitle[locale]}</h2></div>
+    <ol class="ab__purpose" role="list">
+      {about.purpose.map((b, i) => (
+        <li class="ab__block reveal-up" style={`transition-delay:${i * 80}ms`}>
+          <Collage art={arts[i]} ratio="16/9" drift />
+          <h3 class="t-headline-5">{b.title[locale]}</h3>
+          <p class="t-body-4 fg-2">{b.body[locale]}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container ab__split reveal-up" aria-labelledby="ab-t">
+    <h2 class="t-caption-bold" id="ab-t">{about.teamTitle[locale]}</h2>
+    <p class="ab__prose">{about.team[locale]}</p>
+  </section>
+
+  <section class="container ab__split reveal-up" aria-labelledby="ab-g">
+    <h2 class="t-caption-bold" id="ab-g">{about.governanceTitle[locale]}</h2>
+    <p class="ab__prose">{about.governance[locale]}</p>
+  </section>
+
+  <section class="container section-lg" aria-labelledby="ab-more">
+    <div class="rule-row"><h2 class="t-caption-bold" id="ab-more">{page.title[locale]}</h2></div>
+    <ul class="ab__links" role="list">
+      {children.map((c) => (
+        <li><a class="ab__link" href={href(locale, c.path)}>
+          <span class="t-headline-5">{c.title[locale]}</span><span class="t-body-4 fg-2">{c.lede[locale]}</span><Icon name="arrow-right" />
+        </a></li>
+      ))}
+    </ul>
+  </section>
+
+  <div class="container">
+    <section class="ab__cta" aria-labelledby="ab-c">
+      <h2 class="t-headline-3" id="ab-c">{about.ctaTitle[locale]}</h2>
+      <p class="t-body-2">{about.cta[locale]}</p>
+      <a class="btn btn--primary btn--medium btn--rounded btn--trailing ab__cta-btn" href="https://github.com/dtwinuz" target="_blank" rel="noopener">github.com/dtwinuz<Icon name="arrow-up-right" /></a>
+    </section>
+  </div>
+</article>
+
+<style>
+  .ab__title { max-width: 14ch; }
+  .ab__lede { max-width: 30em; margin-top: 28px; color: var(--theme-foreground-secondary); }
+  .ab__purpose { list-style: none; display: grid; gap: 48px var(--grid-gutter); margin-top: 32px; }
+  @media (min-width: 768px) { .ab__purpose { grid-template-columns: repeat(2, 1fr); } }
+  .ab__block { display: grid; gap: 10px; align-content: start; }
+  .ab__block :global(.collage) { margin-bottom: 10px; border-radius: var(--radius-media); overflow: hidden; }
+  .ab__split { display: grid; gap: 20px; padding-block: 48px; border-top: 1px solid var(--theme-border-secondary); }
+  @media (min-width: 1024px) { .ab__split { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
+    .ab__split h2 { grid-column: 1 / span 3; } .ab__prose { grid-column: 4 / span 7; } }
+  .ab__prose { font: 400 clamp(20px, calc(20px + 6 * ((100vw - 390px) / 1530)), 26px)/1.45 var(--serif); font-variation-settings: 'opsz' 28; text-wrap: pretty; }
+  .ab__links { list-style: none; margin-top: 8px; }
+  .ab__link { display: grid; grid-template-columns: 1fr auto; gap: 4px 24px; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--theme-border-secondary); text-decoration: none; color: inherit; }
+  .ab__link .fg-2 { grid-column: 1; }
+  .ab__link :global(svg) { grid-column: 2; grid-row: 1 / span 2; transition: transform .3s var(--ease-out-quart); }
+  @media (hover: hover) { .ab__link:hover :global(svg) { transform: translateX(4px); } }
+  .ab__cta { display: grid; gap: 20px; justify-items: start; margin-bottom: var(--section-spacer-lg); padding: 56px 40px; border-radius: var(--radius-card); background: #141413; color: #faf9f5; }
+  .ab__cta .t-body-2 { color: rgba(250, 249, 245, .75); max-width: 34em; }
+  .ab__cta-btn { background: #faf9f5; color: #141413; }
+</style>

@@ -1,0 +1,1300 @@
+{
+  "dtwin": {
+    "status": "beta",
+    "wrl": 2,
+    "since": "2026-10-26",
+    "repo": null,
+    "stack": [".NET 10", "React 19", "TypeScript", "PostgreSQL 17", "MCP (OAuth 2.1)", "three.js", "Docker", "Caddy"],
+    "summary": {
+      "en": "dtwin is a personal life planner whose day runs from one Maghrib to the next, with tasks anchored to the five daily prayers. It is for Muslims who want worship, habits, money, health and family in one place, on the web, in a Telegram bot and Mini App, and on Android. An MCP server with 96 tools lets Claude and other assistants read and plan your day, within the access you grant.",
+      "uz": "dtwin — kuni bir Shomdan keyingi Shomgacha davom etadigan, vazifalari besh vaqt namozga bogʻlangan shaxsiy hayot rejalashtirgichi. U ibodat, odatlar, pul, salomatlik va oilani bir joyda yuritmoqchi boʻlgan musulmonlar uchun: vebda, Telegram bot va Mini Appʼda hamda Androidʼda ishlaydi. 96 ta vositali MCP serveri orqali Claude va boshqa yordamchilar siz bergan ruxsat doirasida kuningizni oʻqiydi va rejalashtiradi.",
+      "ru": "dtwin — личный планировщик жизни, в котором день длится от одного магриба до следующего, а задачи привязаны к пяти ежедневным намазам. Он для мусульман, которые хотят держать поклонение, привычки, деньги, здоровье и семью в одном месте: в вебе, в Telegram-боте и Mini App и на Android. MCP-сервер на 96 инструментов позволяет Claude и другим ассистентам читать и планировать ваш день в пределах выданного вами доступа."
+    },
+    "features": [
+      {
+        "title": { "en": "A prayer-anchored day", "uz": "Namozga tayangan kun", "ru": "День вокруг намаза" },
+        "body": {
+          "en": "Tasks attach to prayer times, such as twenty minutes after Dhuhr, and the day closes at Maghrib. You can switch from calculated times to your mosque’s congregation times.",
+          "uz": "Vazifalar namoz vaqtiga bogʻlanadi, masalan Peshindan yigirma daqiqa keyin, kun esa Shomda yopiladi. Hisoblangan vaqtlar oʻrniga oʻz masjidingizdagi jamoat vaqtini tanlash mumkin.",
+          "ru": "Задачи привязываются ко времени намаза, например «через двадцать минут после зухра», а день закрывается на магрибе. Вместо расчётного времени можно выбрать время джамаата в своей мечети."
+        }
+      },
+      {
+        "title": { "en": "A planner for qada", "uz": "Qazo rejalashtirgichi", "ru": "План восполнения намазов" },
+        "body": {
+          "en": "Count missed prayers from your profile, build a plan with rest days, and log progress from the web, the bot or an assistant.",
+          "uz": "Qazo namozlarni profilingiz asosida hisoblang, dam kunlari bilan reja tuzing va natijani vebdan, botdan yoki yordamchi orqali belgilang.",
+          "ru": "Посчитайте пропущенные намазы по данным профиля, составьте план с днями отдыха и отмечайте прогресс в вебе, в боте или через ассистента."
+        }
+      },
+      {
+        "title": { "en": "Assistants, with consent", "uz": "Yordamchilar — ruxsat bilan", "ru": "Ассистенты — с согласия" },
+        "body": {
+          "en": "Claude and ChatGPT connect over OAuth 2.1. AI access is granted per area of life, and profile sections can be kept private.",
+          "uz": "Claude va ChatGPT OAuth 2.1 orqali ulanadi. AI uchun ruxsat hayot sohalari boʻyicha alohida beriladi, profil boʻlimlarini esa yopiq saqlash mumkin.",
+          "ru": "Claude и ChatGPT подключаются через OAuth 2.1. Доступ для ИИ выдаётся по сферам жизни, а разделы профиля можно оставить закрытыми."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Capture anywhere", "uz": "Istalgan joydan yozish", "ru": "Запись откуда угодно" },
+        "body": {
+          "en": "Tasks, notes and links come in from the web app, the Telegram bot, the Mini App or an Uzbek voice message.",
+          "uz": "Vazifa, qayd va havolalar veb-ilova, Telegram bot, Mini App yoki oʻzbekcha ovozli xabar orqali keladi.",
+          "ru": "Задачи, заметки и ссылки поступают из веб-приложения, Telegram-бота, Mini App или узбекского голосового сообщения."
+        }
+      },
+      {
+        "title": { "en": "Anchor to prayers", "uz": "Namozga bogʻlash", "ru": "Привязка к намазу" },
+        "body": {
+          "en": "The server places each item relative to today’s prayer times for your city.",
+          "uz": "Server har bir ishni shahringizdagi bugungi namoz vaqtlariga nisbatan joylashtiradi.",
+          "ru": "Сервер размещает каждое дело относительно сегодняшнего времени намазов в вашем городе."
+        }
+      },
+      {
+        "title": { "en": "Remind, within limits", "uz": "Meʼyorida eslatish", "ru": "Напоминания в меру" },
+        "body": {
+          "en": "Reminders go out through Telegram and web push, under a notification limit you control.",
+          "uz": "Eslatmalar Telegram va veb-push orqali, siz belgilagan xabar meʼyori doirasida yuboriladi.",
+          "ru": "Напоминания приходят в Telegram и через веб-пуш, в пределах лимита уведомлений, который задаёте вы."
+        }
+      },
+      {
+        "title": { "en": "Close the day", "uz": "Kunni yakunlash", "ru": "Итог дня" },
+        "body": {
+          "en": "At Maghrib the day ends with a short summary, and assistants can read the same data over MCP.",
+          "uz": "Shomda kun qisqa xulosa bilan yakunlanadi, yordamchilar esa xuddi shu maʼlumotni MCP orqali oʻqiy oladi.",
+          "ru": "На магрибе день завершается коротким итогом, а ассистенты могут читать те же данные через MCP."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "96", "label": { "en": "MCP tools", "uz": "MCP vositasi", "ru": "инструментов MCP" }, "source": "dtwinuz/dtwin README" },
+      { "value": "2,285", "label": { "en": "mosques imported from OpenStreetMap", "uz": "OpenStreetMapʼdan olingan masjid", "ru": "мечетей импортировано из OpenStreetMap" }, "source": "dtwinuz/dtwin #43" },
+      { "value": "4", "label": { "en": "interface languages", "uz": "interfeys tili", "ru": "языка интерфейса" }, "source": "dtwinuz/dtwin web/I18N.md" }
+    ],
+    "milestones": [
+      { "date": "2026-11-10", "text": { "en": "Telegram HTML widgets for the sky view and tasbih go live in the bot.", "uz": "Botda osmon va tasbeh uchun Telegram HTML vidjetlari ishga tushdi.", "ru": "В боте заработали HTML-виджеты Telegram для неба и тасбиха." } },
+      { "date": "2026-10-27", "text": { "en": "Qada planner v2 and mosque congregation times ship to production.", "uz": "Qazo rejalashtirgichi v2 va masjid jamoat vaqtlari prodga chiqdi.", "ru": "В продакшен вышли планировщик восполнения v2 и время джамаата в мечетях." } },
+      { "date": "2026-10-26", "text": { "en": "dtwin.uz opens with GitHub and Google sign-in; the claude.ai connector works.", "uz": "dtwin.uz GitHub va Google orqali kirish bilan ochildi; claude.ai konnektori ishladi.", "ru": "dtwin.uz открылся со входом через GitHub и Google; коннектор claude.ai заработал." } },
+      { "date": "2026-10-23", "text": { "en": "Work starts on a prayer-anchored planner in .NET 10 and React 19.", "uz": ".NET 10 va React 19 da namozga tayangan rejalashtirgich ustida ish boshlandi.", "ru": "Начата работа над планировщиком вокруг намаза на .NET 10 и React 19." } }
+    ],
+    "accent": "#c9a45c"
+  },
+
+  "bitg": {
+    "status": "beta",
+    "wrl": 4,
+    "since": "2026-11-12",
+    "repo": "https://github.com/dtwinuz/bitg",
+    "stack": ["Rust", "Windows TSF", "IBus", "Fcitx5", "macOS InputMethodKit", "Swift", "WebAssembly", "WiX MSI"],
+    "summary": {
+      "en": "bitg converts Uzbek to the 2026 Latin alphabet as you type, in any app, and leaves English, code and links untouched. It runs as a native input method on Windows, Linux and macOS, alongside a command-line tool, a web converter and a Telegram bot, all on one Rust core. It is open source under MIT and Apache-2.0, with signed releases and reproducible builds.",
+      "uz": "bitg istalgan ilovada yozayotganingizda oʻzbekchani 2026-yilgi lotin alifbosiga oʻgiradi, inglizcha matn, kod va havolalarga esa tegmaydi. U Windows, Linux va macOSʼda tizim kiritish usuli sifatida ishlaydi, yonida buyruq qatori vositasi, veb-konvertor va Telegram bot bor — hammasi bitta Rust yadroda. Kod MIT va Apache-2.0 litsenziyalari ostida ochiq, relizlar imzolangan, build qayta yigʻiladigan.",
+      "ru": "bitg переводит узбекский текст на латиницу 2026 года прямо при наборе, в любом приложении, и не трогает английский, код и ссылки. Он работает как системный метод ввода в Windows, Linux и macOS, а также как утилита командной строки, веб-конвертер и Telegram-бот — всё на одном ядре на Rust. Код открыт под MIT и Apache-2.0, релизы подписаны, сборки воспроизводимы."
+    },
+    "features": [
+      {
+        "title": { "en": "Works in every app", "uz": "Har qanday ilovada", "ru": "В любом приложении" },
+        "body": {
+          "en": "Windows TSF, Linux IBus and Fcitx5, and macOS InputMethodKit frontends share one engine, including in Qt apps such as Telegram Desktop.",
+          "uz": "Windows TSF, Linux IBus va Fcitx5 hamda macOS InputMethodKit qobiqlari bitta dvigateldan foydalanadi, jumladan Telegram Desktop kabi Qt ilovalarida ham.",
+          "ru": "Оболочки для Windows TSF, Linux IBus и Fcitx5 и macOS InputMethodKit используют один движок, в том числе в Qt-приложениях вроде Telegram Desktop."
+        }
+      },
+      {
+        "title": { "en": "Leaves English alone", "uz": "Inglizchaga tegmaydi", "ru": "Не трогает английский" },
+        "body": {
+          "en": "On public test sets of 3,000 sentences each, 98.87% of Uzbek sentences convert correctly and 99.73% of English sentences stay unchanged. Words with two possible readings are left as typed rather than guessed.",
+          "uz": "Har biri 3000 gapdan iborat ochiq test toʻplamlarida oʻzbekcha gaplarning 98,87% toʻgʻri oʻgiriladi, inglizcha gaplarning 99,73% oʻzgarishsiz qoladi. Ikki xil oʻqiladigan soʻzlar taxmin qilinmaydi, yozilganicha qoldiriladi.",
+          "ru": "На открытых тестовых наборах по 3000 предложений 98,87% узбекских предложений преобразуются верно, а 99,73% английских остаются без изменений. Слова с двумя возможными прочтениями не угадываются, а остаются как набраны."
+        }
+      },
+      {
+        "title": { "en": "Releases you can verify", "uz": "Tekshirsa boʻladigan relizlar", "ru": "Проверяемые релизы" },
+        "body": {
+          "en": "Each release ships signed build provenance and an SBOM that gh attestation verify can check. Packages are published as an MSI, Debian packages in a signed apt repository, and a Homebrew cask.",
+          "uz": "Har bir reliz imzolangan build kelib chiqishi va gh attestation verify bilan tekshiriladigan SBOM bilan chiqadi. Paketlar MSI, imzolangan apt omboridagi Debian paketlari va Homebrew cask sifatida tarqatiladi.",
+          "ru": "Каждый релиз выходит с подписанными данными о происхождении сборки и SBOM, которые проверяет gh attestation verify. Пакеты публикуются как MSI, Debian-пакеты в подписанном apt-репозитории и Homebrew cask."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "You type", "uz": "Siz yozasiz", "ru": "Вы печатаете" },
+        "body": {
+          "en": "The input method hands each finished word to the Rust core.",
+          "uz": "Kiritish usuli har bir tugallangan soʻzni Rust yadrosiga uzatadi.",
+          "ru": "Метод ввода передаёт каждое законченное слово ядру на Rust."
+        }
+      },
+      {
+        "title": { "en": "The core decides", "uz": "Yadro qaror qiladi", "ru": "Ядро решает" },
+        "body": {
+          "en": "A built-in lexicon and context checks skip English, code, links and sensitive fields such as passwords.",
+          "uz": "Ichki lugʻat va kontekst tekshiruvi inglizcha soʻz, kod, havola va parol kabi maxfiy maydonlarni chetlab oʻtadi.",
+          "ru": "Встроенный словарь и проверка контекста пропускают английские слова, код, ссылки и чувствительные поля вроде паролей."
+        }
+      },
+      {
+        "title": { "en": "The word is replaced", "uz": "Soʻz almashtiriladi", "ru": "Слово заменяется" },
+        "body": {
+          "en": "The converted word replaces the original in place, in 1.4–2.7 µs per word, with no network access.",
+          "uz": "Oʻgirilgan soʻz asl soʻz oʻrniga qoʻyiladi — soʻz boshiga 1,4–2,7 µs, tarmoqsiz.",
+          "ru": "Преобразованное слово встаёт на место исходного за 1,4–2,7 мкс на слово, без обращения к сети."
+        }
+      },
+      {
+        "title": { "en": "Undo teaches it", "uz": "Bekor qilish oʻrgatadi", "ru": "Отмена учит" },
+        "body": {
+          "en": "Undoing a conversion restores your text and adds the word to your exceptions.",
+          "uz": "Oʻgirishni bekor qilsangiz, matningiz tiklanadi va soʻz istisnolar roʻyxatiga qoʻshiladi.",
+          "ru": "Отмена преобразования возвращает ваш текст и добавляет слово в исключения."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "98.87%", "label": { "en": "Uzbek sentences converted correctly", "uz": "oʻzbekcha gap toʻgʻri oʻgiriladi", "ru": "узбекских предложений преобразуются верно" }, "source": "dtwinuz/bitg README" },
+      { "value": "99.73%", "label": { "en": "English sentences left unchanged", "uz": "inglizcha gap oʻzgarishsiz qoladi", "ru": "английских предложений остаются без изменений" }, "source": "dtwinuz/bitg README" },
+      { "value": "Gold", "label": { "en": "OpenSSF Best Practices badge", "uz": "OpenSSF Best Practices belgisi", "ru": "значок OpenSSF Best Practices" }, "source": "bestpractices.dev/projects/16620" }
+    ],
+    "milestones": [
+      { "date": "2026-11-13", "text": { "en": "bitg reaches the OpenSSF Best Practices gold level.", "uz": "bitg OpenSSF Best Practices oltin darajasiga erishdi.", "ru": "bitg получил золотой уровень OpenSSF Best Practices." } },
+      { "date": "2026-11-12", "text": { "en": "v0.3.1: Windows skips password fields; releases carry signed provenance and SBOM attestations.", "uz": "v0.3.1: Windows parol maydonlarini chetlab oʻtadi; relizlar imzolangan kelib chiqish va SBOM attestatsiyasi bilan chiqadi.", "ru": "v0.3.1: в Windows пропускаются поля паролей; релизы выходят с подписанными аттестациями происхождения и SBOM." } },
+      { "date": "2026-11-12", "text": { "en": "v0.3.0 adds the macOS beta package, a signed apt repository and a Homebrew tap.", "uz": "v0.3.0 macOS beta paketi, imzolangan apt ombori va Homebrew tapʼni qoʻshdi.", "ru": "v0.3.0 добавил бета-пакет для macOS, подписанный apt-репозиторий и Homebrew tap." } },
+      { "date": "2026-11-12", "text": { "en": "v0.2.0 brings IBus and Fcitx5 packages for Linux; bitg.uz goes live.", "uz": "v0.2.0 Linux uchun IBus va Fcitx5 paketlarini olib keldi; bitg.uz ishga tushdi.", "ru": "v0.2.0 принёс пакеты IBus и Fcitx5 для Linux; запущен bitg.uz." } },
+      { "date": "2026-11-12", "text": { "en": "v0.1.0, the first public beta: Windows installer, command-line tool and web converter.", "uz": "v0.1.0 — birinchi ommaviy beta: Windows oʻrnatuvchisi, buyruq qatori vositasi va veb-konvertor.", "ru": "v0.1.0 — первая публичная бета: установщик для Windows, утилита командной строки и веб-конвертер." } }
+    ],
+    "accent": "#788c5d"
+  },
+
+  "teletwin": {
+    "status": "mvp",
+    "wrl": 2,
+    "since": "2026-10-29",
+    "repo": "https://github.com/dtwinuz/teletwin-web",
+    "stack": [".NET 10", "SignalR", "PostgreSQL 17", "C++20 / Qt 6", "TypeScript", "Tauri 2", "Capacitor", "LiveKit"],
+    "summary": {
+      "en": "TeleTwin adds a company layer to Telegram: personal chats stay on Telegram, while company chats, channels and announcements live only on the company’s own server. When someone leaves, an admin revokes access once and the company folder disappears from every client in real time. It is built on the open-source Telegram Desktop and Telegram Web A clients; it is not an official Telegram app and is not affiliated with Telegram.",
+      "uz": "TeleTwin Telegramʼga kompaniya qatlamini qoʻshadi: shaxsiy chatlar Telegramʼda qoladi, kompaniya chatlari, kanallari va eʼlonlari esa faqat kompaniyaning oʻz serverida turadi. Xodim ketganda admin kirishni bir marta yopadi va kompaniya papkasi barcha klientlardan darhol yoʻqoladi. U ochiq kodli Telegram Desktop va Telegram Web A klientlari asosida qurilgan; bu rasmiy Telegram ilovasi emas va Telegram bilan bogʻliq emas.",
+      "ru": "TeleTwin добавляет к Telegram корпоративный слой: личные чаты остаются в Telegram, а рабочие чаты, каналы и объявления хранятся только на собственном сервере компании. Когда сотрудник уходит, администратор один раз отзывает доступ, и рабочая папка сразу исчезает из всех клиентов. Он построен на открытых клиентах Telegram Desktop и Telegram Web A; это не официальное приложение Telegram и оно не связано с Telegram."
+    },
+    "features": [
+      {
+        "title": { "en": "One-click revoke", "uz": "Bir bosishda yopish", "ru": "Отзыв в один клик" },
+        "body": {
+          "en": "Revoking an employee ends the company session over a live connection, while their personal Telegram account keeps working.",
+          "uz": "Xodimning kirishi yopilganda kompaniya sessiyasi jonli ulanish orqali tugatiladi, shaxsiy Telegram akkaunti esa ishlashda davom etadi.",
+          "ru": "При отзыве доступа рабочая сессия завершается по живому соединению, а личный аккаунт Telegram продолжает работать."
+        }
+      },
+      {
+        "title": { "en": "Company data stays home", "uz": "Kompaniya maʼlumoti uyda", "ru": "Данные компании — у себя" },
+        "body": {
+          "en": "Company messages and files never pass through Telegram; they are stored on the company’s server, and calls can run on its own LiveKit.",
+          "uz": "Kompaniya xabarlari va fayllari Telegram orqali oʻtmaydi — ular kompaniya serverida saqlanadi, qoʻngʻiroqlar esa uning oʻz LiveKit serverida ishlashi mumkin.",
+          "ru": "Рабочие сообщения и файлы не проходят через Telegram: они хранятся на сервере компании, а звонки могут идти через её собственный LiveKit."
+        }
+      },
+      {
+        "title": { "en": "Three clients", "uz": "Uchta klient", "ru": "Три клиента" },
+        "body": {
+          "en": "A Qt desktop app, a web app packaged for desktop with Tauri, and an Android app built with Capacitor, all showing the same company folder.",
+          "uz": "Qt asosidagi desktop ilova, Tauri bilan desktopga oʻralgan veb-ilova va Capacitor bilan qurilgan Android ilova — hammasida bir xil kompaniya papkasi.",
+          "ru": "Десктопное приложение на Qt, веб-приложение, упакованное для десктопа через Tauri, и Android-приложение на Capacitor — везде одна и та же рабочая папка."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Two sign-ins", "uz": "Ikki xil kirish", "ru": "Два входа" },
+        "body": {
+          "en": "Employees sign in to Telegram as usual and to the company server with a separate account.",
+          "uz": "Xodimlar Telegramʼga odatdagidek, kompaniya serveriga esa alohida akkaunt bilan kiradi.",
+          "ru": "Сотрудники входят в Telegram как обычно, а на сервер компании — под отдельной учётной записью."
+        }
+      },
+      {
+        "title": { "en": "Separate routing", "uz": "Alohida yoʻnaltirish", "ru": "Раздельная маршрутизация" },
+        "body": {
+          "en": "The client sends company chats to the company API and keeps them out of Telegram’s requests and caches.",
+          "uz": "Klient kompaniya chatlarini kompaniya APIʼsiga yuboradi va ularni Telegram soʻrovlari hamda keshidan tashqarida saqlaydi.",
+          "ru": "Клиент отправляет рабочие чаты в API компании и не допускает их в запросы и кэш Telegram."
+        }
+      },
+      {
+        "title": { "en": "Real-time sync", "uz": "Jonli sinxronlash", "ru": "Синхронизация в реальном времени" },
+        "body": {
+          "en": "SignalR pushes messages, typing, read receipts and membership changes as they happen.",
+          "uz": "SignalR xabarlar, yozish holati, oʻqilganlik va aʼzolik oʻzgarishlarini shu zahoti yetkazadi.",
+          "ru": "SignalR сразу доставляет сообщения, статус набора, отметки о прочтении и изменения состава."
+        }
+      },
+      {
+        "title": { "en": "Revoke everywhere", "uz": "Hamma joyda yopish", "ru": "Отзыв везде" },
+        "body": {
+          "en": "When an admin removes access, every client drops the company folder at once.",
+          "uz": "Admin kirishni olib tashlaganda barcha klientlar kompaniya papkasini darhol yopadi.",
+          "ru": "Когда администратор отзывает доступ, все клиенты сразу убирают рабочую папку."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "3", "label": { "en": "client apps: desktop, web and Android", "uz": "klient ilova: desktop, veb va Android", "ru": "клиента: десктоп, веб и Android" }, "source": "dtwinuz/teletwin-web README" },
+      { "value": "v2.13.1", "label": { "en": "latest web and desktop release", "uz": "soʻnggi veb va desktop relizi", "ru": "последний релиз веб- и десктоп-клиента" }, "source": "dtwinuz/teletwin-web releases" }
+    ],
+    "milestones": [
+      { "date": "2026-11-02", "text": { "en": "TeleTwin Desktop 0.2.0 for Windows and the 2.13.1 web and desktop release.", "uz": "Windows uchun TeleTwin Desktop 0.2.0 va 2.13.1 veb hamda desktop relizi chiqdi.", "ru": "Вышли TeleTwin Desktop 0.2.0 для Windows и релиз веб- и десктоп-клиента 2.13.1." } },
+      { "date": "2026-11-01", "text": { "en": "Company calls on LiveKit and an auto-update channel are added.", "uz": "LiveKit asosidagi kompaniya qoʻngʻiroqlari va avtomatik yangilanish kanali qoʻshildi.", "ru": "Добавлены рабочие звонки на LiveKit и канал автообновлений." } },
+      { "date": "2026-10-30", "text": { "en": "Product home page and download page go live.", "uz": "Mahsulot bosh sahifasi va yuklab olish sahifasi ishga tushdi.", "ru": "Запущены главная страница продукта и страница загрузки." } },
+      { "date": "2026-10-29", "text": { "en": "Company server in production; the first Windows desktop build passes.", "uz": "Kompaniya serveri prodda; Windows uchun birinchi desktop build muvaffaqiyatli yigʻildi.", "ru": "Сервер компании в продакшене; первая десктопная сборка для Windows прошла." } }
+    ],
+    "accent": "#6a9bcc"
+  },
+
+  "gateway": {
+    "status": "mvp",
+    "wrl": 1,
+    "since": "2026-11-02",
+    "repo": null,
+    "stack": ["Node.js (no dependencies)", "MCP", "Server-Sent Events", "Docker", "Caddy", "three.js", "GSAP"],
+    "summary": {
+      "en": "Gateway is a single control plane between AI agents and the internal systems they need. Each agent gets its own token, tool allow-list, rate limit and expiry; personal data is masked before it reaches the agent, and every call is written to an audit log. An admin can pause one agent or stop all of them with a kill switch.",
+      "uz": "Gateway — AI agentlar va ularga kerak boʻlgan ichki tizimlar oʻrtasidagi yagona boshqaruv markazi. Har bir agent oʻz tokeni, ruxsat etilgan vositalar roʻyxati, soʻrov limiti va muddatiga ega; shaxsiy maʼlumot agentga yetguncha niqoblanadi, har bir chaqiruv audit jurnaliga yoziladi. Admin bitta agentni toʻxtatib qoʻyishi yoki oʻchirish tugmasi bilan hammasini birdan toʻxtatishi mumkin.",
+      "ru": "Gateway — единая панель управления между ИИ-агентами и внутренними системами, к которым им нужен доступ. У каждого агента свой токен, список разрешённых инструментов, лимит запросов и срок действия; персональные данные маскируются до того, как попадут к агенту, а каждый вызов записывается в журнал аудита. Администратор может приостановить одного агента или остановить всех аварийным выключателем."
+    },
+    "features": [
+      {
+        "title": { "en": "Access per agent", "uz": "Har agentga alohida ruxsat", "ru": "Доступ для каждого агента" },
+        "body": {
+          "en": "Tokens are stored only as hashes, and each one can be limited by tool, argument, IP address and expiry date.",
+          "uz": "Tokenlar faqat xesh koʻrinishida saqlanadi, har birini vosita, argument, IP manzil va muddat boʻyicha cheklash mumkin.",
+          "ru": "Токены хранятся только в виде хешей, и каждый можно ограничить по инструменту, аргументу, IP-адресу и сроку действия."
+        }
+      },
+      {
+        "title": { "en": "Masking comes first", "uz": "Avval niqoblash", "ru": "Сначала маскирование" },
+        "body": {
+          "en": "Passport numbers, phone numbers, cards and tokens are masked by column name or pattern, and admins can add and test their own rules.",
+          "uz": "Pasport, telefon, karta raqamlari va tokenlar ustun nomi yoki shablon boʻyicha niqoblanadi; admin oʻz qoidalarini qoʻshib, sinab koʻrishi mumkin.",
+          "ru": "Номера паспортов, телефонов, карт и токены маскируются по имени столбца или шаблону, а администратор может добавлять и проверять свои правила."
+        }
+      },
+      {
+        "title": { "en": "A complete audit", "uz": "Toʻliq audit", "ru": "Полный аудит" },
+        "body": {
+          "en": "Requests and masked responses are logged and streamed live to the admin panel, which also has a playground for trying calls.",
+          "uz": "Soʻrovlar va niqoblangan javoblar jurnalga yoziladi va admin paneliga jonli uzatiladi; panelda chaqiruvlarni sinab koʻrish uchun maydoncha ham bor.",
+          "ru": "Запросы и замаскированные ответы журналируются и в реальном времени транслируются в админ-панель, где есть и песочница для пробных вызовов."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Agent connects", "uz": "Agent ulanadi", "ru": "Агент подключается" },
+        "body": {
+          "en": "An agent such as Claude Code or Cursor connects to the gateway’s MCP endpoint with its own token.",
+          "uz": "Claude Code yoki Cursor kabi agent oʻz tokeni bilan gatewayʼning MCP manziliga ulanadi.",
+          "ru": "Агент, например Claude Code или Cursor, подключается к MCP-адресу шлюза со своим токеном."
+        }
+      },
+      {
+        "title": { "en": "Policy is checked", "uz": "Siyosat tekshiriladi", "ru": "Проверка политики" },
+        "body": {
+          "en": "The gateway checks the allow-list, rate limit and pause state before forwarding the call.",
+          "uz": "Gateway chaqiruvni uzatishdan oldin ruxsatlar roʻyxati, limit va pauza holatini tekshiradi.",
+          "ru": "Перед передачей вызова шлюз проверяет список разрешений, лимит и состояние паузы."
+        }
+      },
+      {
+        "title": { "en": "Read-only query", "uz": "Faqat oʻqish", "ru": "Только чтение" },
+        "body": {
+          "en": "Connectors reach issue trackers, code hosts and databases read-only, and SQL is SELECT-only and always rolled back.",
+          "uz": "Konnektorlar vazifa trekerlari, kod xostinglari va bazalarga faqat oʻqish uchun ulanadi; SQL faqat SELECT va har doim ROLLBACK bilan.",
+          "ru": "Коннекторы обращаются к трекерам задач, хостингам кода и базам только на чтение; SQL — только SELECT и всегда с откатом."
+        }
+      },
+      {
+        "title": { "en": "Mask and log", "uz": "Niqoblash va yozish", "ru": "Маска и журнал" },
+        "body": {
+          "en": "The result is masked, written to the audit log and only then returned to the agent.",
+          "uz": "Natija niqoblanadi, audit jurnaliga yoziladi va shundan keyingina agentga qaytariladi.",
+          "ru": "Результат маскируется, записывается в журнал аудита и только после этого возвращается агенту."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "v0.2.0", "label": { "en": "admin panel with audit and playground", "uz": "audit va sinov maydonchali admin panel", "ru": "админ-панель с аудитом и песочницей" }, "source": "dtwinuz/gateway b0a5749" },
+      { "value": "30 days", "label": { "en": "audit log retention", "uz": "audit jurnali saqlanish muddati", "ru": "срок хранения журнала аудита" }, "source": "dtwinuz/gateway gateway/server.mjs" }
+    ],
+    "milestones": [
+      { "date": "2026-11-03", "text": { "en": "Alert rules with Telegram notifications are added to the admin panel.", "uz": "Admin panelga Telegram xabarnomali ogohlantirish qoidalari qoʻshildi.", "ru": "В админ-панель добавлены правила оповещений с уведомлениями в Telegram." } },
+      { "date": "2026-11-02", "text": { "en": "v0.2.0: audit of masked responses, agent expiry and IP limits, custom masking rules.", "uz": "v0.2.0: niqoblangan javoblar auditi, agent muddati va IP cheklovi, maxsus niqoblash qoidalari.", "ru": "v0.2.0: аудит замаскированных ответов, срок действия и IP-ограничения агентов, свои правила маскирования." } },
+      { "date": "2026-11-02", "text": { "en": "Gateway v0.1.0 goes live at gateway.dtwin.uz with a public MCP endpoint.", "uz": "Gateway v0.1.0 ommaviy MCP manzili bilan gateway.dtwin.uz da ishga tushdi.", "ru": "Gateway v0.1.0 запущен на gateway.dtwin.uz с публичным MCP-адресом." } }
+    ],
+    "accent": "#3e5f9a"
+  },
+
+  "tunnel": {
+    "status": "mvp",
+    "wrl": 1,
+    "since": "2026-11-02",
+    "repo": null,
+    "stack": ["frp", "Node.js", "Caddy", "Let’s Encrypt", "Go", "PowerShell / Bash", "three.js"],
+    "summary": {
+      "en": "Tunnel publishes a service running on your machine at https://<name>.tunnel.dtwin.uz, on infrastructure we run ourselves. Every user connects with a personal token that owns their subdomains, and any tunnel can be locked with a password or an IP allow-list. It is built on frp, with one-line installers for Windows, Linux and macOS.",
+      "uz": "Tunnel kompyuteringizdagi xizmatni https://<nom>.tunnel.dtwin.uz manziliga chiqaradi — oʻzimiz yuritadigan infratuzilmada. Har bir foydalanuvchi oʻz subdomenlariga egalik qiluvchi shaxsiy token bilan ulanadi, istalgan tunnelni parol yoki IP roʻyxati bilan yopish mumkin. U frp asosida qurilgan, Windows, Linux va macOS uchun bir qatorli oʻrnatuvchilari bor.",
+      "ru": "Tunnel выводит сервис с вашего компьютера на адрес https://<имя>.tunnel.dtwin.uz — на инфраструктуре, которую мы держим сами. Каждый пользователь подключается с личным токеном, которому принадлежат его поддомены, а любой туннель можно закрыть паролем или списком IP. Он построен на frp, с установщиками в одну строку для Windows, Linux и macOS."
+    },
+    "features": [
+      {
+        "title": { "en": "Personal tokens", "uz": "Shaxsiy tokenlar", "ru": "Личные токены" },
+        "body": {
+          "en": "A connection without a valid token is refused, and each token owns its own subdomain names.",
+          "uz": "Yaroqli tokensiz ulanish rad etiladi, har bir token esa oʻz subdomen nomlariga egalik qiladi.",
+          "ru": "Подключение без действующего токена отклоняется, а каждому токену принадлежат свои имена поддоменов."
+        }
+      },
+      {
+        "title": { "en": "Two ways to run", "uz": "Ikki xil ishlatish", "ru": "Два режима" },
+        "body": {
+          "en": "Keep named tunnels running in the background, or open a one-off tunnel to a local port and close it with Ctrl+C.",
+          "uz": "Nomli tunnellarni fonda doimiy ishlating yoki lokal portga bir martalik tunnel oching va Ctrl+C bilan yoping.",
+          "ru": "Держите именованные туннели постоянно в фоне или откройте разовый туннель к локальному порту и закройте его через Ctrl+C."
+        }
+      },
+      {
+        "title": { "en": "Lock and inspect", "uz": "Yopish va kuzatish", "ru": "Защита и просмотр" },
+        "body": {
+          "en": "Add a password or an IP allow-list, and inspect requests in a local viewer that keeps them only in memory.",
+          "uz": "Parol yoki IP roʻyxatini qoʻshing, soʻrovlarni esa ularni faqat xotirada saqlaydigan lokal koʻruvchida kuzating.",
+          "ru": "Добавьте пароль или список разрешённых IP и смотрите запросы в локальном просмотрщике, который держит их только в памяти."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Install", "uz": "Oʻrnatish", "ru": "Установка" },
+        "body": {
+          "en": "A one-line installer sets up the frp client and checks it against a pinned SHA-256.",
+          "uz": "Bir qatorli oʻrnatuvchi frp klientini oʻrnatadi va uni qotirilgan SHA-256 bilan tekshiradi.",
+          "ru": "Установщик в одну строку ставит клиент frp и сверяет его с зафиксированным SHA-256."
+        }
+      },
+      {
+        "title": { "en": "Log in", "uz": "Kirish", "ru": "Вход" },
+        "body": {
+          "en": "The client presents your personal token, and the server checks that the subdomain is yours.",
+          "uz": "Klient shaxsiy tokeningizni koʻrsatadi, server esa subdomen sizniki ekanini tekshiradi.",
+          "ru": "Клиент предъявляет ваш личный токен, а сервер проверяет, что поддомен принадлежит вам."
+        }
+      },
+      {
+        "title": { "en": "Certify first", "uz": "Avval sertifikat", "ru": "Сначала сертификат" },
+        "body": {
+          "en": "A certificate is issued for the name before the link is shown, so the first visit is already HTTPS.",
+          "uz": "Havola koʻrsatilishidan oldin nom uchun sertifikat olinadi, shuning uchun birinchi kirishdayoq HTTPS ishlaydi.",
+          "ru": "Сертификат для имени выпускается до того, как показана ссылка, поэтому первый же заход идёт по HTTPS."
+        }
+      },
+      {
+        "title": { "en": "Route traffic", "uz": "Trafikni yoʻnaltirish", "ru": "Маршрутизация" },
+        "body": {
+          "en": "Requests to your name pass through our edge to your machine, with timeouts of up to 600 seconds.",
+          "uz": "Nomingizga kelgan soʻrovlar bizning chekka serverimiz orqali kompyuteringizga yetadi, kutish muddati 600 soniyagacha.",
+          "ru": "Запросы к вашему имени идут через наш пограничный сервер на ваш компьютер, с тайм-аутом до 600 секунд."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "3 OS", "label": { "en": "one-line installers: Windows, Linux, macOS", "uz": "bir qatorli oʻrnatuvchi: Windows, Linux, macOS", "ru": "установщики в одну строку: Windows, Linux, macOS" }, "source": "dtwinuz/tunnel README" },
+      { "value": "600 s", "label": { "en": "maximum request timeout", "uz": "soʻrovning eng uzun kutish muddati", "ru": "максимальный тайм-аут запроса" }, "source": "dtwinuz/tunnel README" }
+    ],
+    "milestones": [
+      { "date": "2026-11-04", "text": { "en": "Secret TCP tunnels that only a matching client can reach.", "uz": "Faqat mos klient ulana oladigan maxfiy TCP tunnellar qoʻshildi.", "ru": "Добавлены секретные TCP-туннели, к которым может подключиться только парный клиент." } },
+      { "date": "2026-11-02", "text": { "en": "One-off tunnels, a local request inspector and IP allow-lists.", "uz": "Bir martalik tunnellar, lokal soʻrov koʻruvchisi va IP roʻyxatlari qoʻshildi.", "ru": "Добавлены разовые туннели, локальный просмотрщик запросов и списки разрешённых IP." } },
+      { "date": "2026-11-02", "text": { "en": "tunnel.dtwin.uz goes live with personal tokens and an admin panel.", "uz": "tunnel.dtwin.uz shaxsiy tokenlar va admin panel bilan ishga tushdi.", "ru": "tunnel.dtwin.uz запущен с личными токенами и админ-панелью." } }
+    ],
+    "accent": "#cbcadb"
+  },
+
+  "fam": {
+    "status": "preview",
+    "wrl": 1,
+    "since": "2026-11-11",
+    "repo": null,
+    "stack": ["Node 24 (node:sqlite)", "React 19", "Vite", "rrweb", "Chrome MV3", "MCP", "Docker"],
+    "summary": {
+      "en": "Fam is a self-hosted bug-capture tool. One link carries a video, screenshot or DOM replay of the problem, together with console logs, network requests, user actions and device details. An MCP endpoint lets coding agents read the report directly instead of guessing from a description.",
+      "uz": "Fam — oʻz serverimizda ishlaydigan xato yozib olish vositasi. Bitta havolada muammoning videosi, skrinshoti yoki DOM qayta koʻrinishi konsol loglari, tarmoq soʻrovlari, foydalanuvchi harakatlari va qurilma maʼlumoti bilan birga keladi. MCP manzili orqali dasturlash agentlari xatoni taʼrifdan taxmin qilmay, hisobotning oʻzini oʻqiydi.",
+      "ru": "Fam — инструмент для фиксации багов на собственном сервере. Одна ссылка содержит видео, скриншот или DOM-запись проблемы вместе с логами консоли, сетевыми запросами, действиями пользователя и данными устройства. Через MCP-адрес агенты для программирования читают сам отчёт, а не угадывают по описанию."
+    },
+    "features": [
+      {
+        "title": { "en": "Instant replay", "uz": "Darhol qayta koʻrish", "ru": "Мгновенный повтор" },
+        "body": {
+          "en": "The Chrome extension keeps the last two minutes in a rolling buffer, so a bug can be captured after it has happened.",
+          "uz": "Chrome kengaytmasi soʻnggi ikki daqiqani aylanma buferda saqlaydi, shuning uchun xatoni u sodir boʻlgandan keyin ham yozib olish mumkin.",
+          "ru": "Расширение для Chrome хранит последние две минуты в кольцевом буфере, поэтому баг можно зафиксировать уже после того, как он случился."
+        }
+      },
+      {
+        "title": { "en": "One-tag SDK", "uz": "Bir tegli SDK", "ru": "SDK одной строкой" },
+        "body": {
+          "en": "A single script tag adds a report widget to any site, and sensitive fields are masked before anything is uploaded.",
+          "uz": "Bitta script tegi istalgan saytga hisobot vidjetini qoʻshadi, maxfiy maydonlar esa yuklashdan oldin niqoblanadi.",
+          "ru": "Один тег script добавляет на любой сайт виджет отчётов, а чувствительные поля маскируются до загрузки."
+        }
+      },
+      {
+        "title": { "en": "Made for agents", "uz": "Agentlar uchun", "ru": "Для агентов" },
+        "body": {
+          "en": "Eight MCP tools expose reports to assistants, and reports can be forwarded to Jira, GitLab or Telegram.",
+          "uz": "Sakkizta MCP vositasi hisobotlarni yordamchilarga ochadi, hisobotni Jira, GitLab yoki Telegramʼga ham yuborish mumkin.",
+          "ru": "Восемь инструментов MCP открывают отчёты ассистентам, а сами отчёты можно переслать в Jira, GitLab или Telegram."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Record", "uz": "Yozib borish", "ru": "Запись" },
+        "body": {
+          "en": "rrweb records the page into a rolling buffer inside the browser.",
+          "uz": "rrweb sahifani brauzer ichidagi aylanma buferga yozib boradi.",
+          "ru": "rrweb записывает страницу в кольцевой буфер внутри браузера."
+        }
+      },
+      {
+        "title": { "en": "Save a report", "uz": "Hisobotni saqlash", "ru": "Сохранить отчёт" },
+        "body": {
+          "en": "The user saves a report from the extension or the widget, with masking applied.",
+          "uz": "Foydalanuvchi hisobotni kengaytma yoki vidjetdan niqoblangan holda saqlaydi.",
+          "ru": "Пользователь сохраняет отчёт из расширения или виджета с применённым маскированием."
+        }
+      },
+      {
+        "title": { "en": "Store it here", "uz": "Shu yerda saqlash", "ru": "Хранение у себя" },
+        "body": {
+          "en": "The server keeps reports in SQLite on infrastructure we run ourselves.",
+          "uz": "Server hisobotlarni oʻzimiz yuritadigan infratuzilmada SQLite bazasida saqlaydi.",
+          "ru": "Сервер хранит отчёты в SQLite на инфраструктуре, которую мы держим сами."
+        }
+      },
+      {
+        "title": { "en": "Read it", "uz": "Oʻqish", "ru": "Чтение" },
+        "body": {
+          "en": "Developers open the replay in the dashboard, and agents fetch the same report over MCP.",
+          "uz": "Dasturchilar qayta koʻrinishni panelda ochadi, agentlar esa xuddi shu hisobotni MCP orqali oladi.",
+          "ru": "Разработчики открывают запись в панели, а агенты получают тот же отчёт через MCP."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "2 min", "label": { "en": "instant replay buffer", "uz": "darhol qayta koʻrish buferi", "ru": "буфер мгновенного повтора" }, "source": "dtwinuz/fam README" },
+      { "value": "8", "label": { "en": "MCP tools", "uz": "MCP vositasi", "ru": "инструментов MCP" }, "source": "dtwinuz/fam docs/CONTRACT.md" }
+    ],
+    "milestones": [
+      { "date": "2026-11-11", "text": { "en": "First release live at fam.dtwin.uz: server, dashboard, SDK and Chrome extension.", "uz": "Birinchi reliz fam.dtwin.uz da ishga tushdi: server, panel, SDK va Chrome kengaytmasi.", "ru": "Первый релиз запущен на fam.dtwin.uz: сервер, панель, SDK и расширение для Chrome." } },
+      { "date": "2026-11-11", "text": { "en": "Work starts on a self-hosted alternative so that report data stays on our own server.", "uz": "Hisobot maʼlumotlari oʻz serverimizda qolishi uchun oʻzimizning muqobil vosita ustida ish boshlandi.", "ru": "Начата работа над собственной альтернативой, чтобы данные отчётов оставались на нашем сервере." } }
+    ],
+    "accent": "#ebcece"
+  },
+
+  "operobot": {
+    "status": "prototype",
+    "wrl": 1,
+    "since": "2026-11-04",
+    "repo": "https://github.com/dtwinuz/operobot2",
+    "stack": ["Asterisk 22 (ARI)", "Node.js + TypeScript", "Fastify", "PostgreSQL 17 (RLS)", "React 19", "Google Sheets API", "MCP"],
+    "summary": {
+      "en": "operobot is an outbound calling assistant designed around Uzbekistan’s rules for advertising calls. The 09:00–18:00 calling window is enforced in code, calls go out with a local caller ID only, and the system is designed for data to stay in Uzbekistan. operobot2 adds a multi-tenant sales inbox with an AI agent; it is a prototype, and its public demo runs on simulated calls.",
+      "uz": "operobot — Oʻzbekistondagi reklama qoʻngʻiroqlari qoidalariga moslab loyihalangan chiquvchi qoʻngʻiroqlar yordamchisi. 09:00–18:00 qoʻngʻiroq oynasi kodda majburiy qilingan, qoʻngʻiroqlar faqat mahalliy raqam bilan chiqadi, tizim esa maʼlumot Oʻzbekistonda qolishiga moslab qurilgan. operobot2 AI agentli koʻp tenantli savdo inboxini qoʻshadi; bu prototip, ommaviy demo simulyatsiya qilingan qoʻngʻiroqlarda ishlaydi.",
+      "ru": "operobot — ассистент исходящих звонков, спроектированный под узбекские правила рекламных звонков. Окно звонков 09:00–18:00 закреплено в коде, звонки идут только с местного номера, а система рассчитана на то, чтобы данные оставались в Узбекистане. operobot2 добавляет многоарендный входящий ящик продаж с ИИ-агентом; это прототип, и его публичное демо работает на симулированных звонках."
+    },
+    "features": [
+      {
+        "title": { "en": "Rules in code", "uz": "Qoidalar kodda", "ru": "Правила в коде" },
+        "body": {
+          "en": "Outside 09:00–18:00 the dialer queue does not place calls; only demo mode can bypass the lock.",
+          "uz": "09:00–18:00 dan tashqarida qoʻngʻiroq navbati raqam termaydi; bu qulfni faqat demo rejimi chetlab oʻtadi.",
+          "ru": "Вне окна 09:00–18:00 очередь не набирает номера; обойти это ограничение может только демо-режим."
+        }
+      },
+      {
+        "title": { "en": "An AI voice agent", "uz": "AI ovozli agent", "ru": "Голосовой ИИ-агент" },
+        "body": {
+          "en": "Speech-to-text, a language model and text-to-speech handle routine conversations, write a call summary and add leads to a board.",
+          "uz": "Nutqni matnga oʻgirish, til modeli va matnni nutqqa oʻgirish oddiy suhbatlarni olib boradi, qoʻngʻiroq xulosasini yozadi va lidlarni doskaga qoʻshadi.",
+          "ru": "Распознавание речи, языковая модель и синтез речи ведут типовые разговоры, пишут итог звонка и добавляют лиды на доску."
+        }
+      },
+      {
+        "title": { "en": "An isolated demo", "uz": "Ajratilgan demo", "ru": "Изолированное демо" },
+        "body": {
+          "en": "operobot2 isolates every organization with PostgreSQL row-level security, and each visitor gets a private sandbox that is deleted after 24 hours.",
+          "uz": "operobot2 har bir tashkilotni PostgreSQL qator darajasidagi xavfsizlik bilan ajratadi, har bir tashrifchiga esa 24 soatdan keyin oʻchiriladigan alohida sinov muhiti beriladi.",
+          "ru": "operobot2 изолирует каждую организацию с помощью построчной безопасности PostgreSQL, а каждый посетитель получает личную песочницу, которая удаляется через 24 часа."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Load contacts", "uz": "Kontaktlarni yuklash", "ru": "Загрузка контактов" },
+        "body": {
+          "en": "Contacts come from a Google Sheet or from the campaign panel.",
+          "uz": "Kontaktlar Google Sheet yoki kampaniya panelidan olinadi.",
+          "ru": "Контакты берутся из Google Sheets или из панели кампаний."
+        }
+      },
+      {
+        "title": { "en": "Dial in hours", "uz": "Ruxsat vaqtida terish", "ru": "Набор в разрешённое время" },
+        "body": {
+          "en": "Asterisk places calls through a local line, only inside the allowed hours.",
+          "uz": "Asterisk qoʻngʻiroqlarni mahalliy liniya orqali, faqat ruxsat etilgan soatlarda amalga oshiradi.",
+          "ru": "Asterisk звонит через местную линию и только в разрешённые часы."
+        }
+      },
+      {
+        "title": { "en": "Talk or transfer", "uz": "Gaplashish yoki ulash", "ru": "Разговор или перевод" },
+        "body": {
+          "en": "A recorded pitch or the AI agent speaks first, and pressing 1 connects a human operator.",
+          "uz": "Avval yozib olingan matn yoki AI agent gapiradi, 1 tugmasi bosilsa jonli operatorga ulanadi.",
+          "ru": "Сначала говорит записанное сообщение или ИИ-агент, а нажатие 1 соединяет с живым оператором."
+        }
+      },
+      {
+        "title": { "en": "Write back", "uz": "Natijani yozish", "ru": "Запись итогов" },
+        "body": {
+          "en": "Results, summaries and follow-ups are written back to the sheet and the leads board.",
+          "uz": "Natijalar, xulosalar va keyingi qadamlar jadvalga va lidlar doskasiga qaytarib yoziladi.",
+          "ru": "Результаты, итоги и последующие шаги записываются обратно в таблицу и на доску лидов."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "09:00–18:00", "label": { "en": "calling window enforced in code", "uz": "kodda majburiy qoʻngʻiroq oynasi", "ru": "окно звонков, закреплённое в коде" }, "source": "dtwinuz/operobot2 docs/07" },
+      { "value": "24 h", "label": { "en": "lifetime of each demo sandbox", "uz": "har bir demo muhitining umri", "ru": "срок жизни каждой демо-песочницы" }, "source": "dtwinuz/operobot2 docs/09" },
+      { "value": "6", "label": { "en": "MCP tools in operobot2", "uz": "operobot2 dagi MCP vositasi", "ru": "инструментов MCP в operobot2" }, "source": "dtwinuz/operobot2 docs/05" }
+    ],
+    "milestones": [
+      { "date": "2026-11-05", "text": { "en": "operobot2 multi-tenant demo goes live at operobot2.dtwin.uz.", "uz": "operobot2 koʻp tenantli demosi operobot2.dtwin.uz da ishga tushdi.", "ru": "Многоарендное демо operobot2 запущено на operobot2.dtwin.uz." } },
+      { "date": "2026-11-04", "text": { "en": "AI voice agent, call summaries, a leads board and follow-up reminders.", "uz": "AI ovozli agent, qoʻngʻiroq xulosalari, lidlar doskasi va keyingi eslatmalar qoʻshildi.", "ru": "Добавлены голосовой ИИ-агент, итоги звонков, доска лидов и напоминания о повторных контактах." } },
+      { "date": "2026-11-04", "text": { "en": "A demo server runs the real dialer against a simulated Asterisk, with MCP.", "uz": "Demo server haqiqiy dialerni simulyatsiya qilingan Asterisk bilan, MCP orqali ishlatadi.", "ru": "Демо-сервер запускает настоящий дайлер с симулированным Asterisk и MCP." } },
+      { "date": "2026-11-04", "text": { "en": "Work starts: plan, legal research and a site with a 3D call centre.", "uz": "Ish boshlandi: reja, huquqiy izlanish va 3D call-markazli sayt.", "ru": "Начало работы: план, правовое исследование и сайт с 3D-колл-центром." } }
+    ],
+    "accent": "#bcd1ca"
+  },
+
+  "shop": {
+    "status": "experiment",
+    "wrl": 1,
+    "since": "2026-10-30",
+    "repo": null,
+    "stack": ["Vite", "React 19", "TypeScript", "three.js", "GSAP", "GHCR"],
+    "summary": {
+      "en": "shop is a frontend prototype that gathers small Instagram clothing stores into one catalogue. Shoppers get size-aware search, size suggestions from body measurements and price-drop alerts; sellers get an order board, stock tracked per size and product import from post text. It runs on mock data in the browser while we test the idea.",
+      "uz": "shop — Instagramʼdagi kichik kiyim doʻkonlarini bitta katalogga yigʻadigan frontend prototip. Xaridorlar oʻlchamni hisobga oladigan qidiruv, tana oʻlchovlari boʻyicha oʻlcham tavsiyasi va narx tushishi haqida xabar oladi; sotuvchilar buyurtmalar doskasi, har oʻlcham boʻyicha qoldiq va post matnidan mahsulot import qilish imkoniyatiga ega. Gʻoyani sinayotganimiz uchun u brauzerdagi namunaviy maʼlumotda ishlaydi.",
+      "ru": "shop — фронтенд-прототип, который собирает небольшие магазины одежды из Instagram в единый каталог. Покупатели получают поиск с учётом размера, подбор размера по меркам и оповещения о снижении цены; продавцы — доску заказов, учёт остатков по размерам и импорт товара из текста поста. Пока мы проверяем идею, он работает на демонстрационных данных в браузере."
+    },
+    "features": [
+      {
+        "title": { "en": "Search by your size", "uz": "Oʻlchamingiz boʻyicha qidiruv", "ru": "Поиск по размеру" },
+        "body": {
+          "en": "Results take your size into account, and body measurements turn into a size suggestion for each item.",
+          "uz": "Natijalar oʻlchamingizni hisobga oladi, tana oʻlchovlari esa har bir mahsulot uchun oʻlcham tavsiyasiga aylanadi.",
+          "ru": "Результаты учитывают ваш размер, а мерки превращаются в рекомендацию размера для каждой вещи."
+        }
+      },
+      {
+        "title": { "en": "A seller’s desk", "uz": "Sotuvchi paneli", "ru": "Кабинет продавца" },
+        "body": {
+          "en": "Orders move across a board, stock is tracked per size, and products can be created from the text of an Instagram post.",
+          "uz": "Buyurtmalar doska boʻylab harakatlanadi, qoldiq har oʻlcham boʻyicha yuritiladi, mahsulotni Instagram post matnidan yaratish mumkin.",
+          "ru": "Заказы движутся по доске, остатки учитываются по размерам, а товар можно создать из текста поста в Instagram."
+        }
+      },
+      {
+        "title": { "en": "A 3D store twin", "uz": "Doʻkonning 3D egizagi", "ru": "3D-двойник магазина" },
+        "body": {
+          "en": "Each store has a three.js model of its space next to the analytics view.",
+          "uz": "Har bir doʻkonning tahlil sahifasi yonida uning makoni three.js modeli koʻrinishida turadi.",
+          "ru": "У каждого магазина рядом с аналитикой есть модель его пространства на three.js."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Browse stores", "uz": "Doʻkonlarni koʻrish", "ru": "Просмотр магазинов" },
+        "body": {
+          "en": "The catalogue merges items from many small stores into one search.",
+          "uz": "Katalog koʻplab kichik doʻkonlar mahsulotlarini bitta qidiruvga birlashtiradi.",
+          "ru": "Каталог объединяет товары многих небольших магазинов в один поиск."
+        }
+      },
+      {
+        "title": { "en": "Find the fit", "uz": "Mosini topish", "ru": "Подбор размера" },
+        "body": {
+          "en": "Measurements and size charts narrow the list to what fits.",
+          "uz": "Oʻlchovlar va oʻlcham jadvallari roʻyxatni mos keladiganlarga toraytiradi.",
+          "ru": "Мерки и размерные сетки сужают список до того, что подойдёт."
+        }
+      },
+      {
+        "title": { "en": "Place an order", "uz": "Buyurtma berish", "ru": "Оформление заказа" },
+        "body": {
+          "en": "The order lands on the seller’s board with the chosen size reserved.",
+          "uz": "Buyurtma tanlangan oʻlcham band qilingan holda sotuvchi doskasiga tushadi.",
+          "ru": "Заказ попадает на доску продавца с зарезервированным размером."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "12", "label": { "en": "tagged releases", "uz": "teglangan reliz", "ru": "релизов с тегами" }, "source": "dtwinuz/shop-dtwin releases" },
+      { "value": "8", "label": { "en": "releases shipped on a single day", "uz": "bir kunda chiqarilgan reliz", "ru": "релизов, выпущенных за один день" }, "source": "dtwinuz/shop-dtwin releases v0.6.0–v0.13.0" }
+    ],
+    "milestones": [
+      { "date": "2026-11-02", "text": { "en": "Eight releases in one day, v0.6.0 to v0.13.0, and an in-app help widget.", "uz": "Bir kunda sakkizta reliz, v0.6.0 dan v0.13.0 gacha, va ilova ichidagi yordam vidjeti.", "ru": "Восемь релизов за день, с v0.6.0 по v0.13.0, и встроенный виджет помощи." } },
+      { "date": "2026-10-30", "text": { "en": "The prototype goes live at shop.dtwin.uz.", "uz": "Prototip shop.dtwin.uz da ishga tushdi.", "ru": "Прототип запущен на shop.dtwin.uz." } },
+      { "date": "2026-10-29", "text": { "en": "v0.1.0 with a release pipeline that publishes container images.", "uz": "Konteyner obrazlarini chop etadigan reliz quvuri bilan v0.1.0.", "ru": "v0.1.0 с конвейером релизов, публикующим образы контейнеров." } }
+    ],
+    "accent": "#c47a55"
+  },
+
+  "gym": {
+    "status": "experiment",
+    "wrl": 1,
+    "since": "2026-10-30",
+    "repo": "https://github.com/dtwinuz/gym-dtwin",
+    "stack": ["Vite", "React 19", "TypeScript", "three.js", "lucide-react", "oxlint"],
+    "summary": {
+      "en": "gym is an open-source workout diary that works in the browser without an account. It has a library of 1,827 exercises, starter plans that include a Ramadan and a hot-weather mode, set logging with a rest timer, and progress views such as a 12-month heatmap and one-rep-max charts. Data stays on the device, with JSON backup and CSV import from Strong, Hevy and FitNotes.",
+      "uz": "gym — brauzerda akkauntsiz ishlaydigan ochiq kodli mashgʻulot kundaligi. Unda 1827 ta mashqli kutubxona, Ramazon va issiq kunlar rejimi bor boshlangʻich rejalar, dam olish taymerli set yozuvi hamda 12 oylik issiqlik xaritasi va bir martalik maksimum grafiklari kabi natija koʻrinishlari bor. Maʼlumot qurilmada qoladi; JSON zaxira va Strong, Hevy, FitNotes dan CSV import qilish mumkin.",
+      "ru": "gym — дневник тренировок с открытым кодом, который работает в браузере без учётной записи. В нём библиотека из 1827 упражнений, стартовые планы с режимами для Рамадана и жары, запись подходов с таймером отдыха и экраны прогресса вроде годовой тепловой карты и графиков разового максимума. Данные остаются на устройстве, есть резервная копия в JSON и импорт CSV из Strong, Hevy и FitNotes."
+    },
+    "features": [
+      {
+        "title": { "en": "A large exercise library", "uz": "Katta mashqlar kutubxonasi", "ru": "Большая библиотека" },
+        "body": {
+          "en": "1,827 exercises with typo-tolerant search, equipment filters and a muscle map, many with Uzbek and Russian names.",
+          "uz": "Xatoga chidamli qidiruv, jihoz filtrlari va mushak xaritasi bilan 1827 ta mashq, koʻpi oʻzbekcha va ruscha nomlangan.",
+          "ru": "1827 упражнений с поиском, устойчивым к опечаткам, фильтрами по инвентарю и картой мышц, многие с узбекскими и русскими названиями."
+        }
+      },
+      {
+        "title": { "en": "Plans that fit life", "uz": "Hayotga mos rejalar", "ru": "Планы под жизнь" },
+        "body": {
+          "en": "Weekly and rotating schedules, a routine editor with supersets and progression, and modes for Ramadan and hot days.",
+          "uz": "Haftalik va aylanma jadvallar, superset va progressiyali mashgʻulot muharriri hamda Ramazon va issiq kunlar rejimlari.",
+          "ru": "Недельные и ротационные расписания, редактор тренировок с суперсетами и прогрессией и режимы для Рамадана и жарких дней."
+        }
+      },
+      {
+        "title": { "en": "Your data, your device", "uz": "Maʼlumot sizning qurilmangizda", "ru": "Данные на вашем устройстве" },
+        "body": {
+          "en": "Everything is stored locally, with JSON backup and restore, CSV export and import from other training apps.",
+          "uz": "Hammasi qurilmada saqlanadi; JSON zaxira va tiklash, CSV eksport va boshqa mashgʻulot ilovalaridan import bor.",
+          "ru": "Всё хранится локально; есть резервная копия и восстановление в JSON, экспорт CSV и импорт из других приложений для тренировок."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Pick a plan", "uz": "Reja tanlash", "ru": "Выбор плана" },
+        "body": {
+          "en": "Start from a starter plan or build your own routine.",
+          "uz": "Boshlangʻich rejadan boshlang yoki oʻz mashgʻulotingizni tuzing.",
+          "ru": "Начните со стартового плана или соберите свою тренировку."
+        }
+      },
+      {
+        "title": { "en": "Log each set", "uz": "Har setni yozish", "ru": "Запись подходов" },
+        "body": {
+          "en": "Sets are logged with the last weight pre-filled and a rest timer between them.",
+          "uz": "Setlar oxirgi vazn oldindan toʻldirilgan holda, oraliqda dam olish taymeri bilan yoziladi.",
+          "ru": "Подходы записываются с подставленным прошлым весом и таймером отдыха между ними."
+        }
+      },
+      {
+        "title": { "en": "See progress", "uz": "Natijani koʻrish", "ru": "Прогресс" },
+        "body": {
+          "en": "Heatmaps, muscle maps and one-rep-max charts show how training adds up.",
+          "uz": "Issiqlik xaritalari, mushak xaritalari va bir martalik maksimum grafiklari mashgʻulot natijasini koʻrsatadi.",
+          "ru": "Тепловые карты, карты мышц и графики разового максимума показывают, к чему ведут тренировки."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "1,827", "label": { "en": "exercises in the library", "uz": "kutubxonadagi mashq", "ru": "упражнений в библиотеке" }, "source": "dtwinuz/gym-dtwin README" },
+      { "value": "8", "label": { "en": "starter plans", "uz": "boshlangʻich reja", "ru": "стартовых планов" }, "source": "dtwinuz/gym-dtwin README" },
+      { "value": "3", "label": { "en": "languages: Uzbek, Russian, English", "uz": "til: oʻzbek, rus, ingliz", "ru": "языка: узбекский, русский, английский" }, "source": "dtwinuz/gym-dtwin README" }
+    ],
+    "milestones": [
+      { "date": "2026-10-30", "text": { "en": "MVP live at gym.dtwin.uz with a 3D landing page and a stories overview.", "uz": "MVP 3D bosh sahifa va stories tanishuvi bilan gym.dtwin.uz da ishga tushdi.", "ru": "MVP запущен на gym.dtwin.uz с 3D-лендингом и обзором в формате историй." } },
+      { "date": "2026-10-29", "text": { "en": "Research and concept decks define the plan, workout and progress flow.", "uz": "Tadqiqot va konsepsiya taqdimotlari reja, mashgʻulot va natija oqimini belgiladi.", "ru": "Исследование и концепт-презентации задали цепочку «план, тренировка, прогресс»." } }
+    ],
+    "accent": "#788c5d"
+  },
+
+  "med": {
+    "status": "experiment",
+    "wrl": 1,
+    "since": "2026-10-30",
+    "repo": null,
+    "stack": ["Vite", "React 19", "TypeScript", "three.js", "GSAP"],
+    "summary": {
+      "en": "med is an experimental study platform for medicine. It covers 11 topics across 5 specialties with ICD-10 codes, short clinical guidelines, a drug reference without dosages, a practice exam and a personal progress page. All content is demo material and is labelled as such.",
+      "uz": "med — tibbiyotni oʻrganish uchun tajriba platformasi. U ICD-10 kodlari bilan 5 mutaxassislik boʻyicha 11 mavzuni, qisqa klinik koʻrsatmalarni, dozasiz dori maʼlumotnomasini, mashq imtihonini va shaxsiy natijalar sahifasini oʻz ichiga oladi. Barcha kontent namunaviy va shunday deb belgilangan.",
+      "ru": "med — экспериментальная платформа для изучения медицины. В ней 11 тем по 5 специальностям с кодами МКБ-10, краткие клинические рекомендации, справочник лекарств без дозировок, пробный экзамен и личная страница прогресса. Весь контент демонстрационный и помечен как таковой."
+    },
+    "features": [
+      {
+        "title": { "en": "Structured topics", "uz": "Tartiblangan mavzular", "ru": "Структурированные темы" },
+        "body": {
+          "en": "Each topic carries its ICD-10 code, a short guideline and links to related topics.",
+          "uz": "Har bir mavzuda ICD-10 kodi, qisqa koʻrsatma va bogʻliq mavzularga havolalar bor.",
+          "ru": "У каждой темы есть код МКБ-10, краткая рекомендация и ссылки на связанные темы."
+        }
+      },
+      {
+        "title": { "en": "A careful drug reference", "uz": "Ehtiyotkor dori maʼlumotnomasi", "ru": "Осторожный справочник" },
+        "body": {
+          "en": "The pharmacology section describes drugs without dosages, so it cannot be read as a prescription.",
+          "uz": "Farmakologiya boʻlimi dorilarni dozasiz tasvirlaydi, shuning uchun uni retsept deb oʻqib boʻlmaydi.",
+          "ru": "Раздел фармакологии описывает препараты без дозировок, чтобы его нельзя было принять за назначение."
+        }
+      },
+      {
+        "title": { "en": "Practice and progress", "uz": "Mashq va natija", "ru": "Практика и прогресс" },
+        "body": {
+          "en": "A short exam checks understanding, and a progress page shows what has been studied.",
+          "uz": "Qisqa imtihon tushunishni tekshiradi, natijalar sahifasi esa nima oʻrganilganini koʻrsatadi.",
+          "ru": "Короткий экзамен проверяет понимание, а страница прогресса показывает, что уже изучено."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Choose a topic", "uz": "Mavzu tanlash", "ru": "Выбор темы" },
+        "body": {
+          "en": "Search or browse by specialty to open a topic.",
+          "uz": "Mavzuni qidiruv orqali yoki mutaxassislik boʻyicha toping.",
+          "ru": "Найдите тему поиском или по специальности."
+        }
+      },
+      {
+        "title": { "en": "Read the guideline", "uz": "Koʻrsatmani oʻqish", "ru": "Чтение рекомендации" },
+        "body": {
+          "en": "Each page gives the code, the key points and related drugs.",
+          "uz": "Har bir sahifa kod, asosiy jihatlar va bogʻliq dorilarni beradi.",
+          "ru": "На каждой странице — код, ключевые положения и связанные препараты."
+        }
+      },
+      {
+        "title": { "en": "Test yourself", "uz": "Oʻzingizni sinash", "ru": "Самопроверка" },
+        "body": {
+          "en": "The practice exam records results on your progress page.",
+          "uz": "Mashq imtihoni natijani shaxsiy natijalar sahifangizga yozadi.",
+          "ru": "Пробный экзамен записывает результаты на вашу страницу прогресса."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "11", "label": { "en": "topics", "uz": "mavzu", "ru": "тем" }, "source": "dtwinuz/med-dtwin README" },
+      { "value": "5", "label": { "en": "specialties", "uz": "mutaxassislik", "ru": "специальностей" }, "source": "dtwinuz/med-dtwin README" }
+    ],
+    "milestones": [
+      { "date": "2026-11-02", "text": { "en": "In-app help widget connected to the shared support desk.", "uz": "Ilova ichidagi yordam vidjeti umumiy qoʻllab-quvvatlash xizmatiga ulandi.", "ru": "Встроенный виджет помощи подключён к общей службе поддержки." } },
+      { "date": "2026-11-01", "text": { "en": "CI workflows hardened with static analysis.", "uz": "CI jarayonlari statik tahlil bilan mustahkamlandi.", "ru": "CI-процессы усилены статическим анализом." } },
+      { "date": "2026-10-30", "text": { "en": "MVP live at med.dtwin.uz with a 3D helix home page.", "uz": "MVP 3D spiralli bosh sahifa bilan med.dtwin.uz da ishga tushdi.", "ru": "MVP запущен на med.dtwin.uz с главной страницей в виде 3D-спирали." } },
+      { "date": "2026-10-29", "text": { "en": "Research decks shape the scope of the study platform.", "uz": "Tadqiqot taqdimotlari platforma doirasini belgiladi.", "ru": "Исследовательские презентации определили рамки платформы." } }
+    ],
+    "accent": "#ebcece"
+  },
+
+  "faktura-twin": {
+    "status": "production",
+    "wrl": 2,
+    "since": "2026-10-29",
+    "repo": null,
+    "stack": [".NET 10", "SignalR", "EF Core + SQLite", "React 19", "react-three-fiber", "GSAP", "Blender", "Playwright"],
+    "summary": {
+      "en": "faktura-twin is a live 3D digital twin of a working office, rendered in the browser and updated in real time over SignalR. A typed entity model, from site to room to rack to server, is exposed over MCP, so agents can query live state and point the camera at what they are describing. A scene constructor and baked lighting keep the model editable and fast.",
+      "uz": "faktura-twin — ishlab turgan ofisning jonli 3D raqamli egizagi: brauzerda chiziladi va SignalR orqali real vaqtda yangilanadi. Bino, xona, rack va servergacha boʻlgan tipli obyekt modeli MCP orqali ochiq, shuning uchun agentlar jonli holatni soʻray oladi va kamerani oʻzi gapirayotgan joyga yoʻnaltira oladi. Sahna konstruktori va oldindan pishirilgan yorugʻlik modelni tahrirlanadigan va tez qiladi.",
+      "ru": "faktura-twin — живой 3D-цифровой двойник работающего офиса: он отрисовывается в браузере и обновляется в реальном времени через SignalR. Типизированная модель объектов — от здания и комнат до стоек и серверов — открыта через MCP, поэтому агенты могут запрашивать текущее состояние и направлять камеру на то, о чём говорят. Конструктор сцены и запечённое освещение делают модель редактируемой и быстрой."
+    },
+    "features": [
+      {
+        "title": { "en": "Live state", "uz": "Jonli holat", "ru": "Живое состояние" },
+        "body": {
+          "en": "Server load, service status and events reach every open screen through SignalR, grouped by what each user is allowed to see.",
+          "uz": "Server yuklamasi, xizmatlar holati va voqealar SignalR orqali har bir ochiq ekranga, foydalanuvchiga ruxsat etilgan qatlamlar boʻyicha yetib boradi.",
+          "ru": "Нагрузка серверов, статус сервисов и события через SignalR приходят на каждый открытый экран — с учётом того, что разрешено видеть пользователю."
+        }
+      },
+      {
+        "title": { "en": "Agents over MCP", "uz": "Agentlar MCP orqali", "ru": "Агенты через MCP" },
+        "body": {
+          "en": "Tools such as list_entities, get_entity and focus_camera let an assistant read the model and fly every open screen to a room or server.",
+          "uz": "list_entities, get_entity va focus_camera kabi vositalar yordamchiga modelni oʻqish va barcha ochiq ekranlarni xona yoki serverga uchirish imkonini beradi.",
+          "ru": "Инструменты list_entities, get_entity и focus_camera позволяют ассистенту читать модель и переводить все открытые экраны к нужной комнате или серверу."
+        }
+      },
+      {
+        "title": { "en": "A scene constructor", "uz": "Sahna konstruktori", "ru": "Конструктор сцены" },
+        "body": {
+          "en": "Admins edit rooms, doors and furniture in versioned scenes with publish and rollback, and only changed rooms lose their baked lighting.",
+          "uz": "Adminlar xona, eshik va mebellarni nashr qilish va orqaga qaytarish imkoni bor versiyali sahnalarda tahrirlaydi; pishirilgan yorugʻlik faqat oʻzgargan xonalarda yangilanadi.",
+          "ru": "Администраторы редактируют комнаты, двери и мебель в версионных сценах с публикацией и откатом, а запечённый свет сбрасывается только у изменённых комнат."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Collect signals", "uz": "Signallarni yigʻish", "ru": "Сбор сигналов" },
+        "body": {
+          "en": "The .NET backend gathers service and infrastructure state on a schedule and from webhooks.",
+          "uz": ".NET backend xizmat va infratuzilma holatini jadval boʻyicha va webhookʼlar orqali yigʻadi.",
+          "ru": "Бэкенд на .NET собирает состояние сервисов и инфраструктуры по расписанию и через вебхуки."
+        }
+      },
+      {
+        "title": { "en": "Build the model", "uz": "Modelni qurish", "ru": "Построение модели" },
+        "body": {
+          "en": "Each entity gets a position in metres and typed properties with units.",
+          "uz": "Har bir obyekt metrdagi oʻrin va birlikli tipli xossalarga ega boʻladi.",
+          "ru": "Каждый объект получает положение в метрах и типизированные свойства с единицами измерения."
+        }
+      },
+      {
+        "title": { "en": "Stream changes", "uz": "Oʻzgarishlarni uzatish", "ru": "Передача изменений" },
+        "body": {
+          "en": "SignalR pushes updates to browsers, and MCP serves the same model to agents.",
+          "uz": "SignalR yangilanishlarni brauzerlarga yuboradi, MCP esa xuddi shu modelni agentlarga beradi.",
+          "ru": "SignalR отправляет обновления в браузеры, а MCP отдаёт ту же модель агентам."
+        }
+      },
+      {
+        "title": { "en": "Render the scene", "uz": "Sahnani chizish", "ru": "Отрисовка сцены" },
+        "body": {
+          "en": "react-three-fiber draws a Blender-baked shell with instanced furniture on top.",
+          "uz": "react-three-fiber Blenderʼda pishirilgan qobiqni va uning ustidagi instanslangan mebellarni chizadi.",
+          "ru": "react-three-fiber рисует запечённую в Blender оболочку и инстансированную мебель поверх неё."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "1,039 → 436", "label": { "en": "draw calls after baking and batching", "uz": "pishirish va guruhlashdan keyingi draw call", "ru": "вызовов отрисовки после запекания и пакетирования" }, "source": "faktura-twin build notes, 2026-11-05" }
+    ],
+    "milestones": [
+      { "date": "2026-11-05", "text": { "en": "Scene constructor with versioned scenes and baked shell lighting; draw calls fall from 1,039 to 436.", "uz": "Versiyali sahnalar va pishirilgan qobiq yorugʻligi bilan sahna konstruktori; draw call 1039 dan 436 ga tushdi.", "ru": "Конструктор сцены с версиями и запечённым светом оболочки; вызовы отрисовки сократились с 1039 до 436." } },
+      { "date": "2026-11-04", "text": { "en": "Typed entity model exposed over MCP; Playwright end-to-end tests run in CI.", "uz": "Tipli obyekt modeli MCP orqali ochildi; Playwright end-to-end testlari CIʼda ishlaydi.", "ru": "Типизированная модель объектов открыта через MCP; сквозные тесты Playwright запускаются в CI." } },
+      { "date": "2026-11-03", "text": { "en": "Lighting baked in Blender replaces real-time shading for the building shell.", "uz": "Bino qobigʻi uchun real vaqtdagi soyalash oʻrniga Blenderʼda pishirilgan yorugʻlik qoʻllandi.", "ru": "Для оболочки здания освещение в реальном времени заменено запечённым в Blender." } },
+      { "date": "2026-10-29", "text": { "en": "First version deployed with live updates over SignalR.", "uz": "SignalR orqali jonli yangilanadigan birinchi versiya ishga tushirildi.", "ru": "Развёрнута первая версия с живыми обновлениями через SignalR." } }
+    ],
+    "accent": "#3e5f9a"
+  },
+
+  "attendo": {
+    "status": "mvp",
+    "wrl": 1,
+    "since": null,
+    "repo": null,
+    "stack": [".NET 10", "EF Core", "SQLite", "React 19", "Tailwind 4", "three.js", "Hikvision ISAPI"],
+    "summary": {
+      "en": "Attendo turns raw scans from Hikvision face-recognition terminals into attendance figures that managers, HR and employees can trust. Raw scans are never changed: every figure is recomputed from them under explicit rules for schedules, lunch, lateness, overtime and missing exits. It is a rewrite in .NET 10 and React 19, built to get the day and exit rules right.",
+      "uz": "Attendo Hikvision yuz tanish terminallaridagi xom skanlarni rahbarlar, HR va xodimlar ishonadigan davomat koʻrsatkichlariga aylantiradi. Xom skanlar hech qachon oʻzgartirilmaydi: har bir koʻrsatkich ish jadvali, tushlik, kechikish, qoʻshimcha ish va chiqish qayd etilmagan holatlar uchun aniq qoidalar boʻyicha ulardan qayta hisoblanadi. Bu kun va chiqish qoidalarini toʻgʻri yuritish uchun .NET 10 va React 19 da qayta yozilgan tizim.",
+      "ru": "Attendo превращает сырые отметки с терминалов распознавания лиц Hikvision в данные о посещаемости, которым могут доверять руководители, HR и сами сотрудники. Сырые отметки никогда не изменяются: каждая цифра заново вычисляется из них по явным правилам для графиков, обеда, опозданий, переработок и неотмеченных уходов. Это система, переписанная на .NET 10 и React 19, чтобы правильно считать рабочий день и уход."
+    },
+    "features": [
+      {
+        "title": { "en": "Traceable numbers", "uz": "Manbasi aniq raqamlar", "ru": "Прослеживаемые цифры" },
+        "body": {
+          "en": "Every total can be traced back to the scans it came from, because the scans themselves are never edited.",
+          "uz": "Har bir yakuniy raqamni u olingan skanlargacha kuzatish mumkin, chunki skanlarning oʻzi hech qachon tahrirlanmaydi.",
+          "ru": "Любой итог можно проследить до отметок, из которых он получен, потому что сами отметки никогда не редактируются."
+        }
+      },
+      {
+        "title": { "en": "Rules you can read", "uz": "Oʻqiladigan qoidalar", "ru": "Понятные правила" },
+        "body": {
+          "en": "Schedules, lunch, lateness, overtime and missing exits are settings on a rules page, not hidden logic.",
+          "uz": "Ish jadvali, tushlik, kechikish, qoʻshimcha ish va qayd etilmagan chiqish — yashirin mantiq emas, qoidalar sahifasidagi sozlamalar.",
+          "ru": "График, обед, опоздания, переработки и неотмеченные уходы — это настройки на странице правил, а не скрытая логика."
+        }
+      },
+      {
+        "title": { "en": "Built for the office", "uz": "Ofis uchun qurilgan", "ru": "Сделано для офиса" },
+        "body": {
+          "en": "Timesheets with CSV export, leave requests, roles and an audit log, plus a Telegram bot and Mini App.",
+          "uz": "CSV eksportli tabel, taʼtil soʻrovlari, rollar va audit jurnali, shuningdek Telegram bot va Mini App.",
+          "ru": "Табель с экспортом в CSV, заявки на отсутствие, роли и журнал аудита, а также Telegram-бот и Mini App."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Read scans", "uz": "Skanlarni oʻqish", "ru": "Чтение отметок" },
+        "body": {
+          "en": "Attendo pulls access events from each terminal over Hikvision ISAPI.",
+          "uz": "Attendo har bir terminaldan kirish hodisalarini Hikvision ISAPI orqali oladi.",
+          "ru": "Attendo забирает события доступа с каждого терминала через Hikvision ISAPI."
+        }
+      },
+      {
+        "title": { "en": "Match people", "uz": "Odamlarni moslash", "ru": "Сопоставление людей" },
+        "body": {
+          "en": "Each scan is mapped by terminal and employee number, since the same number can mean different people on different devices.",
+          "uz": "Har bir skan terminal va xodim raqami boʻyicha moslanadi, chunki bir xil raqam turli qurilmalarda turli odamni bildirishi mumkin.",
+          "ru": "Каждая отметка сопоставляется по терминалу и табельному номеру, ведь один и тот же номер на разных устройствах может означать разных людей."
+        }
+      },
+      {
+        "title": { "en": "Apply rules", "uz": "Qoidalarni qoʻllash", "ru": "Применение правил" },
+        "body": {
+          "en": "The attendance engine rebuilds each day from raw events using the current rules.",
+          "uz": "Davomat dvigateli har bir kunni joriy qoidalar asosida xom hodisalardan qayta quradi.",
+          "ru": "Движок посещаемости заново собирает каждый день из сырых событий по текущим правилам."
+        }
+      },
+      {
+        "title": { "en": "Report", "uz": "Hisobot berish", "ru": "Отчётность" },
+        "body": {
+          "en": "Results reach the dashboard, the timesheet export and Telegram.",
+          "uz": "Natijalar panelga, tabel eksportiga va Telegramʼga yetib boradi.",
+          "ru": "Результаты попадают на панель, в экспорт табеля и в Telegram."
+        }
+      }
+    ],
+    "facts": [],
+    "milestones": [
+      { "date": "2026-11-05", "text": { "en": "A home page and a 3D particle-morph login screen with an animated brand mark.", "uz": "Bosh sahifa va animatsion brend belgili 3D zarra-morf kirish ekrani qoʻshildi.", "ru": "Добавлены главная страница и экран входа с 3D-морфингом частиц и анимированным знаком бренда." } },
+      { "date": "2026-11-04", "text": { "en": "Rewritten in .NET 10 and React 19 with a rules engine, roles and an audit log.", "uz": ".NET 10 va React 19 da qoidalar dvigateli, rollar va audit jurnali bilan qayta yozildi.", "ru": "Переписан на .NET 10 и React 19 с движком правил, ролями и журналом аудита." } }
+    ],
+    "accent": "#bcd1ca"
+  },
+
+  "oilaviy": {
+    "status": "production",
+    "wrl": 3,
+    "since": "2026-11-07",
+    "repo": null,
+    "stack": ["Vite", "React 19", "Motion", "three.js", "Leaflet", "Node 24 (node:sqlite)", "grammY"],
+    "summary": {
+      "en": "Oilaviy is the ordering system for a family restaurant: a website, a Telegram Mini App, an admin panel and Telegram bots. Guests order on the web or inside Telegram and follow live status from the kitchen to their door, while staff confirm orders from a Telegram group. Support requests from the site become tracked issues.",
+      "uz": "Oilaviy — oilaviy restoran uchun buyurtma tizimi: veb-sayt, Telegram Mini App, admin panel va Telegram botlar. Mehmonlar vebda yoki Telegram ichida buyurtma beradi va uning holatini oshxonadan eshigigacha jonli kuzatadi, xodimlar esa buyurtmalarni Telegram guruhidan tasdiqlaydi. Saytdan kelgan yordam soʻrovlari kuzatiladigan vazifalarga aylanadi.",
+      "ru": "Oilaviy — система заказов для семейного ресторана: сайт, Telegram Mini App, админ-панель и Telegram-боты. Гости заказывают на сайте или прямо в Telegram и в реальном времени следят за заказом от кухни до двери, а персонал подтверждает заказы из группы в Telegram. Обращения в поддержку с сайта превращаются в отслеживаемые задачи."
+    },
+    "features": [
+      {
+        "title": { "en": "Order anywhere", "uz": "Istalgan joydan buyurtma", "ru": "Заказ откуда угодно" },
+        "body": {
+          "en": "Checkout works on the website with a map and distance-based delivery pricing, or inside Telegram through the Mini App and bot.",
+          "uz": "Buyurtma saytda xarita va masofaga qarab yetkazish narxi bilan yoki Telegram ichida Mini App va bot orqali rasmiylashtiriladi.",
+          "ru": "Заказ оформляется на сайте с картой и ценой доставки по расстоянию или прямо в Telegram через Mini App и бота."
+        }
+      },
+      {
+        "title": { "en": "Live order status", "uz": "Jonli buyurtma holati", "ru": "Живой статус заказа" },
+        "body": {
+          "en": "Status moves from cooking to delivering to done, and reaches the guest through server-sent events and bot messages.",
+          "uz": "Holat «tayyorlanmoqda»dan «yetkazilmoqda» va «tayyor»gacha oʻzgaradi va mehmonga server hodisalari hamda bot xabarlari orqali yetadi.",
+          "ru": "Статус меняется от «готовится» к «в пути» и «доставлен» и приходит гостю через серверные события и сообщения бота."
+        }
+      },
+      {
+        "title": { "en": "Careful operations", "uz": "Ehtiyotkor ekspluatatsiya", "ru": "Аккуратная эксплуатация" },
+        "body": {
+          "en": "Each deploy is health-checked and rolls back on failure, and encrypted backups are copied offsite every day with a tested restore.",
+          "uz": "Har bir deploy salomatlik tekshiruvidan oʻtadi va xato boʻlsa orqaga qaytadi, shifrlangan zaxiralar esa har kuni tashqi joyga koʻchiriladi, tiklash sinab koʻrilgan.",
+          "ru": "Каждый деплой проходит проверку работоспособности и откатывается при сбое, а зашифрованные резервные копии ежедневно уходят во внешнее хранилище; восстановление проверено."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Browse the menu", "uz": "Menyuni koʻrish", "ru": "Просмотр меню" },
+        "body": {
+          "en": "Guests open the menu on the website or in the Telegram Mini App.",
+          "uz": "Mehmonlar menyuni saytda yoki Telegram Mini Appʼda ochadi.",
+          "ru": "Гости открывают меню на сайте или в Telegram Mini App."
+        }
+      },
+      {
+        "title": { "en": "Place the order", "uz": "Buyurtma berish", "ru": "Оформление" },
+        "body": {
+          "en": "They share a phone number and location, and the order is saved with a delivery price.",
+          "uz": "Ular telefon raqami va manzilini yuboradi, buyurtma yetkazish narxi bilan saqlanadi.",
+          "ru": "Они указывают телефон и местоположение, и заказ сохраняется с ценой доставки."
+        }
+      },
+      {
+        "title": { "en": "Staff confirm", "uz": "Xodimlar tasdiqlaydi", "ru": "Подтверждение" },
+        "body": {
+          "en": "An order card appears in the staff Telegram group, where it is confirmed and moved along.",
+          "uz": "Xodimlarning Telegram guruhida buyurtma kartasi paydo boʻladi, u yerda tasdiqlanadi va keyingi bosqichga oʻtkaziladi.",
+          "ru": "Карточка заказа появляется в Telegram-группе персонала, где его подтверждают и ведут дальше."
+        }
+      },
+      {
+        "title": { "en": "Guest follows", "uz": "Mehmon kuzatadi", "ru": "Гость следит" },
+        "body": {
+          "en": "Every status change reaches the guest on the order page and in the bot.",
+          "uz": "Har bir holat oʻzgarishi mehmonga buyurtma sahifasida va botda yetib boradi.",
+          "ru": "Каждое изменение статуса приходит гостю на странице заказа и в боте."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "30 days", "label": { "en": "retention of encrypted offsite backups", "uz": "shifrlangan tashqi zaxiralar saqlanish muddati", "ru": "срок хранения зашифрованных внешних копий" }, "source": "dtwinuz/oilaviy #37" },
+      { "value": "54", "label": { "en": "server tests run before each deploy", "uz": "har deploydan oldin yuradigan server testi", "ru": "серверных теста перед каждым деплоем" }, "source": "dtwinuz/oilaviy #34" }
+    ],
+    "milestones": [
+      { "date": "2026-11-09", "text": { "en": "Moves to its own domain, oilaviyshaharcha.uz, with a new ordering bot.", "uz": "Yangi buyurtma boti bilan oʻz domeni oilaviyshaharcha.uz ga koʻchdi.", "ru": "Переезд на собственный домен oilaviyshaharcha.uz с новым ботом для заказов." } },
+      { "date": "2026-11-07", "text": { "en": "Health-checked deploys with automatic rollback and daily encrypted offsite backups.", "uz": "Avtomatik orqaga qaytariladigan, salomatligi tekshiriladigan deploylar va har kungi shifrlangan tashqi zaxiralar.", "ru": "Деплои с проверкой работоспособности и автоматическим откатом, ежедневные зашифрованные внешние копии." } },
+      { "date": "2026-11-07", "text": { "en": "Launch: website, Mini App, admin panel, API and Telegram bots in production.", "uz": "Ishga tushirish: veb-sayt, Mini App, admin panel, API va Telegram botlar prodda.", "ru": "Запуск: сайт, Mini App, админ-панель, API и Telegram-боты в продакшене." } }
+    ],
+    "accent": "#c47a55"
+  },
+
+  "primus-library": {
+    "status": "production",
+    "wrl": 2,
+    "since": "2026-11-02",
+    "repo": null,
+    "stack": ["React 19", "Vite", "TypeScript", "three.js", "Node 24 (node:sqlite)", "Google sign-in", "GitHub Actions"],
+    "summary": {
+      "en": "Primus Library is a 3D asset library and production board for an animation studio. Every model has a preview, a 3D viewer, versions and its path on the studio’s network drive, and the Work section links models to projects, episodes and review cards. It runs on our infrastructure with Google sign-in, roles and daily backups.",
+      "uz": "Primus Library — animatsiya studiyasi uchun 3D asset kutubxonasi va ishlab chiqarish doskasi. Har bir modelning prevyusi, 3D koʻruvchisi, versiyalari va studiya tarmoq diskidagi yoʻli bor, Ish boʻlimi esa modellarni loyihalar, epizodlar va koʻrib chiqish kartalariga bogʻlaydi. U bizning infratuzilmamizda Google orqali kirish, rollar va har kungi zaxira bilan ishlaydi.",
+      "ru": "Primus Library — библиотека 3D-ассетов и производственная доска для анимационной студии. У каждой модели есть превью, 3D-просмотрщик, версии и путь на сетевом диске студии, а раздел «Работа» связывает модели с проектами, эпизодами и карточками на проверку. Она работает на нашей инфраструктуре со входом через Google, ролями и ежедневными резервными копиями."
+    },
+    "features": [
+      {
+        "title": { "en": "One place for models", "uz": "Modellar uchun bitta joy", "ru": "Все модели в одном месте" },
+        "body": {
+          "en": "Search and filter the catalogue, inspect a model in the GLB viewer, and open its folder on the network drive in one click.",
+          "uz": "Katalogni qidiring va filtrlang, modelni GLB koʻruvchida koʻrib chiqing va uning tarmoq diskidagi papkasini bir bosishda oching.",
+          "ru": "Ищите и фильтруйте каталог, рассматривайте модель в GLB-просмотрщике и открывайте её папку на сетевом диске в один клик."
+        }
+      },
+      {
+        "title": { "en": "A production board", "uz": "Ishlab chiqarish doskasi", "ru": "Производственная доска" },
+        "body": {
+          "en": "Projects, episodes and task cards carry each model through review and approval.",
+          "uz": "Loyihalar, epizodlar va vazifa kartalari har bir modelni koʻrib chiqish va tasdiqlashdan oʻtkazadi.",
+          "ru": "Проекты, эпизоды и карточки задач проводят каждую модель через проверку и утверждение."
+        }
+      },
+      {
+        "title": { "en": "Data kept safe", "uz": "Maʼlumot himoyada", "ru": "Данные под защитой" },
+        "body": {
+          "en": "Model versions, project locks, daily backups and offsite backup support protect the catalogue, and API tokens allow scripted access.",
+          "uz": "Model versiyalari, loyihani qulflash, har kungi zaxira va tashqi zaxira imkoniyati katalogni himoya qiladi, API tokenlar esa skript orqali kirishga imkon beradi.",
+          "ru": "Версии моделей, блокировка проектов, ежедневные копии и поддержка внешнего резервного копирования защищают каталог, а API-токены дают доступ для скриптов."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Sign in", "uz": "Kirish", "ru": "Вход" },
+        "body": {
+          "en": "Studio members sign in with Google and get a role.",
+          "uz": "Studiya aʼzolari Google orqali kiradi va rol oladi.",
+          "ru": "Участники студии входят через Google и получают роль."
+        }
+      },
+      {
+        "title": { "en": "Find a model", "uz": "Modelni topish", "ru": "Поиск модели" },
+        "body": {
+          "en": "Filters and the 3D viewer narrow the catalogue to the right asset.",
+          "uz": "Filtrlar va 3D koʻruvchi katalogni kerakli assetgacha toraytiradi.",
+          "ru": "Фильтры и 3D-просмотрщик сужают каталог до нужного ассета."
+        }
+      },
+      {
+        "title": { "en": "Open the file", "uz": "Faylni ochish", "ru": "Открыть файл" },
+        "body": {
+          "en": "A small desktop helper opens the model’s folder in Explorer, limited to allowed drives.",
+          "uz": "Kichik desktop yordamchi modelning papkasini Explorerʼda ochadi — faqat ruxsat etilgan disklarda.",
+          "ru": "Небольшой десктопный помощник открывает папку модели в Проводнике — только на разрешённых дисках."
+        }
+      },
+      {
+        "title": { "en": "Track the work", "uz": "Ishni kuzatish", "ru": "Учёт работы" },
+        "body": {
+          "en": "Task cards move through review, and changes reach the team in Telegram digests.",
+          "uz": "Vazifa kartalari koʻrib chiqishdan oʻtadi, oʻzgarishlar esa jamoaga Telegram dayjestlarida yetadi.",
+          "ru": "Карточки задач проходят проверку, а изменения приходят команде в дайджестах Telegram."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "v9", "label": { "en": "current release", "uz": "joriy reliz", "ru": "текущий релиз" }, "source": "dtwinuz/primus-library #30" }
+    ],
+    "milestones": [
+      { "date": "2026-11-12", "text": { "en": "v9: offsite backup support, project locks, model versions and API tokens.", "uz": "v9: tashqi zaxira imkoniyati, loyihani qulflash, model versiyalari va API tokenlar.", "ru": "v9: поддержка внешнего резервного копирования, блокировка проектов, версии моделей и API-токены." } },
+      { "date": "2026-11-11", "text": { "en": "The Work section adds episode model lists and a task board.", "uz": "Ish boʻlimi epizod modellari roʻyxati va vazifalar doskasini qoʻshdi.", "ru": "Раздел «Работа» добавил списки моделей по эпизодам и доску задач." } },
+      { "date": "2026-11-02", "text": { "en": "v2.0 moves the catalogue to our own server with automated deploys.", "uz": "v2.0 katalogni avtomatik deploy bilan oʻz serverimizga koʻchirdi.", "ru": "v2.0 перенёс каталог на наш сервер с автоматическими деплоями." } }
+    ],
+    "accent": "#cbcadb"
+  },
+
+  "halvet": {
+    "status": "concept",
+    "wrl": 1,
+    "since": "2026-11-09",
+    "repo": "https://github.com/dtwinuz/halvet",
+    "stack": ["Vanilla JavaScript", "three.js", "WebGL shaders", "Lenis", "Caddy"],
+    "summary": {
+      "en": "Halvet is a concept build of a premium website for a company that builds private hammams, saunas and pools. It explains the engineering behind them with interactive blueprints, a 3D plant room and a camera flight through the spaces, and sets the mood with WebGL steam and a mosaic shader. Photos and videos are licensed stock, not completed projects.",
+      "uz": "Halvet — xususiy hammom, sauna va basseyn quradigan kompaniya uchun premium veb-saytning konsepsiyasi. U ularning muhandisligini interaktiv chizmalar, 3D texnik xona va makonlar boʻylab kamera parvozi orqali tushuntiradi, kayfiyatni esa WebGL bugʻi va mozaika shaderi yaratadi. Surat va videolar litsenziyalangan stok materiallar, bajarilgan loyihalar emas.",
+      "ru": "Halvet — концепт премиального сайта для компании, которая строит частные хаммамы, сауны и бассейны. Он объясняет их инженерию через интерактивные чертежи, 3D-техническое помещение и пролёт камеры по пространствам, а настроение создают пар на WebGL и мозаичный шейдер. Фото и видео — лицензионные стоковые материалы, а не реализованные проекты."
+    },
+    "features": [
+      {
+        "title": { "en": "Engineering made visible", "uz": "Koʻrinadigan muhandislik", "ru": "Наглядная инженерия" },
+        "body": {
+          "en": "Interactive blueprints for filtration, heating, electrics, plumbing and steam, and a 3D plant room where colour-coded pipes show the flow.",
+          "uz": "Filtrlash, isitish, elektr, santexnika va bugʻ uchun interaktiv chizmalar hamda quvurlarda rangli oqim koʻrinadigan 3D texnik xona.",
+          "ru": "Интерактивные чертежи фильтрации, отопления, электрики, сантехники и пара и 3D-техническое помещение, где цветные трубы показывают поток."
+        }
+      },
+      {
+        "title": { "en": "Living steam", "uz": "Jonli bugʻ", "ru": "Живой пар" },
+        "body": {
+          "en": "A GPU fluid simulation drifts steam across the hero and follows the cursor, with a lighter 2D fallback.",
+          "uz": "GPU suyuqlik simulyatsiyasi bugʻni bosh ekran boʻylab suzdiradi va kursorga ergashadi; yengilroq 2D varianti ham bor.",
+          "ru": "Симуляция жидкости на GPU гонит пар по первому экрану и следует за курсором; есть облегчённый 2D-вариант."
+        }
+      },
+      {
+        "title": { "en": "Fast despite the 3D", "uz": "3D boʻlsa ham tez", "ru": "Быстрый, несмотря на 3D" },
+        "body": {
+          "en": "Responsive WebP images, self-hosted fonts and lazy-loaded scenes took the mobile Lighthouse score from 55 to 100.",
+          "uz": "Moslashuvchan WebP rasmlar, oʻzimizdagi shriftlar va kechiktirib yuklanadigan sahnalar mobil Lighthouse bahosini 55 dan 100 ga koʻtardi.",
+          "ru": "Адаптивные изображения WebP, собственные шрифты и отложенная загрузка сцен подняли мобильную оценку Lighthouse с 55 до 100."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Arrive in steam", "uz": "Bugʻ ichida kirish", "ru": "Вход в пару" },
+        "body": {
+          "en": "The page opens on a hammam scene with live steam and depth parallax.",
+          "uz": "Sahifa jonli bugʻ va chuqurlik parallaksi bilan hammom sahnasidan ochiladi.",
+          "ru": "Страница открывается сценой хаммама с живым паром и параллаксом глубины."
+        }
+      },
+      {
+        "title": { "en": "Fly through", "uz": "Ichidan uchib oʻtish", "ru": "Пролёт" },
+        "body": {
+          "en": "Scrolling moves a camera through the spaces and under the 3D dome.",
+          "uz": "Aylantirganda kamera makonlar boʻylab va 3D gumbaz ostida harakatlanadi.",
+          "ru": "При прокрутке камера движется по пространствам и под 3D-купол."
+        }
+      },
+      {
+        "title": { "en": "Open the plant room", "uz": "Texnik xonani ochish", "ru": "Техпомещение" },
+        "body": {
+          "en": "Numbered tags in the 3D plant room jump to each step of the system.",
+          "uz": "3D texnik xonadagi raqamli teglar tizimning har bir bosqichiga olib oʻtadi.",
+          "ru": "Пронумерованные метки в 3D-техпомещении переводят к каждому этапу системы."
+        }
+      },
+      {
+        "title": { "en": "Read your language", "uz": "Oʻz tilingizda", "ru": "На своём языке" },
+        "body": {
+          "en": "The site is generated in Uzbek, Russian and English from one source.",
+          "uz": "Sayt bitta manbadan oʻzbek, rus va ingliz tillarida yigʻiladi.",
+          "ru": "Сайт собирается из одного источника на узбекском, русском и английском."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "55 → 100", "label": { "en": "mobile Lighthouse performance score", "uz": "mobil Lighthouse tezlik bahosi", "ru": "мобильная оценка производительности Lighthouse" }, "source": "dtwinuz/halvet f0739fe" },
+      { "value": "3", "label": { "en": "languages: Uzbek, Russian, English", "uz": "til: oʻzbek, rus, ingliz", "ru": "языка: узбекский, русский, английский" }, "source": "dtwinuz/halvet 6e9c2a0" }
+    ],
+    "milestones": [
+      { "date": "2026-11-09", "text": { "en": "v1.8 adds Russian and English and GPU-simulated steam.", "uz": "v1.8 rus va ingliz tillarini hamda GPU simulyatsiyali bugʻni qoʻshdi.", "ru": "v1.8 добавил русский и английский и пар с симуляцией на GPU." } },
+      { "date": "2026-11-09", "text": { "en": "v1.2 adds the WebGL fog and the 3D dome.", "uz": "v1.2 WebGL tuman va 3D gumbazni qoʻshdi.", "ru": "v1.2 добавил туман на WebGL и 3D-купол." } },
+      { "date": "2026-11-09", "text": { "en": "v1.1 raises the mobile Lighthouse score from 55 to 100.", "uz": "v1.1 mobil Lighthouse bahosini 55 dan 100 ga koʻtardi.", "ru": "v1.1 поднял мобильную оценку Lighthouse с 55 до 100." } },
+      { "date": "2026-11-09", "text": { "en": "v1 goes live at halvet.dtwin.uz with engineering blueprints.", "uz": "v1 muhandislik chizmalari bilan halvet.dtwin.uz da ishga tushdi.", "ru": "v1 запущен на halvet.dtwin.uz с инженерными чертежами." } }
+    ],
+    "accent": "#c9a45c"
+  },
+
+  "xnosir": {
+    "status": "live",
+    "wrl": 1,
+    "since": "2026-11-09",
+    "repo": null,
+    "stack": ["Vite", "TypeScript", "three.js", "Custom shaders", "GSAP", "Lenis", "Cesium", "MapLibre"],
+    "summary": {
+      "en": "xnosir.io is the founder’s portfolio, built as a descent through the layers of a software stack. Visitors boot in and move down from design and code to infrastructure, data and projects, with a particle-morph 3D form for each chapter and a working terminal along the way. It is available in Uzbek, Russian and English.",
+      "uz": "xnosir.io — asoschining portfoliosi, dasturiy stek qatlamlari boʻylab pastga tushish sifatida qurilgan. Tashrifchi tizimga kiradi va dizayn hamda koddan infratuzilma, maʼlumot va loyihalargacha tushib boradi; har bir bobning oʻz zarra-morf 3D shakli bor, yoʻl davomida ishlaydigan terminal ham bor. Sayt oʻzbek, rus va ingliz tillarida.",
+      "ru": "xnosir.io — портфолио основателя, построенное как спуск по слоям программного стека. Посетитель «загружается» и опускается от дизайна и кода к инфраструктуре, данным и проектам; у каждой главы своя 3D-форма из морфящихся частиц, а по пути работает терминал. Сайт доступен на узбекском, русском и английском."
+    },
+    "features": [
+      {
+        "title": { "en": "A descent through the stack", "uz": "Stek boʻylab tushish", "ru": "Спуск по стеку" },
+        "body": {
+          "en": "Each layer, from surface to root, has its own particle-morph form drawn with custom shaders.",
+          "uz": "Sirtdan ildizgacha har bir qatlamning maxsus shaderlar bilan chizilgan oʻz zarra-morf shakli bor.",
+          "ru": "У каждого слоя, от поверхности до корня, своя форма из морфящихся частиц на собственных шейдерах."
+        }
+      },
+      {
+        "title": { "en": "A working terminal", "uz": "Ishlaydigan terminal", "ru": "Рабочий терминал" },
+        "body": {
+          "en": "A command line built into the page answers real commands, including a career log.",
+          "uz": "Sahifaga oʻrnatilgan buyruq qatori haqiqiy buyruqlarga, jumladan karyera jurnaliga javob beradi.",
+          "ru": "Встроенная в страницу командная строка отвечает на настоящие команды, включая журнал карьеры."
+        }
+      },
+      {
+        "title": { "en": "Notes and posts", "uz": "Qaydlar va postlar", "ru": "Заметки и посты" },
+        "body": {
+          "en": "A built-in content platform turns Markdown into static pages with search, a feed and a sitemap.",
+          "uz": "Ichki kontent platforma Markdownʼni qidiruv, lenta va sayt xaritasi bilan statik sahifalarga aylantiradi.",
+          "ru": "Встроенная контент-платформа превращает Markdown в статические страницы с поиском, лентой и картой сайта."
+        }
+      }
+    ],
+    "how": [
+      {
+        "title": { "en": "Boot in", "uz": "Tizimga kirish", "ru": "Загрузка" },
+        "body": {
+          "en": "The intro reads the visitor’s browser, GPU and time zone before granting access.",
+          "uz": "Kirish qismi ruxsat berishdan oldin tashrifchining brauzeri, GPU va vaqt mintaqasini oʻqiydi.",
+          "ru": "Перед тем как открыть доступ, вступление считывает браузер, GPU и часовой пояс посетителя."
+        }
+      },
+      {
+        "title": { "en": "Scroll down", "uz": "Pastga aylantirish", "ru": "Прокрутка вниз" },
+        "body": {
+          "en": "Scrolling descends from design and code to infrastructure, data and projects.",
+          "uz": "Aylantirish dizayn va koddan infratuzilma, maʼlumot va loyihalarga tushiradi.",
+          "ru": "Прокрутка ведёт вниз — от дизайна и кода к инфраструктуре, данным и проектам."
+        }
+      },
+      {
+        "title": { "en": "Explore further", "uz": "Chuqurroq koʻrish", "ru": "Дальше" },
+        "body": {
+          "en": "An optional globe fly-to and the terminal open more detail on demand.",
+          "uz": "Ixtiyoriy globus parvozi va terminal soʻralganda batafsil maʼlumot ochadi.",
+          "ru": "Необязательный пролёт над глобусом и терминал открывают подробности по запросу."
+        }
+      }
+    ],
+    "facts": [
+      { "value": "3", "label": { "en": "languages: Uzbek, Russian, English", "uz": "til: oʻzbek, rus, ingliz", "ru": "языка: узбекский, русский, английский" }, "source": "dtwinuz/xnosir-portfolio src/content.ts" }
+    ],
+    "milestones": [
+      { "date": "2026-11-09", "text": { "en": "Content platform with posts, notes, search and a feed.", "uz": "Postlar, qaydlar, qidiruv va lentali kontent platforma qoʻshildi.", "ru": "Добавлена контент-платформа с постами, заметками, поиском и лентой." } },
+      { "date": "2026-11-09", "text": { "en": "Moves to the xnosir.io domain with a full SEO and social preview set.", "uz": "Toʻliq SEO va ijtimoiy tarmoq prevyulari bilan xnosir.io domeniga koʻchdi.", "ru": "Переезд на домен xnosir.io с полным набором SEO и превью для соцсетей." } },
+      { "date": "2026-11-09", "text": { "en": "System Descent v1 goes live.", "uz": "System Descent v1 ishga tushdi.", "ru": "Запущен System Descent v1." } }
+    ],
+    "accent": "#6a9bcc"
+  }
+}

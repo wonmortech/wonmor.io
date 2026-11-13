@@ -1,0 +1,57 @@
+---
+/* Real screenshots in quiet device frames: a browser window with a phone overlapping it.
+   On scroll the pair settles from a slight 3D tilt to flat (CSS only, honours reduced motion). */
+interface Props { title: string; host: string; desktop?: string; mobile?: string; alt: string }
+const { title, host, desktop, mobile, alt } = Astro.props;
+---
+<figure class:list={['show', !mobile && 'show--solo', !desktop && 'show--phone']} data-show>
+  {desktop && (
+    <div class="show__browser">
+      <div class="show__bar" aria-hidden="true"><i></i><i></i><i></i><span class="show__url">{host}</span></div>
+      <img src={desktop} alt={alt} width="1512" height="945" loading="eager" decoding="async" fetchpriority="high" />
+    </div>
+  )}
+  {mobile && (
+    <div class="show__phone">
+      <img src={mobile} alt={desktop ? '' : alt} width="390" height="844" loading="lazy" decoding="async" />
+    </div>
+  )}
+  <figcaption class="sr-only">{title}</figcaption>
+</figure>
+
+<script>
+  const els = document.querySelectorAll<HTMLElement>('[data-show]');
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      els.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * 0.9)));
+        el.style.setProperty('--settle', (1 - p).toFixed(3));
+      });
+    };
+    addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+    update();
+  }
+</script>
+
+<style>
+  .show { --settle: 0; position: relative; margin: 0; perspective: 1600px; padding: 0 0 48px; }
+  .show__browser { position: relative; border-radius: 12px; overflow: hidden; background: #fff;
+    box-shadow: 0 1px 0 rgba(20, 20, 19, .06), 0 30px 60px -20px rgba(20, 20, 19, .28), 0 0 0 1px rgba(20, 20, 19, .08);
+    transform: rotateX(calc(var(--settle) * 14deg)) translateY(calc(var(--settle) * 40px)) scale(calc(1 - var(--settle) * .04));
+    transform-origin: 50% 100%; will-change: transform; }
+  .show__bar { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; background: var(--gray-150); border-bottom: 1px solid var(--gray-250); }
+  .show__bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--gray-300); }
+  .show__url { margin-left: 10px; padding: 3px 12px; border-radius: 6px; background: var(--gray-050); font: 400 12px/1.2 var(--sans); color: var(--gray-600); }
+  .show__browser img { display: block; width: 100%; height: auto; aspect-ratio: 1512 / 945; object-fit: cover; object-position: top; }
+  .show__phone { position: absolute; right: 4%; bottom: 0; width: clamp(110px, 19%, 240px); border-radius: 26px; padding: 7px; background: #141413;
+    box-shadow: 0 30px 50px -15px rgba(20, 20, 19, .45);
+    transform: translateY(calc(var(--settle) * 90px)) rotate(calc(var(--settle) * 4deg)); will-change: transform; }
+  .show__phone img { display: block; width: 100%; height: auto; aspect-ratio: 390 / 844; object-fit: cover; object-position: top; border-radius: 20px; }
+  .show--solo { padding-bottom: 0; }
+  .show--phone { display: grid; justify-items: center; padding-bottom: 0; }
+  .show--phone .show__phone { position: relative; right: auto; width: min(300px, 70%); transform: none; }
+  @media (max-width: 640px) { .show__phone { right: 2%; width: 30%; border-radius: 18px; padding: 5px; } .show__phone img { border-radius: 14px; } .show__bar { height: 26px; } .show__url { display: none; } }
+</style>
