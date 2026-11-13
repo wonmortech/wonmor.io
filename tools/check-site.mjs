@@ -33,9 +33,10 @@ for (const f of files) {
   for (const [re, what] of PRIVATE) if (re.test(s)) errors.push(`${name}: ${what} (${s.match(re)[0]})`);
   if (!f.endsWith('.html')) continue;
 
-  for (const m of s.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+  // Case-insensitive and tolerant of `</script >`, so no spelling of an inline script slips through.
+  for (const m of s.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi)) {
     const attrs = m[1];
-    if (/\bsrc=/.test(attrs) || /type="?application\/ld\+json/.test(attrs)) continue;
+    if (/\bsrc\s*=/i.test(attrs) || /type\s*=\s*["']?application\/ld\+json/i.test(attrs)) continue;
     if (m[2].trim()) errors.push(`${name}: inline <script> blocked by CSP`);
   }
   for (const m of s.matchAll(/\s(?:href|src)="(\/[^"#?]*)/g)) {
