@@ -11,6 +11,7 @@ import Icon from '../Icon.astro';
 import Plate, { type Motif } from '../Plate.astro';
 import FeatureCarousel from '../ui/FeatureCarousel.astro';
 import Select from '../ui/Select.astro';
+import RelationMark from './RelationMark.astro';
 import { formatDate, href, type Locale } from '../../i18n/config';
 import { categories } from '../../i18n/home';
 import { groups, pageByKey } from '../../i18n/pages';
@@ -167,7 +168,7 @@ const band = [
       </div>
     </div>
     <div class="nx__th" aria-hidden="true">
-      <span>{L.title[locale]}</span><span>{L.summary[locale]}</span><span>{L.topic[locale]}</span><span>{L.date[locale]}</span><span></span>
+      <span>{L.title[locale]}</span><span>{L.summary[locale]}</span><span>{L.topic[locale]}</span><span>{L.date[locale]}</span><span class="nx__th-mark"><RelationMark /></span>
     </div>
     <ul class="nx__list" role="list" aria-labelledby="nx-all" data-nt-body>
       {news.map((n, i) => (
@@ -484,6 +485,7 @@ const band = [
   @media (min-width: 900px) {
     .nx__th, .nx__row { grid-template-columns: minmax(0, 3.2fr) minmax(0, 4fr) minmax(0, 1.4fr) minmax(0, 1.4fr) 40px; column-gap: 24px; }
     .nx__th { display: grid; padding-block: 10px; font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--theme-foreground-tertiary); }
+    .nx__th-mark { display: flex; justify-content: center; align-items: center; }
     .nx__row { grid-template-areas: 't d c dt b'; padding-block: 16px; }
     /* one line per cell; clipped cells fade at the edge and pan on hover */
     .nx__t, .nx__d { display: block; overflow: hidden; white-space: nowrap; }

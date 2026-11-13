@@ -1,0 +1,51 @@
+---
+/*
+Teardown #16: a 24x12 mark in the last column of the news table header,
+next to the row expander it hints at. Four nodes walk through three wonmor
+layouts (chain, diamond, W) every 18 s while the line between them redraws.
+CSS only. Browsers without CSS `d` (Safari) and reduced motion get the
+static diamond.
+*/
+---
+<svg class="rmark" viewBox="0 0 24 12" width="24" height="12" aria-hidden="true" focusable="false">
+  <path class="rmark__l" d="M6 6L12 2L18 6L12 10Z" />
+  <circle class="rmark__n rmark__n1" r="1.5" cx="6" cy="6" />
+  <circle class="rmark__n rmark__n2" r="1.5" cx="12" cy="2" />
+  <circle class="rmark__n rmark__n3" r="1.5" cx="18" cy="6" />
+  <circle class="rmark__n rmark__n4" r="1.5" cx="12" cy="10" />
+</svg>
+
+<style>
+  .rmark { display: block; overflow: visible; color: var(--theme-foreground-tertiary); }
+  .rmark__l { fill: none; stroke: currentColor; stroke-width: .75; stroke-linejoin: round; }
+  .rmark__n { fill: currentColor; }
+
+  @supports (d: path('M0 0')) {
+    @media (prefers-reduced-motion: no-preference) {
+      .rmark__n { cx: 0; cy: 0; }
+      .rmark__n1 { animation: rmark-n1 18s cubic-bezier(.65, 0, .35, 1) infinite; }
+      .rmark__n2 { animation: rmark-n2 18s cubic-bezier(.65, 0, .35, 1) infinite; }
+      .rmark__n3 { animation: rmark-n3 18s cubic-bezier(.65, 0, .35, 1) infinite; }
+      .rmark__n4 { animation: rmark-n4 18s cubic-bezier(.65, 0, .35, 1) infinite; }
+      .rmark__l { stroke-dasharray: 40; animation: rmark-l 18s cubic-bezier(.65, 0, .35, 1) infinite; }
+    }
+  }
+
+  /* stages: chain 0-28%, diamond 33-61%, W 66-94% */
+  @keyframes rmark-n1 { 0%, 28% { transform: translate(3px, 6px); } 33%, 61% { transform: translate(6px, 6px); } 66%, 94% { transform: translate(3px, 3px); } 100% { transform: translate(3px, 6px); } }
+  @keyframes rmark-n2 { 0%, 28% { transform: translate(9px, 6px); } 33%, 61% { transform: translate(12px, 2px); } 66%, 94% { transform: translate(9px, 10px); } 100% { transform: translate(9px, 6px); } }
+  @keyframes rmark-n3 { 0%, 28% { transform: translate(15px, 6px); } 33%, 61% { transform: translate(18px, 6px); } 66%, 94% { transform: translate(15px, 3px); } 100% { transform: translate(15px, 6px); } }
+  @keyframes rmark-n4 { 0%, 28% { transform: translate(21px, 6px); } 33%, 61% { transform: translate(12px, 10px); } 66%, 94% { transform: translate(21px, 10px); } 100% { transform: translate(21px, 6px); } }
+  /* the line hides while the nodes move, then draws in along the new layout */
+  @keyframes rmark-l {
+    0% { d: path('M3 6L9 6L15 6L21 6L21 6'); stroke-dashoffset: 40; }
+    6%, 28% { d: path('M3 6L9 6L15 6L21 6L21 6'); stroke-dashoffset: 0; }
+    30% { d: path('M3 6L9 6L15 6L21 6L21 6'); stroke-dashoffset: 40; }
+    33% { d: path('M6 6L12 2L18 6L12 10L6 6'); stroke-dashoffset: 40; }
+    39%, 61% { d: path('M6 6L12 2L18 6L12 10L6 6'); stroke-dashoffset: 0; }
+    63% { d: path('M6 6L12 2L18 6L12 10L6 6'); stroke-dashoffset: 40; }
+    66% { d: path('M3 3L9 10L15 3L21 10L21 10'); stroke-dashoffset: 40; }
+    72%, 94% { d: path('M3 3L9 10L15 3L21 10L21 10'); stroke-dashoffset: 0; }
+    96%, 100% { d: path('M3 6L9 6L15 6L21 6L21 6'); stroke-dashoffset: 40; }
+  }
+</style>
