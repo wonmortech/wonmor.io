@@ -141,10 +141,10 @@ a { color: inherit; }
 /* Light focus ring inside fixed-dark panels in both themes. */
 :is(.ri__feat, .ra__rep, .ab__cta, .cst) { --theme-focus-ring: #8fb4ec; }
 /* Shiki code blocks: dual themes from astro.config (light default, dark via CSS variables). */
-:root:is([data-theme="dark"], [data-theme="ink"], [data-theme="cobalt"]) :is(.astro-code, .astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
+:root:is([data-theme="dark"], [data-theme="ink"], [data-theme="cobalt"], [data-theme="glass"]) :is(.astro-code, .astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) :is(.astro-code, .astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
 }
 /* github-dark comments (#6A737D on #24292e) are 3:1; lift them to 4.5:1 in every dark theme. */
-:root:is([data-theme="dark"], [data-theme="ink"], [data-theme="cobalt"]) .astro-code span[style*="--shiki-dark:#6A737D"] { color: #959da5 !important; }
+:root:is([data-theme="dark"], [data-theme="ink"], [data-theme="cobalt"], [data-theme="glass"]) .astro-code span[style*="--shiki-dark:#6A737D"] { color: #959da5 !important; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme]) .astro-code span[style*="--shiki-dark:#6A737D"] { color: #959da5 !important; } }

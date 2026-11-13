@@ -2,6 +2,7 @@
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/prose.css';
+import '../styles/fx.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MenuOverlay from '../components/MenuOverlay.astro';
@@ -82,6 +83,7 @@ const jsonLd = [
     <script is:inline src={asset('/js/boot.js')}></script>
   </head>
   <body>
+    <div class="fx" aria-hidden="true"><div class="fx__aurora"></div><div class="fx__dots"></div><div class="fx__lit" data-fx-lit><div class="fx__lit-dots"></div></div></div>
     <a class="skip-link" href="#main">{ui.skip[locale]}</a>
     <Header locale={locale} />
     <MenuOverlay locale={locale} featured={featured} />
