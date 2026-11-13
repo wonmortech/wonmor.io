@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT, COLORS as K, MARK, lockup, svgPath } from '../lib/geo.mjs';
+const MWF = +MARK.W.toFixed(2), MHF = +MARK.H.toFixed(2);
 
 const OUT = path.join(ROOT, 'out', 'figma', 'wonmor_Figma');
 fs.rmSync(OUT, { recursive: true, force: true });
@@ -26,7 +27,7 @@ const tokens = {
       body: { value: { fontFamily: 'Plus Jakarta Sans', fontWeight: '500', fontSize: '16', lineHeight: '150%' }, type: 'typography' },
     },
     mark: {
-      ratio: { value: '164:100', type: 'other', description: 'W mark width:height' },
+      ratio: { value: `${MWF}:${MHF}`, type: 'other', description: 'W mark width:height' },
       'lockup-gap': { value: '0.42 x mark height', type: 'other' },
       'clear-space': { value: '0.5 x mark height on every side', type: 'other' },
       'min-size': { value: '16px mark height (screen), 6mm (print)', type: 'sizing' },
@@ -53,15 +54,15 @@ const text = (x, y, s, t, fill = K.grey, w = 500) => `<text x="${x}" y="${y}" fo
 S.push(`<rect width="${W}" height="2400" fill="${K.paper}"/>`);
 S.push(text(120, 150, 64, 'wonmor', K.ink, 700), text(120, 200, 24, 'Brand kit. One diamond. One W.'));
 S.push(`<rect x="120" y="280" width="1680" height="720" rx="24" fill="${K.blue}"/>`);
-S.push(g(960 - 82 * 3.4, 640 - 50 * 3.4, 3.4, markD, K.white));
+S.push(g(960 - MWF / 2 * 3.4, 640 - MHF / 2 * 3.4, 3.4, markD, K.white));
 S.push(text(150, 960, 20, 'Mark, white on blue', K.white));
 S.push(`<rect x="120" y="1060" width="820" height="560" rx="24" fill="${K.ink}"/>`);
-const cs = 3.2, cx0 = 530 - 82 * cs, cy0 = 1340 - 50 * cs;
+const cs = 3.2 * 100 / MHF, cx0 = 530 - MWF / 2 * cs, cy0 = 1340 - MHF / 2 * cs;
 S.push(g(cx0, cy0, cs, markD, 'none', `stroke="${K.blue}" stroke-width="${(1.5 / cs).toFixed(3)}"`));
-[[0, 0], [164, 0], [0, 100], [164, 100]].forEach(([x, y]) => S.push(`<rect x="${cx0 + x * cs - 4}" y="${cy0 + y * cs - 4}" width="8" height="8" fill="${K.white}" stroke="${K.blue}"/>`));
-S.push(`<line x1="${cx0 - 30}" y1="${cy0}" x2="${cx0 - 30}" y2="${cy0 + 100 * cs}" stroke="${K.measure}"/>`, text(cx0 - 90, cy0 + 50 * cs, 18, '100', K.measure));
-S.push(`<line x1="${cx0}" y1="${cy0 + 100 * cs + 30}" x2="${cx0 + 164 * cs}" y2="${cy0 + 100 * cs + 30}" stroke="${K.measure}"/>`, text(cx0 + 82 * cs - 18, cy0 + 100 * cs + 60, 18, '164', K.measure));
-S.push(text(150, 1590, 20, 'Construction 164 : 100', '#9AA3B5'));
+[[0, 0], [MWF, 0], [0, MHF], [MWF, MHF]].forEach(([x, y]) => S.push(`<rect x="${cx0 + x * cs - 4}" y="${cy0 + y * cs - 4}" width="8" height="8" fill="${K.white}" stroke="${K.blue}"/>`));
+S.push(`<line x1="${cx0 - 30}" y1="${cy0}" x2="${cx0 - 30}" y2="${cy0 + MHF * cs}" stroke="${K.measure}"/>`, text(cx0 - 90, cy0 + MHF / 2 * cs, 18, String(MHF), K.measure));
+S.push(`<line x1="${cx0}" y1="${cy0 + MHF * cs + 30}" x2="${cx0 + MWF * cs}" y2="${cy0 + MHF * cs + 30}" stroke="${K.measure}"/>`, text(cx0 + MWF / 2 * cs - 18, cy0 + MHF * cs + 60, 18, String(MWF), K.measure));
+S.push(text(150, 1590, 20, `Construction ${MWF} : ${MHF}`, '#9AA3B5'));
 const ls = 640 / LK.width;
 const ly = (top) => top + 135 - (LK.top + (-LK.top) / 2) * ls; // vertically centre the lockup in a 270px card
 S.push(`<rect x="980" y="1060" width="820" height="270" rx="24" fill="${K.white}"/>`);

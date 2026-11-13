@@ -5,6 +5,7 @@ const fs = require('fs');
 const { chromium } = require(process.env.PW_CORE);
 
 const ROOT = path.resolve(__dirname, '..');
+const GEO = JSON.parse(fs.readFileSync(path.join(ROOT, 'out', 'data', 'geo.json'), 'utf8'));
 const OUT = path.join(ROOT, 'out', 'textures');
 fs.mkdirSync(OUT, { recursive: true });
 const url = (p) => 'file:///' + p.replace(/\\/g, '/');
@@ -20,7 +21,7 @@ const url = (p) => 'file:///' + p.replace(/\\/g, '/');
   fs.writeFileSync(path.join(OUT, 'ig-screen.json'), JSON.stringify(ava));
 
   for (const [svg, w] of [['mark-w_blue', 2048], ['mark-w_white', 2048], ['mark-w_ink', 2048]]) {
-    const q = await b.newPage({ viewport: { width: w, height: Math.round(w * 100 / 164) } });
+    const q = await b.newPage({ viewport: { width: w, height: Math.round(w * GEO.mark.h / GEO.mark.w) } });
     const src = fs.readFileSync(path.join(ROOT, 'out', 'vectors', svg + '.svg'), 'utf8').replace(/ width="[^"]+" height="[^"]+"/, ' width="100%" height="100%" preserveAspectRatio="xMidYMid meet"');
     await q.setContent(`<html><body style="margin:0;background:transparent;width:100vw;height:100vh;overflow:hidden">${src}</body></html>`);
     await q.waitForTimeout(100);
