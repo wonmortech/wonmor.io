@@ -49,7 +49,7 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
       <div class="hdr__end-nav">
         {navEnd.map((m) => <NavDropdown m={m} locale={locale} active={isActive(m)} currentHref={Astro.url.pathname} align="end" />)}
         <div class="nav-dd hdr__lang" data-dd>
-          <button class="btn btn--tertiary btn--small btn--pill btn--trailing nav-dd__trigger" type="button" aria-expanded="false" aria-controls="dd-lang" aria-label={`${ui.language[locale]}: ${localeNames[locale]}`}>
+          <button class="btn btn--tertiary btn--small btn--pill btn--trailing nav-dd__trigger" type="button" aria-expanded="false" aria-controls="dd-lang" aria-label={`${localeShort[locale]}, ${ui.language[locale]}: ${localeNames[locale]}`}>
             <Icon name="globe" />{localeShort[locale]}<Icon name="chevron-down" class="nav-dd__chev" />
           </button>
           <div class="nav-dd__popup nav-dd__popup--end" id="dd-lang" hidden>
