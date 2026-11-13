@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 import remarkSteps from './tools/remark-steps.mjs';
 import rehypeTableLabels from './tools/rehype-table-labels.mjs';
+import rehypeFigures from './tools/rehype-figures.mjs';
 
 // Static build straight into ./site — the folder deploy/deploy.sh ships (build output is committed).
 export default defineConfig({
@@ -13,8 +14,9 @@ export default defineConfig({
   build: { format: 'directory', inlineStylesheets: 'auto', assets: 'assets' },
   compressHTML: true,
   markdown: {
-    // ```steps blocks become flow diagrams (tools/remark-steps.mjs); wide tables get mobile card labels (tools/rehype-table-labels.mjs)
-    processor: unified({ remarkPlugins: [remarkSteps], rehypePlugins: [rehypeTableLabels] }),
+    // ```steps blocks become flow diagrams (tools/remark-steps.mjs); wide tables get mobile card labels (tools/rehype-table-labels.mjs);
+    // in posts, images, diagrams and tables become numbered figures (tools/rehype-figures.mjs, runs after the table labels)
+    processor: unified({ remarkPlugins: [remarkSteps], rehypePlugins: [rehypeTableLabels, rehypeFigures] }),
     shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: 'light', wrap: false },
   },
   integrations: [
