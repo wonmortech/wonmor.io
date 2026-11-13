@@ -18,7 +18,7 @@ Wonmor is an independent, self-funded studio from Uzbekistan. It builds and supp
 
 - **News** — dated posts like this one. Every post lists its sources, and anything that has not happened yet is labelled as planned.
 - **Products** — one page per product, with links to the live service and, where the code is public, the repository.
-- **Research and engineering** — longer write-ups of what we learn while building. Some of these sections are still being written, and they say so.
+- **Research and engineering** — longer write-ups of what we learn while building.
 
 The site is static, built with Astro, and available in English, Uzbek and Russian. It is deployed to the same edge as our other sites, using the release-and-switch flow that keeps downloads running through a deploy.
 

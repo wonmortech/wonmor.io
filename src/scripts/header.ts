@@ -31,11 +31,12 @@ if (logo && !reduce && scrollY < FOLD_AT) {
 const themeBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
 const sysDark = matchMedia('(prefers-color-scheme: dark)');
 const isDark = () => (doc.dataset.theme ? doc.dataset.theme === 'dark' : sysDark.matches);
-const themeMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+const themeMetas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];
 function syncTheme() {
   const dark = isDark();
   themeBtn?.setAttribute('aria-pressed', String(dark));
-  if (themeMeta) themeMeta.content = dark ? '#1a1918' : '#faf9f5';
+  // A saved choice overrides the system: both media-specific metas get the chosen colour.
+  if (doc.dataset.theme) themeMetas.forEach((m) => { m.content = dark ? '#1a1918' : '#faf9f5'; });
 }
 if (themeBtn) {
   themeBtn.hidden = false;

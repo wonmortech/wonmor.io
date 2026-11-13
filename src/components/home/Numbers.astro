@@ -10,7 +10,7 @@ const fmt = new Intl.NumberFormat(locale === 'uz' ? 'uz-Latn' : locale);
   <div class="rule-row"><h2 class="t-caption-bold" id="nums-h">{numbersTitle[locale]}</h2><span class="t-caption fg-3">{numbersAsOf[locale]}</span></div>
   <dl class="nums__grid">
     {numbers.map((n) => (
-      <div class="nums__item" title={n.source}>
+      <div class="nums__item" title={typeof n.source === 'string' ? n.source : n.source[locale]}>
         <dt class="t-caption fg-2">{n.label[locale]}</dt>
         <dd class="nums__v" data-to={n.value}>{fmt.format(n.value)}</dd>
       </div>

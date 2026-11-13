@@ -32,7 +32,7 @@ export const home = {
     uz: 'Namozga tayangan hayot rejalashtirgichi, uch operatsion tizim uchun oʻzbekcha klaviatura hamda ularni ishlatib turadigan gateway, tunnel va vositalar.',
     ru: 'Планировщик жизни вокруг намаза, узбекская клавиатура для трёх операционных систем и шлюзы, туннели и инструменты, на которых всё это держится.',
   },
-  heroCta1: { en: 'Explore dtwin', uz: 'dtwin’ni ochish', ru: 'Открыть dtwin' },
+  heroCta1: { en: 'Explore dtwin', uz: 'dtwinʼni ochish', ru: 'Открыть dtwin' },
   heroCta2: { en: 'All products', uz: 'Barcha mahsulotlar', ru: 'Все продукты' },
   filmLabel: { en: 'Wonmor brand film: one diamond becomes a V, the V splits and becomes a W.', uz: 'Wonmor brend filmi: bitta olmos V ga aylanadi, V ikkiga boʻlinib W boʻladi.', ru: 'Брендовый фильм Wonmor: бриллиант становится V, V раздваивается и становится W.' },
   learnMore: [

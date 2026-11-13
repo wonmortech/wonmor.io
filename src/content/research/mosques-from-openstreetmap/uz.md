@@ -86,7 +86,7 @@ Oʻn yetti kunda toʻrtta yangi masjid bu shunchaki xaritachilarning ishi, va ro
 
 ## U bilan birga kelgan hisob oʻzgarishi
 
-Vaqtlarni tekshirayotganda yangi foydalanuvchilar uchun standart hisob usulini Shimoliy Amerika konvensiyasidan (15° shafaq burchagi) islom.uz usuliga (15.5°) almashtirdik. Toshkentda islom.uz jadvaliga solishtirilganda eski standart shomni ikki-uch daqiqa erta, bomdodni esa ikki-uch daqiqa kech qoʻyardi, bu iftor va saharlik uchun aynan xato tomonga adashish. Migratsiya Toshkent va Samarqand vaqt zonalaridagi eski standartda qolgan foydalanuvchilarni koʻchirdi.
+Vaqtlarni tekshirayotganda yangi foydalanuvchilar uchun standart hisob usulini Shimoliy Amerika konvensiyasidan (15° shafaq burchagi) islom.uz usuliga (15,5°) almashtirdik. Toshkentda islom.uz jadvaliga solishtirilganda eski standart shomni ikki-uch daqiqa erta, bomdodni esa ikki-uch daqiqa kech qoʻyardi, bu iftor va saharlik uchun aynan xato tomonga adashish. Migratsiya Toshkent va Samarqand vaqt zonalaridagi eski standartda qolgan foydalanuvchilarni koʻchirdi.
 
 ## Cheklovlar
 

@@ -24,7 +24,7 @@ const { locale, title, description, date, category, links, related } = Astro.pro
         <div><dt>{ui.published[locale]}</dt><dd>{formatDate(date, locale)}</dd></div>
         <div><dt>{ui.category[locale]}</dt><dd>{categories[category][locale]}</dd></div>
         {links.map((l) => (
-          <div><dt>{l.label}</dt><dd><a class="link-underline" href={l.href} target="_blank" rel="noopener">{l.text}</a>{' '}<Icon name={l.kind === 'download' ? 'download' : 'arrow-up-right'} size={12} /></dd></div>
+          <div><dt>{l.label}</dt><dd><a class="link-underline" href={l.href} target={l.kind === 'internal' ? undefined : '_blank'} rel={l.kind === 'internal' ? undefined : 'noopener'}>{l.text}{l.kind !== 'internal' && <span class="sr-only"> {ui.external[locale]}</span>}</a>{' '}<Icon name={l.kind === 'download' ? 'download' : l.kind === 'internal' ? 'arrow-right' : 'arrow-up-right'} size={12} /></dd></div>
         ))}
       </dl>
     </aside>

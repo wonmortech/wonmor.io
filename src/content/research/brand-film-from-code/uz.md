@@ -1,6 +1,6 @@
 ---
 title: "Koddan brend film yasash"
-description: "19.4 soniyalik wonmor brend filmi bitta timeline faylidan qanday yaratilishi: MP4 uchun canvas renderer, generatsiya qilingan After Effects loyihasi, materiallar uchun Blender, sintez qilingan ovoz va veb uchun kodlash."
+description: "19,4 soniyalik wonmor brend filmi bitta timeline faylidan qanday yaratilishi: MP4 uchun canvas renderer, generatsiya qilingan After Effects loyihasi, materiallar uchun Blender, sintez qilingan ovoz va veb uchun kodlash."
 date: 2026-11-13
 kind: engineering
 area: interfaces
@@ -17,7 +17,7 @@ reproduce:
     - "ffprobe -v error -show_entries format=duration,size:stream=codec_name,width,height,r_frame_rate -of compact https://wonmor.io/film/wonmor_16x9.mp4"
 ---
 
-wonmor.ioʼning bosh qismi 19.4 soniyalik brend film. Bitta olmos kesiladi, uning pastki qismi V ga aylanadi, V esa ikkilanib belgining Wʼsiga aylanadi, keyin wordmark chiziladi. Jarayonda video muharriri yoʻq. Film har bir qatlam va keyframeʼni tasvirlaydigan bitta JavaScript faylidan yaratiladi, oʻsha fayl esa tahrirlanadigan After Effects loyihasini ham chiqaradi. Bu maqola qanday ishlashi va nega shunday qurganimiz haqida. Birinchi versiya 2026-yil 13-noyabrda chiqdi.
+wonmor.ioʼning bosh qismi 19,4 soniyalik brend film. Bitta olmos kesiladi, uning pastki qismi V ga aylanadi, V esa ikkilanib belgining Wʼsiga aylanadi, keyin wordmark chiziladi. Jarayonda video muharriri yoʻq. Film har bir qatlam va keyframeʼni tasvirlaydigan bitta JavaScript faylidan yaratiladi, oʻsha fayl esa tahrirlanadigan After Effects loyihasini ham chiqaradi. Bu maqola qanday ishlashi va nega shunday qurganimiz haqida. Birinchi versiya 2026-yil 13-noyabrda chiqdi.
 
 ```steps
 Timeline :: Bitta fayl har bir kadrni qatlamlar, keyframeʼlar, easingʼlar, ranglar va kirish-chiqish vaqtlari bilan tasvirlaydi.
@@ -68,7 +68,7 @@ for (let s = 0; s < samples; s++) {
 }
 ```
 
-Toʻrtta namuna bilan filmning 582 kadri (30 fpsʼda 19.4 s) 2 328 toʻliq chizishni anglatadi. Bu sekin, lekin oflayn render uchun maqbul.
+Toʻrtta namuna bilan filmning 582 kadri (30 fpsʼda 19,4 s) 2 328 toʻliq chizishni anglatadi. Bu sekin, lekin oflayn render uchun maqbul.
 
 Bu yozib qoʻyishga arziydigan bitta xato tugʻdirdi. Agar kesish ikki kadr boshi orasiga tushsa, kadrning baʼzi sub-namunalari chiqib ketayotgan kadrdan, baʼzilari kirib kelayotganidan olinadi va oʻrtacha ikki bogʻliq boʻlmagan tasvirni arvohli kadrga aralashtiradi. Tuzatish rendererʼda emas, timelineʼda. JSON yozilishidan oldin har qatlamning kirish va chiqish vaqtlari hamda har keyframe kadr boshiga yaxlitlanadi:
 
@@ -86,9 +86,9 @@ Ovoz ham namunalarsiz sintez qilinadi. NumPyʼli Python skripti timelineʼga mos
 
 ## Veb uchun kodlash
 
-Yakunlovchi skript ovozni birlashtiradi va uch narsa chiqaradi: 320 kbps AACʼli yuqori sifatli master, har tomonlar nisbati uchun veb fayllar va 11.5-soniyada olingan poster kadr. Veb fayl x264, CRF 24, `-tune film`, adaptiv kvantlash rejimi 3, Lanczos masshtablash va `+faststart` bilan kodlanadi, shunda ijro fayl toʻliq yuklanmasdan boshlanadi. Ovoz 128 kbpsʼda saqlanadi: ishga tushganda sahifa filmni standart holatda ovozsiz oʻynatardi, ovoz tugmasi va pauza tugmasi bilan.
+Yakunlovchi skript ovozni birlashtiradi va uch narsa chiqaradi: 320 kbps AACʼli yuqori sifatli master, har tomonlar nisbati uchun veb fayllar va 11,5-soniyada olingan poster kadr. Veb fayl x264, CRF 24, `-tune film`, adaptiv kvantlash rejimi 3, Lanczos masshtablash va `+faststart` bilan kodlanadi, shunda ijro fayl toʻliq yuklanmasdan boshlanadi. Ovoz 128 kbpsʼda saqlanadi: ishga tushganda sahifa filmni standart holatda ovozsiz oʻynatardi, ovoz tugmasi va pauza tugmasi bilan.
 
-Bugun eʼlon qilingan 16:9 fayl 2 656 349 bayt: 1920×1080, 30 fps, AACʼli H.264, aniq 19.4 soniya.
+Bugun eʼlon qilingan 16:9 fayl 2 656 349 bayt: 1920×1080, 30 fps, AACʼli H.264, aniq 19,4 soniya.
 
 ## Cheklovlar
 

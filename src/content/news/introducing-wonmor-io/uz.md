@@ -18,7 +18,7 @@ Wonmor — Oʻzbekistondagi mustaqil, oʻz mablagʻi hisobidan ishlaydigan studi
 
 - **Yangiliklar** — mana shu kabi sanali postlar. Har bir postda manbalar koʻrsatiladi, hali roʻy bermagan narsa esa “reja” deb belgilanadi.
 - **Mahsulotlar** — har bir mahsulot uchun alohida sahifa: jonli xizmatga havola va kod ochiq boʻlsa, repozitoriy.
-- **Tadqiqot va muhandislik** — qurish jarayonida oʻrganganlarimiz haqida batafsil yozuvlar. Bu boʻlimlarning bir qismi hali yozilmoqda va bu ochiq aytilgan.
+- **Tadqiqot va muhandislik** — qurish jarayonida oʻrganganlarimiz haqida batafsil yozuvlar.
 
 Sayt statik, Astroʼda yigʻilgan va ingliz, oʻzbek, rus tillarida ochiladi. U boshqa saytlarimiz turgan edgeʼga, deploy paytida ham yuklab olishlar uzilmaydigan “reliz va almashtirish” usuli bilan chiqariladi.
 

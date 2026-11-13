@@ -1,11 +1,11 @@
 import type { T } from '../i18n/config';
 
 /** Home "numbers" band. Counted from the GitHub API and the product list on 2026-11-13. */
-export const numbers: { value: number; suffix?: string; label: T; source: string }[] = [
+export const numbers: { value: number; suffix?: string; label: T; source: string | T }[] = [
   { value: 15, label: { en: 'live products', uz: 'jonli mahsulot', ru: 'работающих продуктов' }, source: 'wonmor.io/products' },
   { value: 26, label: { en: 'repositories', uz: 'repozitoriy', ru: 'репозиториев' }, source: 'github.com/dtwinuz' },
-  { value: 635, label: { en: 'merged pull requests', uz: 'birlashtirilgan pull request', ru: 'принятых pull request' }, source: 'GitHub search: org:dtwinuz is:pr is:merged' },
-  { value: 21, label: { en: 'releases', uz: 'reliz', ru: 'релиз' }, source: 'GitHub releases, all dtwinuz repositories' },
+  { value: 635, label: { en: 'merged pull requests', uz: 'birlashtirilgan pull request', ru: 'принятых pull request' }, source: { en: 'Public GitHub search: org:dtwinuz is:pr is:merged', uz: 'GitHubʼda ochiq qidiruv: org:dtwinuz is:pr is:merged', ru: 'Открытый поиск GitHub: org:dtwinuz is:pr is:merged' } },
+  { value: 21, label: { en: 'releases', uz: 'reliz', ru: 'релиз' }, source: { en: 'GitHub releases, all dtwinuz repositories', uz: 'GitHub relizlari, barcha dtwinuz repozitoriylari', ru: 'Релизы GitHub, все репозитории dtwinuz' } },
   { value: 3, label: { en: 'desktop systems for bitg', uz: 'bitg uchun kompyuter tizimi', ru: 'настольные системы для bitg' }, source: 'github.com/dtwinuz/bitg/releases' },
 ];
 export const numbersAsOf: T = { en: 'As of November 13, 2026. Counted from GitHub.', uz: '2026-yil 13-noyabr holatiga. GitHubʼdan sanalgan.', ru: 'На 13 ноября 2026 года. Подсчитано по GitHub.' };
@@ -20,7 +20,7 @@ export const about = {
     { title: { en: 'Engineered like infrastructure', uz: 'Infratuzilmadek puxta', ru: 'Надёжно, как инфраструктура' },
       body: { en: 'Small products still get release levels, backups, monitoring and rollbacks. bitg ships signed, attested and reproducible packages.', uz: 'Kichik mahsulotlar ham reliz darajasi, zaxira nusxa, monitoring va orqaga qaytarish imkoniga ega. bitg imzolangan, attestatsiyalangan va qayta yigʻiladigan paketlar bilan chiqadi.', ru: 'Даже у небольших продуктов есть уровни релиза, резервные копии, мониторинг и откат. bitg выходит подписанными, аттестованными и воспроизводимыми пакетами.' } },
     { title: { en: 'Built in the open', uz: 'Ochiq holda quriladi', ru: 'Открыто' },
-      body: { en: 'Decisions live in issues, pull requests and ADRs. Eight repositories are public today, and we publish what we learn.', uz: 'Qarorlar issue, pull request va ADRʼlarda saqlanadi. Bugun sakkizta repozitoriy ochiq, oʻrganganlarimizni eʼlon qilamiz.', ru: 'Решения живут в issues, pull requests и ADR. Сегодня открыты восемь репозиториев, и мы публикуем то, чему научились.' } },
+      body: { en: 'Decisions live in issues, pull requests and ADRs. Fifteen repositories are public today, eight on dtwinuz and seven on wonmortech, and we publish what we learn.', uz: 'Qarorlar issue, pull request va ADRʼlarda saqlanadi. Bugun oʻn beshta repozitoriy ochiq — sakkiztasi dtwinuz va yettitasi wonmortechʼda — oʻrganganlarimizni eʼlon qilamiz.', ru: 'Решения живут в issues, pull requests и ADR. Сегодня открыты пятнадцать репозиториев — восемь в dtwinuz и семь в wonmortech, — и мы публикуем то, чему научились.' } },
     { title: { en: 'Independent', uz: 'Mustaqil', ru: 'Независимо' },
       body: { en: 'Wonmor is a self-funded brand, not a company with investors. It pays for servers, domains, CI and design time so the work can continue.', uz: 'Wonmor — oʻz mablagʻi hisobiga ishlaydigan brend, investorli kompaniya emas. Ish davom etishi uchun serverlar, domenlar, CI va dizayn vaqtiga pul toʻlaydi.', ru: 'Wonmor — бренд на собственные средства, а не компания с инвесторами. Он оплачивает серверы, домены, CI и время на дизайн, чтобы работа продолжалась.' } },
   ],
@@ -54,7 +54,7 @@ export const founder = {
     { period: '2026 —', org: 'dtwin · Wonmor', role: { en: 'Founder and engineer', uz: 'Asoschi va muhandis', ru: 'Основатель и инженер' },
       text: { en: 'A product ecosystem built and operated end to end: a prayer-anchored life planner, an Uzbek keyboard, gateways, tunnels and tools.', uz: 'Boshidan oxirigacha qurilgan va yuritiladigan mahsulotlar ekotizimi: namozga tayangan hayot rejalashtirgichi, oʻzbekcha klaviatura, gateway, tunnel va vositalar.', ru: 'Экосистема продуктов, построенная и поддерживаемая от начала до конца: планировщик жизни вокруг намаза, узбекская клавиатура, шлюзы, туннели и инструменты.' } },
     { period: '2026 —', org: 'Faktura.uz', role: { en: 'Full-stack software engineer and DevOps', uz: 'Full-stack dasturiy muhandis va DevOps', ru: 'Full-stack инженер и DevOps' },
-      text: { en: 'Engineering on a national e-invoicing and document-flow platform integrated with the tax authority’s roaming network and E-IMZO digital signatures.', uz: 'Soliq organining rouming tarmogʻi va E-IMZO elektron imzosi bilan bogʻlangan milliy elektron hisob-faktura va hujjat aylanishi platformasida muhandislik.', ru: 'Разработка национальной платформы электронных счетов-фактур и документооборота, интегрированной с роуминговой сетью налоговой и ЭЦП E-IMZO.' } },
+      text: { en: 'Full-stack and DevOps engineering on a national e-invoicing platform.', uz: 'Milliy elektron hisob-faktura platformasida full-stack va DevOps muhandislik.', ru: 'Full-stack и DevOps-разработка национальной платформы электронных счетов-фактур.' } },
     { period: '2022 — 2026', org: 'Fincube', role: { en: 'Full-stack .NET developer', uz: 'Full-stack .NET dasturchi', ru: 'Full-stack .NET-разработчик' },
       text: { en: 'Client software for an insurance company and a bank of the APEX group: workflow automation, integrations and internal systems.', uz: 'APEX guruhidagi sugʻurta kompaniyasi va bank uchun dasturlar: ish jarayonlarini avtomatlashtirish, integratsiyalar va ichki tizimlar.', ru: 'Программы для страховой компании и банка группы APEX: автоматизация процессов, интеграции и внутренние системы.' } },
     { period: '2022', org: 'UZCARD', role: { en: '.NET developer', uz: '.NET dasturchi', ru: '.NET-разработчик' },

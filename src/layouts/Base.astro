@@ -62,7 +62,8 @@ const jsonLd = [
     {locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={new URL(href(l, here), site).toString()} />)}
     <link rel="alternate" hreflang="x-default" href={new URL(href('en', here), site).toString()} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#faf9f5" />
+    <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1918" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href={asset('/favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={asset('/apple-touch-icon.png')} />
     <link rel="manifest" href={asset('/site.webmanifest')} />

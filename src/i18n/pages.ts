@@ -30,7 +30,7 @@ const C = {
   preview: { en: 'Preview', uz: 'Sinov', ru: 'Превью' },
   prototype: { en: 'Prototype', uz: 'Prototip', ru: 'Прототип' },
   experiment: { en: 'Experiment', uz: 'Tajriba', ru: 'Эксперимент' },
-  production: { en: 'In production', uz: 'Ishlab turibdi', ru: 'В работе' },
+  production: { en: 'In daily use', uz: 'Har kuni ishlatiladi', ru: 'Используется каждый день' },
   concept: { en: 'Concept', uz: 'Konsepsiya', ru: 'Концепт' },
   live: { en: 'Live', uz: 'Jonli', ru: 'Онлайн' },
   oss: { en: 'Open source · v0.3.1', uz: 'Ochiq kod · v0.3.1', ru: 'Открытый код · v0.3.1' },
@@ -286,9 +286,9 @@ export const navEnd: NavMenu[] = [
   { id: 'company', label: groups.company, items: [
     { key: 'company' }, { key: 'founder' }, { key: 'sponsorship' }, { key: 'timeline' }, { key: 'careers' }, { key: 'events' }, { key: 'brand' }, { key: 'contact' },
   ] },
-  { id: 'try', label: { en: 'Try dtwin', uz: 'dtwin’ni sinang', ru: 'Попробовать dtwin' }, items: [
+  { id: 'try', label: { en: 'Try dtwin', uz: 'dtwinʼni sinang', ru: 'Попробовать dtwin' }, items: [
     { label: { en: 'dtwin.uz', uz: 'dtwin.uz', ru: 'dtwin.uz' }, href: 'https://dtwin.uz', external: true },
-    { label: { en: 'Download bitg', uz: 'bitg’ni yuklab olish', ru: 'Скачать bitg' }, href: 'https://bitg.uz', external: true },
+    { label: { en: 'Download bitg', uz: 'bitgʼni yuklab olish', ru: 'Скачать bitg' }, href: 'https://bitg.uz', external: true },
     { label: { en: 'All products', uz: 'Barcha mahsulotlar', ru: 'Все продукты' }, href: '/products' },
   ] },
 ];

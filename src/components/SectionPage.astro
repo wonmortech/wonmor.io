@@ -65,12 +65,14 @@ const host = page.url?.replace(/^https?:\/\//, '');
     </section>
   )}
 
-  <aside class="container sp__note-wrap">
-    <div class="sp__note" role="note">
-      <p class="t-caption-bold">{ui.inProgressTitle[locale]}</p>
-      <p class="t-body-4 fg-2">{ui.inProgressBody[locale]}</p>
-    </div>
-  </aside>
+  {children.length === 0 && (
+    <aside class="container sp__note-wrap">
+      <div class="sp__note" role="note">
+        <p class="t-caption-bold">{ui.inProgressTitle[locale]}</p>
+        <p class="t-body-4 fg-2">{ui.inProgressBody[locale]}</p>
+      </div>
+    </aside>
+  )}
 </article>
 
 <style>

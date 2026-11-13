@@ -132,6 +132,8 @@ a { color: inherit; }
 /* ---------- dark theme extras (tokens in tokens.css) ---------- */
 /* Fixed-dark panels keep their colour in both themes; in dark they get a hairline so they do not melt into the page. */
 :is(.ri__feat, .ra__rep, .ab__cta, .cst, .pcard__media--scene, .ap__pimg, .pp__mmedia, .show__phone) { box-shadow: inset 0 0 0 1px var(--panel-edge); }
+/* Light focus ring inside fixed-dark panels in both themes. */
+:is(.ri__feat, .ra__rep, .ab__cta, .cst) { --theme-focus-ring: #8fb4ec; }
 /* Header theme button shows the icon of the theme it switches to. */
 .hdr__theme .hdr__sun { display: none; }
 .hdr__theme[aria-pressed="true"] .hdr__sun { display: block; }

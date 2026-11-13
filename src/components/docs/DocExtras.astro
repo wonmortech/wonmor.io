@@ -38,7 +38,7 @@ const fmt = new Intl.NumberFormat(locale === 'uz' ? 'uz-Latn' : locale);
       {brandFiles.map((f) => (
         <li><a class="dx-file" href={asset(`/brand/${f.file}`)} download>
           <span class="dx-file__img" style={`background:${f.ground}`}><img src={asset(`/brand/${f.file}`)} alt="" loading="lazy" /></span>
-          <span class="dx-file__row"><span class="t-body-4">{f.label}</span><span class="t-caption fg-3">{f.file.split('.').pop()?.toUpperCase()} <Icon name="download" size={12} /></span></span>
+          <span class="dx-file__row"><span class="t-body-4">{f.label[locale]}</span><span class="t-caption fg-3">{f.file.split('.').pop()?.toUpperCase()} <Icon name="download" size={12} /></span></span>
         </a></li>
       ))}
     </ul>
@@ -58,8 +58,8 @@ const fmt = new Intl.NumberFormat(locale === 'uz' ? 'uz-Latn' : locale);
   <section aria-labelledby="dx-tr">
     <div class="rule-row"><h2 class="t-caption-bold" id="dx-tr">{D.asOf[locale]}</h2></div>
     <dl class="dx-nums">
-      {numbers.map((n) => <div class="dx-num"><dt class="t-caption fg-2">{n.label[locale]}</dt><dd class="dx-num__v">{fmt.format(n.value)}</dd><dd class="t-caption fg-3">{n.source}</dd></div>)}
-      <div class="dx-num"><dt class="t-caption fg-2">{D.openssf[locale]}</dt><dd class="dx-num__v">Gold</dd><dd class="t-caption fg-3"><a class="link-underline" href="https://www.bestpractices.dev/projects/16620" target="_blank" rel="noopener">bestpractices.dev/projects/16620</a></dd></div>
+      {numbers.map((n) => <div class="dx-num"><dt class="t-caption fg-2">{n.label[locale]}</dt><dd class="dx-num__v">{fmt.format(n.value)}</dd><dd class="t-caption fg-3">{typeof n.source === 'string' ? n.source : n.source[locale]}</dd></div>)}
+      <div class="dx-num"><dt class="t-caption fg-2">{D.openssf[locale]}</dt><dd class="dx-num__v">{D.gold[locale]}</dd><dd class="t-caption fg-3"><a class="link-underline" href="https://www.bestpractices.dev/projects/16620" target="_blank" rel="noopener">bestpractices.dev/projects/16620</a></dd></div>
     </dl>
     <div class="rule-row dx-gap"><h2 class="t-caption-bold">{D.byLevel[locale]}</h2></div>
     <ul class="dx-levels-mini" role="list">

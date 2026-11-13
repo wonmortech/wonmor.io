@@ -20,7 +20,9 @@ Bular shunchaki vaʼda emas: saytning xavfsizlik siyosati (Content-Security-Poli
 
 ## Brauzeringiz nimani saqlaydi
 
-Bitta kichik qiymat. Brauzer oynasida birinchi marta sahifa ochganingizda Wonmor logotipi qisqa ochilish animatsiyasini koʻrsatadi. Uni har sahifada qayta koʻrsatmaslik uchun sayt brauzeringizning session storageʼiga `wm-intro` kalitini `1` qiymati bilan yozadi. Unda siz haqingizda hech narsa yoʻq, u qurilmangizdan chiqmaydi va oyna yopilganda oʻchadi. Brauzeringiz xotirani bloklasa, animatsiya shunchaki yana koʻrsatiladi.
+Ikkita kichik qiymat, ikkalasi ham faqat qurilmangizda. Brauzer oynasida birinchi marta sahifa ochganingizda Wonmor logotipi qisqa ochilish animatsiyasini koʻrsatadi. Uni har sahifada qayta koʻrsatmaslik uchun sayt brauzeringizning session storageʼiga `wm-intro` kalitini `1` qiymati bilan yozadi. Unda siz haqingizda hech narsa yoʻq, u qurilmangizdan chiqmaydi va oyna yopilganda oʻchadi. Brauzeringiz xotirani bloklasa, animatsiya shunchaki yana koʻrsatiladi.
+
+Agar headerʼdagi tugma bilan yorugʻ va qorongʻi mavzu oʻrtasida almashsangiz, sayt tanlovingizni brauzeringizning local storageʼiga `wm-theme` kaliti (`light` yoki `dark`) sifatida saqlaydi, shunda keyingi sahifa ham shu mavzuda ochiladi. U shu sayt maʼlumotlarini tozalamaguningizcha qoladi va hech qayerga yuborilmaydi. Tugmani bosmasangiz, hech narsa saqlanmaydi va sayt tizim sozlamangizga ergashadi.
 
 ## Qidiruv
 

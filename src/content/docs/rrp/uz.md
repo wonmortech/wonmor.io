@@ -24,7 +24,7 @@ Har bir daraja oʻzidan pastdagi darajalarning barcha talablarini oʻz ichiga ol
 
 **Taʼrif.** Gʻoyani koʻrsatadigan ishlaydigan demo. U ogohlantirishsiz qayta yozilishi, nomi oʻzgarishi yoki oʻchirilishi mumkin.
 
-**Talab qilinadigan dalil.** Mahsulot ochiladi va mahsulot sahifasida prototip, konsept yoki tajriba deb aniq belgilangan.
+**Talab qilinadigan dalil.** Mahsulot ochiladi va mahsulot sahifasida prototip deb aniq belgilangan; u yerda koʻrsatilgan “WRL-1 · Prototip” daraja belgisi aynan shu yorliq. Yonidagi MVP yoki Preview kabi bosqich yorligʻi imkoniyatlar qanchalik tayyorligini bildiradi, mahsulotga qanchalik tayanish mumkinligini emas.
 
 **Nima kutish mumkin.** Uni sinab koʻrib, fikringizni aytishingiz mumkin. Unda muhim narsa saqlamang va haqiqiy shaxsiy maʼlumot kiritmang. Maʼlumotlar istalgan vaqtda tozalanishi mumkin; uzluksiz ishlash yoki yordam vaʼda qilinmaydi.
 
