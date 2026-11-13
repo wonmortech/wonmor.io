@@ -1,0 +1,96 @@
+---
+/* The product ecosystem as a 3D star map (three.js, lazy). The list beside it is the accessible
+   navigation and also the fallback when WebGL is unavailable. */
+import Icon from '../Icon.astro';
+import { href, type Locale } from '../../i18n/config';
+import { pageByKey } from '../../i18n/pages';
+import { clusters, pageKey } from '../../data/ecosystem';
+
+interface Props { locale: Locale; title: string; hint: string; open: string }
+const { locale, title, hint, open } = Astro.props;
+const nodes = clusters.flatMap((c) => c.products.map((p) => ({
+  key: p, cluster: c.key, color: c.color, label: pageByKey[pageKey(p)].title[locale], group: c.label[locale],
+  href: href(locale, pageByKey[pageKey(p)].path),
+})));
+---
+<section class="cst theme-slate" aria-labelledby="cst-h" data-cst>
+  <div class="cst__stage" data-cst-stage data-nodes={JSON.stringify(nodes)}>
+    <div class="cst__tip" data-cst-tip hidden>
+      <span class="t-caption fg-3" data-tip-group></span>
+      <span class="cst__tip-title" data-tip-title></span>
+      <a class="cst__tip-link t-caption" href="#" tabindex="-1">{open}<Icon name="arrow-right" size={12} /></a>
+    </div>
+    <p class="cst__hint t-caption" aria-hidden="true">{hint}</p>
+  </div>
+  <div class="cst__side">
+    <h2 class="t-caption-bold" id="cst-h">{title}</h2>
+    <ul class="cst__legend" role="list">
+      {clusters.map((c) => (
+        <li>
+          <span class="cst__cluster t-caption"><i style={`--c:${c.color}`}></i>{c.label[locale]}</span>
+          <ul role="list" class="cst__items">
+            {c.products.map((p) => { const pg = pageByKey[pageKey(p)]; return (
+              <li><a class="cst__item" href={href(locale, pg.path)} data-cst-item={p}>{pg.title[locale]}</a></li>
+            ); })}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-cst]');
+  const stage = root?.querySelector<HTMLElement>('[data-cst-stage]');
+  const tip = root?.querySelector<HTMLElement>('[data-cst-tip]');
+  const glOk = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
+  if (root && stage && tip && glOk) {
+    const io = new IntersectionObserver(async ([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const { mountConstellation } = await import('../../scripts/scenes');
+      const api = mountConstellation(stage, JSON.parse(stage.dataset.nodes!), tip);
+      root.classList.add('is-live');
+      const items = root.querySelectorAll<HTMLAnchorElement>('[data-cst-item]');
+      items.forEach((a) => {
+        a.addEventListener('pointerenter', () => api.focus(a.dataset.cstItem!));
+        a.addEventListener('focus', () => api.focus(a.dataset.cstItem!));
+        a.addEventListener('pointerleave', () => api.focus(null));
+        a.addEventListener('blur', () => api.focus(null));
+      });
+      stage.addEventListener('star', (ev) => {
+        const key = (ev as CustomEvent<string | null>).detail;
+        items.forEach((a) => a.toggleAttribute('data-active', a.dataset.cstItem === key));
+      });
+    }, { rootMargin: '200px' });
+    io.observe(stage);
+  } else root?.classList.add('is-static');
+</script>
+
+<style>
+  .cst { display: grid; border-radius: var(--radius-card); overflow: hidden; background: #141413; color: var(--theme-foreground-primary); }
+  @media (min-width: 1024px) { .cst { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); } }
+  .cst__stage { position: relative; min-height: 420px; aspect-ratio: 4 / 3; cursor: grab; overflow: hidden;
+    background: radial-gradient(60% 60% at 50% 50%, rgba(217, 195, 154, .08), transparent 70%); }
+  @media (min-width: 1024px) { .cst__stage { aspect-ratio: auto; min-height: 620px; } }
+  .is-static .cst__stage { display: none; }
+  .cst__hint { position: absolute; left: 24px; bottom: 20px; color: rgba(255, 255, 255, .45); pointer-events: none; transition: opacity .4s; }
+  .cst:not(.is-live) .cst__hint { opacity: 0; }
+  .cst__tip { position: absolute; left: 0; top: 0; z-index: 2; display: grid; gap: 2px; min-width: 160px; margin: -96px 0 0 -80px;
+    padding: 12px 14px; border-radius: 10px; background: rgba(250, 249, 245, .96); color: #141413; pointer-events: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35); transition: transform .08s linear; }
+  .cst__tip[hidden] { display: none; }
+  .cst__tip .fg-3 { color: #5e5d59; }
+  .cst__tip-title { font: 600 17px/1.3 var(--sans); letter-spacing: -.01em; }
+  .cst__tip-link { display: inline-flex; align-items: center; gap: 6px; color: #3d3d3a; text-decoration: none; margin-top: 4px; }
+  .cst__side { padding: 32px; border-top: 1px solid rgba(255, 255, 255, .08); display: grid; align-content: start; gap: 20px; }
+  @media (min-width: 1024px) { .cst__side { border-top: 0; border-left: 1px solid rgba(255, 255, 255, .08); padding: 40px 32px; } }
+  .cst__side h2 { color: #fff; }
+  .cst__legend { list-style: none; display: grid; gap: 18px; }
+  .cst__cluster { display: flex; align-items: center; gap: 8px; color: rgba(255, 255, 255, .55); margin-bottom: 6px; }
+  .cst__cluster i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+  .cst__items { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .cst__item { display: inline-block; padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .14);
+    color: rgba(255, 255, 255, .85); font: 400 14px/1.2 var(--sans); text-decoration: none; transition: background-color .2s, color .2s, border-color .2s; }
+  .cst__item:hover, .cst__item[data-active] { background: #faf9f5; color: #141413; border-color: #faf9f5; }
+</style>

@@ -10,6 +10,12 @@ import NewsCard from '../components/NewsCard.astro';
 import SectionPage from '../components/SectionPage.astro';
 import NewsArticle from '../components/NewsArticle.astro';
 import Icon from '../components/Icon.astro';
+import Numbers from '../components/home/Numbers.astro';
+import ProductsIndex from '../components/products/ProductsIndex.astro';
+import ProductPage from '../components/products/ProductPage.astro';
+import AboutPage from '../components/company/AboutPage.astro';
+import FounderPage from '../components/company/FounderPage.astro';
+import TimelinePage from '../components/company/TimelinePage.astro';
 import { locales, defaultLocale, href, formatDate, type Locale } from '../i18n/config';
 import { pages, groups, type PageDef } from '../i18n/pages';
 import { home } from '../i18n/home';
@@ -62,6 +68,7 @@ const meta = kind === 'home'
           {news.slice(0, 3).map((n) => { const c = card(n); return <NewsCard locale={locale} {...c} />; })}
         </div>
       </section>
+      <Numbers locale={locale} />
       <LearnMore locale={locale} />
     </>
   )}
@@ -83,7 +90,14 @@ const meta = kind === 'home'
     </NewsArticle>
   )}
 
-  {kind === 'page' && page && <SectionPage locale={locale} page={page} />}
+  {kind === 'page' && page && (
+    page.key === 'products' ? <ProductsIndex locale={locale} page={page} />
+    : page.group === 'products' && page.key.startsWith('p-') ? <ProductPage locale={locale} page={page} />
+    : page.key === 'company' ? <AboutPage locale={locale} page={page} />
+    : page.key === 'founder' ? <FounderPage locale={locale} page={page} />
+    : page.key === 'timeline' ? <TimelinePage locale={locale} page={page} />
+    : <SectionPage locale={locale} page={page} />
+  )}
 
   {kind === 'search' && (
     <section class="container page-top section-lg search-page" data-search-page>

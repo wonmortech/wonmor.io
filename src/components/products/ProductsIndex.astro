@@ -1,0 +1,85 @@
+---
+/* /products: lede, the 3D ecosystem map, then every product by cluster with a real screenshot. */
+import Constellation from './Constellation.astro';
+import { href, type Locale } from '../../i18n/config';
+import { pageByKey, type PageDef } from '../../i18n/pages';
+import { clusters, pageKey } from '../../data/ecosystem';
+import { productMedia, sceneVariant } from '../../data/media';
+import { productUi as U } from '../../data/products';
+
+interface Props { locale: Locale; page: PageDef }
+const { locale, page } = Astro.props;
+---
+<article class="pi">
+  <header class="container page-top pi__head">
+    <h1 class="t-headline-2">{page.title[locale]}</h1>
+    <p class="t-sub-3 fg-2 pi__lede">{page.lede[locale]}</p>
+  </header>
+
+  <div class="container pi__map reveal-up">
+    <Constellation locale={locale} title={U.map[locale]} hint={U.mapHint[locale]} open={U.open[locale]} />
+  </div>
+
+  {clusters.map((c) => (
+    <section class="container pi__cluster" aria-labelledby={`cl-${c.key}`}>
+      <div class="rule-row"><h2 class="t-caption-bold pi__cl-h" id={`cl-${c.key}`}><i style={`--c:${c.color}`}></i>{c.label[locale]}</h2></div>
+      <ul class:list={['pi__grid', c.products.length === 1 && 'pi__grid--solo']} role="list">
+        {c.products.map((p) => {
+          const pg = pageByKey[pageKey(p)];
+          const m = productMedia(p);
+          const img = m.desktop ?? m.poster;
+          return (
+            <li>
+              <a class="pcard" href={href(locale, pg.path)}>
+                <span class:list={['pcard__media', !img && 'pcard__media--empty', sceneVariant[p] && 'pcard__media--scene']} style={`--c:${c.color}`}>
+                  {img ? <img src={img} alt="" width="1512" height="945" loading="lazy" decoding="async" /> : <span class="pcard__mono" aria-hidden="true">{pg.title[locale].slice(0, 1)}</span>}
+                </span>
+                <span class="pcard__top">
+                  <span class="t-headline-5 pcard__title">{pg.title[locale]}</span>
+                  {pg.chip && <span class="chip">{pg.chip[locale]}</span>}
+                </span>
+                <span class="t-body-4 pcard__desc">{pg.lede[locale]}</span>
+                {pg.url && <span class="t-caption pcard__host">{pg.url.replace(/^https?:\/\//, '')}</span>}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ))}
+  <p class="container t-caption fg-3 pi__note">{U.asOf[locale]}</p>
+</article>
+
+<style>
+  .pi__lede { max-width: 40em; margin-top: 24px; }
+  .pi__map { margin-top: 56px; }
+  .pi__cluster { margin-top: var(--section-spacer-md, 96px); }
+  .pi__cl-h { display: flex; align-items: center; gap: 10px; }
+  .pi__cl-h i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+  .pi__grid { list-style: none; display: grid; gap: 40px var(--grid-gutter); margin-top: 28px; grid-template-columns: 1fr; }
+  @media (min-width: 768px) { .pi__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1280px) { .pi__grid { grid-template-columns: repeat(3, 1fr); } }
+  .pcard { display: grid; gap: 10px; text-decoration: none; color: inherit; }
+  @media (min-width: 768px) {
+    .pi__grid--solo { grid-template-columns: 1fr; }
+    .pi__grid--solo .pcard { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; column-gap: var(--grid-gutter); align-items: start; }
+    .pi__grid--solo .pcard__media { grid-column: 1; grid-row: 1 / span 4; margin-bottom: 0; }
+    .pi__grid--solo :is(.pcard__top, .pcard__desc, .pcard__host) { grid-column: 2; }
+    .pi__grid--solo .pcard__top { padding-top: 4px; }
+  }
+  .pcard__media { position: relative; display: block; aspect-ratio: 16 / 10; border-radius: var(--radius-media); overflow: hidden;
+    background: var(--gray-150); box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .06); margin-bottom: 8px; }
+  .pcard__media img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .8s var(--ease-out-quart); }
+  .pcard__media--scene { background: #141413; }
+  .pcard__media--empty { display: grid; place-items: center; background: color-mix(in srgb, var(--c) 30%, var(--gray-100)); }
+  .pcard__mono { font: 500 72px/1 var(--serif); color: rgba(20, 20, 19, .55); }
+  .pcard__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .pcard__title, .pcard__desc { transition: color .2s; }
+  .pcard__desc { color: var(--theme-foreground-secondary); }
+  .pcard__host { color: var(--theme-foreground-tertiary); }
+  @media (hover: hover) {
+    .pcard:hover .pcard__media img { transform: scale(1.03); }
+    .pcard:hover :is(.pcard__title, .pcard__desc) { color: var(--theme-foreground-quaternary); }
+  }
+  .pi__note { margin-top: 64px; padding-bottom: var(--section-spacer-lg); }
+</style>

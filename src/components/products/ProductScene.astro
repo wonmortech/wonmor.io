@@ -1,0 +1,32 @@
+---
+/* Generated 3D point-cloud for products with no public interface to show. Static poster first, scene on view. */
+interface Props { variant: string; accent: string; label: string; poster?: string }
+const { variant, accent, label, poster } = Astro.props;
+---
+<figure class="pscene" data-pscene data-variant={variant} data-accent={accent}>
+  {poster && <img class="pscene__poster" src={poster} alt="" width="1600" height="1000" loading="lazy" decoding="async" />}
+  <figcaption class="sr-only">{label}</figcaption>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pscene]').forEach((host) => {
+    let gl = false;
+    try { const c = document.createElement('canvas'); gl = !!(c.getContext('webgl2') || c.getContext('webgl')); } catch {}
+    if (!gl) return;
+    const io = new IntersectionObserver(async ([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const { mountMorph } = await import('../../scripts/scenes');
+      mountMorph(host, host.dataset.variant!, host.dataset.accent!);
+      host.classList.add('is-live');
+    }, { rootMargin: '200px' });
+    io.observe(host);
+  });
+</script>
+
+<style>
+  .pscene { position: relative; margin: 0; aspect-ratio: 16 / 10; border-radius: var(--radius-media); overflow: hidden;
+    background: radial-gradient(70% 70% at 50% 45%, #262624, #141413); }
+  .pscene__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .6s; }
+  .pscene.is-live .pscene__poster { opacity: 0; }
+</style>

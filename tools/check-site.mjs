@@ -18,7 +18,8 @@ const errors = [];
 const rel = (p) => relative(ROOT, p).split(sep).join('/');
 
 const PRIVATE = [
-  [/\b(?:10|127|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\.?\d{0,3}\b/, 'private IP address'],
+  // Standalone dotted quads only, so hex tables such as "0f.10.11.12.13.14" in bundled libraries do not match.
+  [/(?<![\w.])(?:10\.\d{1,3}|127\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}(?!\.?\w)/, 'private IP address'],
   ...(process.env.WM_FORBIDDEN ? [[new RegExp(process.env.WM_FORBIDDEN), 'forbidden string (WM_FORBIDDEN)']] : []),
   [/gitlab\.fkt|jira\.faktura|patchapi|\bFA-\d{3,}/i, 'internal Faktura reference'],
   [/(?:ghp_|github_pat_|glpat-|xox[bp]-)[A-Za-z0-9_]{10,}/, 'token-like string'],

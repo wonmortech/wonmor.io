@@ -1,0 +1,1 @@
+var e=document.querySelectorAll(`[data-show]`);if(!matchMedia(`(prefers-reduced-motion: reduce)`).matches){let t=0,n=()=>{t=0,e.forEach(e=>{let t=e.getBoundingClientRect(),n=Math.min(1,Math.max(0,(innerHeight-t.top)/(innerHeight*.9)));e.style.setProperty(`--settle`,(1-n).toFixed(3))})};addEventListener(`scroll`,()=>{t||=requestAnimationFrame(n)},{passive:!0}),n()}
