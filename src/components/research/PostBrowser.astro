@@ -1,84 +1,132 @@
 ---
-/* Every post of a section (anthropic.com engineering pattern): mono count, sort, grid/list toggle and search, a grid of
-   square picture cards (or rows), then "See more". Without JavaScript everything shows as the grid. */
+/* Every post of a section (anthropic.com listing pattern): mono count, Sort and View listboxes and a search field, then
+   the posts as a gallery (editorial scatter on 12 columns), a grid of square cards, or rows; then "See more".
+   Sort and view live in the URL (?sort=new|old|az, ?view=gallery|grid|list, replaceState, no reload); the view is also
+   remembered per visitor (localStorage wm-plist-view), and the URL wins. Without JavaScript the tools are hidden and
+   the posts show in the default view, all of them. */
 import Icon from '../Icon.astro';
+import Select from '../ui/Select.astro';
 import PostCard from './PostCard.astro';
 import PostRow, { type PostLite } from './PostRow.astro';
 import { type Locale } from '../../i18n/config';
 import { postCount, researchUi as R } from '../../data/research';
-interface Props { locale: Locale; posts: PostLite[]; label: string; page?: number }
-const { locale, posts, label, page = 12 } = Astro.props;
+type View = 'gallery' | 'grid' | 'list';
+interface Props { locale: Locale; posts: PostLite[]; label: string; page?: number; view?: View }
+const { locale, posts, label, page = 24, view = 'grid' } = Astro.props;
 const more = { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать ещё' }[locale];
+const sorted = [...posts].sort((a, b) => b.date.getTime() - a.date.getTime());
+/** gallery slot k % 6: slots 1 and 5 are wide (16:9), the rest narrow (1:1); see the CSS pattern below */
+const wide = (k: number) => k % 6 === 1 || k % 6 === 5;
 ---
-<div class="pb" data-plist data-page={page} data-label={label}>
+<div class="pb" data-plist data-page={page} data-label={label} data-view={view} data-default-view={view} data-locale={locale}>
   <div class="pb__bar">
     <p class="pb__count t-caption"><span data-plist-count>{posts.length}</span> <span class="pb__unit">{postCount(posts.length, locale).replace(/^\d+\s*/, '')}</span></p>
     <div class="pb__tools">
-      <label class="pb__sort"><span class="sr-only">{R.newest[locale]}</span>
-        <select data-plist-sort>
-          <option value="new">{R.newest[locale]}</option>
-          <option value="old">{R.oldest[locale]}</option>
-        </select>
-        <Icon name="chevron-down" size={14} />
-      </label>
-      <div class="pb__views" role="group" aria-label={`${R.gridView[locale]} / ${R.listView[locale]}`}>
-        <button type="button" data-plist-view="grid" aria-pressed="true" aria-label={R.gridView[locale]}><Icon name="grid" size={16} /></button>
-        <button type="button" data-plist-view="list" aria-pressed="false" aria-label={R.listView[locale]}><Icon name="list" size={16} /></button>
+      <Select class="pb__sel" label={R.sort[locale]} value="new"
+        options={[{ value: 'new', label: R.sortNew[locale] }, { value: 'old', label: R.sortOld[locale] }, { value: 'az', label: R.sortAz[locale] }]} />
+      <Select class="pb__sel" label={R.view[locale]} value={view}
+        options={[{ value: 'gallery', label: R.viewGallery[locale] }, { value: 'grid', label: R.viewGrid[locale] }, { value: 'list', label: R.viewList[locale] }]} />
+      <div class="pb__search" data-plist-search>
+        <label class="sr-only" for={`pq-${locale}`}>{R.searchIn[locale]}</label>
+        <input id={`pq-${locale}`} type="search" data-plist-q placeholder={R.searchIn[locale]} autocomplete="off" />
+        <span class="pb__glass" aria-hidden="true"><Icon name="search" size={14} /></span>
+        <button type="button" class="pb__x" data-plist-x aria-label={R.clearSearch[locale]} hidden><Icon name="close" size={12} /></button>
       </div>
-      <label class="pb__search"><span class="sr-only">{R.searchIn[locale]}</span>
-        <input type="search" data-plist-q placeholder={R.searchIn[locale]} autocomplete="off" />
-        <Icon name="search" size={14} />
-      </label>
     </div>
   </div>
   <ul class="pb__grid" role="list" data-plist-grid>
-    {posts.map((p) => <li data-pitem data-date={p.date.toISOString()} data-text={`${p.title} ${p.description}`.toLowerCase()}><PostCard locale={locale} post={p} /></li>)}
+    {sorted.map((p, k) => (
+      <li data-pitem data-g={k % 6} data-wide={wide(k) ? '' : undefined} data-date={p.date.toISOString()} data-title={p.title} data-text={`${p.title} ${p.description}`.toLowerCase()}>
+        <PostCard locale={locale} post={p} ratio={view === 'gallery' ? '16/9' : '1/1'} />
+      </li>
+    ))}
   </ul>
-  <ol class="pb__list" role="list" data-plist-list hidden>
-    {posts.map((p) => <PostRow locale={locale} post={p} />)}
+  <ol class="pb__list" role="list" data-plist-list hidden={view !== 'list'}>
+    {sorted.map((p) => <PostRow locale={locale} post={p} />)}
   </ol>
   <div class="empty" data-plist-none hidden><p class="t-headline-5">{R.noMatch[locale]}</p><p class="t-body-4 fg-2">{R.noMatchHint[locale]}</p><button type="button" class="btn btn--secondary btn--sm" data-plist-clear>{R.clearSearch[locale]}</button></div>
   <div class="pb__more"><button type="button" class="btn btn--secondary btn--small btn--rounded btn--trailing" data-plist-more hidden>{more}<Icon name="arrow-down" size={14} /></button></div>
 </div>
 
 <script>
+  const VIEWS = ['gallery', 'grid', 'list'];
+  const SORTS = ['new', 'old', 'az'];
+  const KEY = 'wm-plist-view';
   document.querySelectorAll<HTMLElement>('[data-plist]').forEach((root) => {
-    const per = Number(root.dataset.page) || 12;
+    const per = Number(root.dataset.page) || 24;
+    const def = root.dataset.defaultView ?? 'grid';
     const grid = root.querySelector<HTMLElement>('[data-plist-grid]')!;
     const list = root.querySelector<HTMLElement>('[data-plist-list]')!;
     const cards = [...grid.children] as HTMLElement[];
     const rows = [...list.children] as HTMLElement[];
-    const pairs = cards.map((c, k) => ({ c, r: rows[k], date: c.dataset.date ?? '', text: c.dataset.text ?? '' }));
+    const pairs = cards.map((c, k) => ({ c, r: rows[k], date: c.dataset.date ?? '', title: c.dataset.title ?? '', text: c.dataset.text ?? '' }));
     const q = root.querySelector<HTMLInputElement>('[data-plist-q]')!;
-    const sort = root.querySelector<HTMLSelectElement>('[data-plist-sort]')!;
-    const views = [...root.querySelectorAll<HTMLButtonElement>('[data-plist-view]')];
+    const x = root.querySelector<HTMLButtonElement>('[data-plist-x]')!;
+    const [sortSel, viewSel] = [...root.querySelectorAll<HTMLElement>('.pb__tools [data-select]')];
     const more = root.querySelector<HTMLButtonElement>('[data-plist-more]')!;
     const none = root.querySelector<HTMLElement>('[data-plist-none]')!;
     const count = root.querySelector<HTMLElement>('[data-plist-count]')!;
+    const collator = new Intl.Collator(root.dataset.locale || undefined, { sensitivity: 'base' });
+
+    const params = new URLSearchParams(location.search);
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(KEY); } catch { /* storage blocked */ }
+    const pv = params.get('view') ?? '', ps = params.get('sort') ?? '';
+    let view = VIEWS.includes(pv) ? pv : stored && VIEWS.includes(stored) ? stored : def;
+    let sort = SORTS.includes(ps) ? ps : 'new';
     let shown = per;
-    let view = 'grid';
-    try { view = localStorage.getItem('wm-plist-view') === 'list' ? 'list' : 'grid'; } catch { /* storage blocked */ }
+
+    // the listbox script may run after this one: retry until it is wired
+    const setSel = (el: HTMLElement | undefined, value: string, tries = 0) => {
+      if (!el) return;
+      if (el.dataset.ready) el.dispatchEvent(new CustomEvent('select:set', { detail: { value } }));
+      else if (tries < 60) requestAnimationFrame(() => setSel(el, value, tries + 1));
+    };
+    const syncUrl = () => {
+      const u = new URL(location.href);
+      if (sort === 'new') u.searchParams.delete('sort'); else u.searchParams.set('sort', sort);
+      u.searchParams.set('view', view);
+      history.replaceState(history.state, '', u);
+    };
     const render = () => {
       const term = q.value.trim().toLowerCase();
-      const order = [...pairs].sort((a, b) => (sort.value === 'old' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)));
+      const order = [...pairs].sort((a, b) => (sort === 'old' ? a.date.localeCompare(b.date) : sort === 'az' ? collator.compare(a.title, b.title) : b.date.localeCompare(a.date)));
       const hits = order.filter((p) => !term || p.text.includes(term));
       order.forEach((p) => { grid.append(p.c); list.append(p.r); p.c.hidden = true; p.r.hidden = true; });
-      hits.forEach((p, k) => { const on = k < shown; p.c.hidden = !on; p.r.hidden = !on; });
+      hits.forEach((p, k) => {
+        const on = k < shown;
+        p.c.hidden = !on; p.r.hidden = !on;
+        p.c.dataset.g = String(k % 6);
+        p.c.toggleAttribute('data-wide', k % 6 === 1 || k % 6 === 5);
+      });
       count.textContent = String(hits.length);
       none.hidden = hits.length > 0;
       more.hidden = hits.length <= shown;
-      grid.hidden = view !== 'grid'; list.hidden = view !== 'list';
-      views.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.plistView === view)));
+      x.hidden = !q.value;
+      root.dataset.view = view;
+      grid.hidden = view === 'list'; list.hidden = view !== 'list';
     };
+
     q.addEventListener('input', () => { shown = per; render(); });
-    root.querySelector('[data-plist-clear]')?.addEventListener('click', () => { q.value = ''; shown = per; render(); q.focus(); });
-    sort.addEventListener('change', render);
-    views.forEach((b) => b.addEventListener('click', () => {
-      view = b.dataset.plistView ?? 'grid';
-      try { localStorage.setItem('wm-plist-view', view); } catch { /* storage blocked */ }
-      render();
-    }));
+    q.addEventListener('keydown', (e) => { if (e.key === 'Escape' && q.value) { e.preventDefault(); q.value = ''; shown = per; render(); } });
+    const clear = () => { q.value = ''; shown = per; render(); q.focus(); };
+    x.addEventListener('click', clear);
+    root.querySelector('[data-plist-clear]')?.addEventListener('click', clear);
+    sortSel?.addEventListener('select:change', (e) => {
+      const v = String((e as CustomEvent).detail?.value ?? '');
+      if (!SORTS.includes(v)) return;
+      sort = v; shown = per; syncUrl(); render();
+    });
+    viewSel?.addEventListener('select:change', (e) => {
+      const v = String((e as CustomEvent).detail?.value ?? '');
+      if (!VIEWS.includes(v)) return;
+      view = v;
+      try { localStorage.setItem(KEY, view); } catch { /* storage blocked */ }
+      syncUrl(); render();
+    });
     more.addEventListener('click', () => { shown += per; render(); });
+    if (sort !== 'new') setSel(sortSel, sort);
+    if (view !== def) setSel(viewSel, view);
     render();
   });
 </script>
@@ -88,21 +136,51 @@ const more = { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать е�
   .pb__count { font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--theme-foreground-tertiary); }
   .pb__tools { display: none; }
   :global(.js) .pb__tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .pb__sort, .pb__search { position: relative; display: inline-flex; align-items: center; }
-  .pb__sort select, .pb__search input { height: 36px; border-radius: 999px; border: 1px solid var(--theme-border-secondary); background: var(--theme-background-secondary);
-    color: var(--theme-foreground-primary); font: 500 var(--fs-caption-1)/1 var(--sans); }
-  .pb__sort select { appearance: none; padding: 0 34px 0 14px; cursor: pointer; }
-  .pb__sort :global(.icon), .pb__search :global(.icon) { position: absolute; right: 12px; pointer-events: none; color: var(--theme-foreground-tertiary); }
-  .pb__search input { width: min(240px, 60vw); padding: 0 34px 0 14px; }
+
+  /* search: 28px like the listbox triggers; the magnifier turns into a clear button once there is text */
+  .pb__search { position: relative; display: inline-flex; align-items: center; }
+  .pb__search input { width: min(260px, 64vw); height: 28px; padding: 0 32px 0 12px; border-radius: 8px; border: 1px solid transparent;
+    background: var(--theme-background-secondary); color: var(--theme-foreground-primary); font: 400 13px/1 var(--sans); transition: background-color .15s, border-color .15s; }
+  .pb__search input::placeholder { color: var(--theme-foreground-tertiary); }
+  .pb__search input:hover { background: var(--theme-background-tertiary); }
   .pb__search input::-webkit-search-cancel-button { display: none; }
-  .pb__views { display: inline-flex; padding: 2px; border-radius: 999px; border: 1px solid var(--theme-border-secondary); background: var(--theme-background-secondary); }
-  .pb__views button { display: grid; place-items: center; width: 32px; height: 30px; border: 0; border-radius: 999px; background: transparent; color: var(--theme-foreground-tertiary); cursor: pointer; transition: background-color .2s, color .2s; }
-  .pb__views button[aria-pressed="true"] { background: var(--theme-background-primary); color: var(--theme-foreground-primary); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
-  @media (pointer: coarse) { .pb__sort select, .pb__search input { height: 44px; } .pb__views button { width: 40px; height: 38px; } }
+  .pb__glass { position: absolute; right: 10px; display: inline-flex; pointer-events: none; color: var(--theme-foreground-tertiary); }
+  .pb__x { position: absolute; right: 4px; display: grid; place-items: center; width: 22px; height: 22px; border: 0; border-radius: 6px; cursor: pointer;
+    background: var(--theme-foreground-primary); color: var(--theme-background-primary); transition: opacity .15s; }
+  .pb__x:hover { opacity: .8; }
+  .pb__x[hidden] { display: none; }
+  .pb__search:has(.pb__x:not([hidden])) .pb__glass { display: none; }
+  @media (pointer: coarse) { .pb__search input { height: 40px; font-size: 14px; } .pb__x { width: 30px; height: 30px; right: 5px; } }
+  @media (max-width: 639px) { :global(.js) .pb__tools { width: 100%; } .pb__search { flex: 1 1 100%; order: -1; } .pb__search input { width: 100%; } }
+
+  /* grid view: square cards, 2 / 3 / 4 columns */
   .pb__grid { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px var(--grid-gutter); margin-top: 32px; }
   @media (min-width: 768px) { .pb__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @media (min-width: 1280px) { .pb__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 479px) { .pb__grid { grid-template-columns: 1fr; } }
+
+  /* gallery view: one column on phones (narrow cards inset, alternating sides); a 12-column editorial scatter from 768px,
+     cycling six slots of different starts, spans and top offsets */
+  .pb[data-view="gallery"] .pb__grid { grid-template-columns: minmax(0, 1fr); row-gap: 48px; margin-top: 40px; align-items: start; }
+  .pb[data-view="gallery"] .pb__grid > li:not([data-wide]) { width: 82%; }
+  .pb[data-view="gallery"] .pb__grid > :is([data-g="0"], [data-g="3"]) { justify-self: end; }
+  @media (min-width: 768px) {
+    .pb[data-view="gallery"] .pb__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); row-gap: 72px; margin-top: 48px; }
+    .pb[data-view="gallery"] .pb__grid > li:not([data-wide]) { width: auto; }
+    .pb[data-view="gallery"] .pb__grid > li { justify-self: stretch; }
+    .pb[data-view="gallery"] .pb__grid > [data-g="0"] { grid-column: 4 / span 3; }
+    .pb[data-view="gallery"] .pb__grid > [data-g="1"] { grid-column: 7 / span 6; margin-top: 64px; }
+    .pb[data-view="gallery"] .pb__grid > [data-g="2"] { grid-column: 1 / span 3; margin-top: 8px; }
+    .pb[data-view="gallery"] .pb__grid > [data-g="3"] { grid-column: 9 / span 4; margin-top: 64px; }
+    .pb[data-view="gallery"] .pb__grid > [data-g="4"] { grid-column: 2 / span 4; }
+    .pb[data-view="gallery"] .pb__grid > [data-g="5"] { grid-column: 8 / span 5; margin-top: 8px; }
+  }
+
+  /* off-screen cards and rows skip layout and paint until they come near the viewport */
+  .pb__grid > li { content-visibility: auto; contain-intrinsic-block-size: auto 420px; }
+  .pb__list > :global(li) { content-visibility: auto; contain-intrinsic-block-size: auto 56px; }
+  .pb__grid :global(.pcard:focus-visible), .pb__list :global(.prow__link:focus-visible) { outline-offset: -2px; }
+
   .pb__grid > [hidden], .pb__list > [hidden], .pb__grid[hidden], .pb__list[hidden] { display: none; }
   .pb__list { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
   .pb__more [hidden] { display: none; }
