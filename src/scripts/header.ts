@@ -30,6 +30,17 @@ if (logo && !reduce && scrollY < FOLD_AT) {
 // "auto" removes the attribute and the saved value, so the CSS media query follows the system again.
 // The picker is a [data-dd] dropdown, so open/close and arrow keys come from the dropdown code below.
 const themeColour: Record<string, string> = { light: '#faf9f5', dark: '#1a1918', ink: '#0b0d24', blueprint: '#f5f8ff', cobalt: '#1a4fd6', contrast: '#ffffff', paper: '#f4ecd8', dots: '#f6f7fb', glass: '#070818' };
+// Language switcher: save the pick before leaving, so public/js/boot.js never sends the visitor back.
+document.addEventListener('click', (e) => {
+  const a = (e.target as Element | null)?.closest?.('a[hreflang]') as HTMLAnchorElement | null;
+  const l = a?.hreflang.slice(0, 2);
+  if (l && /^(en|uz|ru)$/.test(l)) { try { localStorage.setItem('wm-lang', l); } catch { /* storage blocked */ } }
+}, true);
+// Safety net: if a cached old boot.js did not know the saved theme, apply it here (one late repaint beats a wrong theme).
+try {
+  const saved = localStorage.getItem('wm-theme');
+  if (saved && saved in themeColour && doc.dataset.theme !== saved) doc.dataset.theme = saved;
+} catch { /* storage blocked */ }
 const themeDd = document.querySelector<HTMLElement>('[data-theme-dd]');
 const themeOpts = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-set]')];
 const themeMetas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];
