@@ -32,6 +32,20 @@ gh repo list dtwinuz --visibility public --json name,licenseInfo,description
 
 GitHub bitgʼni Apache-2.0 deb koʻrsatadi, chunki u bitta litsenziya faylini aniqlaydi. Aslida bitgʼda LICENSE-MIT va LICENSE-APACHE ikkalasi bor, har bir manba fayli esa CIʼda REUSE litsenziya tekshiruvidan oʻtadi.
 
+## Wonmorʼning umumiy materiallari: wonmortech
+
+Bitta mahsulotga emas, butun Wonmorʼga tegishli materiallar ikkinchi tashkilotda — [github.com/wonmortech](https://github.com/wonmortech) da turadi. Uning yettita repozitoriysi 2026-yil 13-noyabrda ochildi:
+
+| Repozitoriy | Nima | Litsenziya |
+|---|---|---|
+| [research](https://github.com/wonmortech/research) | Ushbu saytdagi har bir post ortidagi buyruqlar, soʻrovlar va skriptlar | Kod uchun MIT, matn uchun CC BY 4.0 |
+| [uz-open-data](https://github.com/wonmortech/uz-open-data) | Oʻzbekiston masjidlari OpenStreetMapʼdan GeoJSON koʻrinishida va bitgʼdagi kirill–lotin jadvali | Xarita maʼlumoti uchun ODbL 1.0, jadval uchun MIT |
+| [deploy-kit](https://github.com/wonmortech/deploy-kit) | Uzilishsiz statik deploy: relizlar, symlink almashtirish, Caddy reload, orqaga qaytarish | MIT |
+| [design-system](https://github.com/wonmortech/design-system) | Ushbu saytning dizayn tokenlari (`@wonmor/tokens`); komponentlar rejalashtirilgan | MIT |
+| [brand](https://github.com/wonmortech/brand) | Belgi, lockupʼlar, ranglar va brend filmi | Ochiq litsenziya emas, [Brend](/uz/brand/) sahifasiga qarang |
+| [open-source-fund](https://github.com/wonmortech/open-source-fund) | Rejalashtirilgan fond: mezonlar va ariza shabloni; hali ochilmagan | CC BY 4.0 |
+| [.github](https://github.com/wonmortech/.github) | Tashkilot profili, hissa qoʻshish qoʻllanmasi, xulq kodeksi va xavfsizlik siyosati | — |
+
 ## Sukut boʻyicha nimani ochamiz
 
 Repozitoriy odamlar oʻrnatadigan yoki ishga tushiradigan mahsulot yoki vosita, boshqalar qayta ishlata oladigan kutubxona yoki manbasi biror narsani oʻrgatadigan sayt boʻlsa, uni ochiq qilishni afzal koʻramiz. Erta ochishning amaliy foydasi bor: kodni istalgan odam koʻrib chiqa oladi, xavfsizlik skanerlari unda bepul ishlaydi, biz toʻxtasak ham ish foydali boʻlib qoladi.

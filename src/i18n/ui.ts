@@ -2,6 +2,7 @@ import type { T } from './config';
 
 /** Interface strings. Content pages live in pages.ts; news in src/content/news. */
 export const ui = {
+  darkTheme: { en: 'Dark theme', uz: 'Qorongʻi mavzu', ru: 'Тёмная тема' },
   skip: { en: 'Skip to content', uz: 'Asosiy qismga oʻtish', ru: 'Перейти к содержанию' },
   home: { en: 'Home', uz: 'Bosh sahifa', ru: 'Главная' },
   primaryNav: { en: 'Primary', uz: 'Asosiy menyu', ru: 'Основное меню' },

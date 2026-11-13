@@ -41,6 +41,7 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
         </div>
       </div>
       <div class="hdr__icons">
+        <button class="btn btn--tertiary btn--small btn--rounded btn--icon hdr__theme" type="button" data-theme-toggle aria-pressed="false" aria-label={ui.darkTheme[locale]} hidden><Icon name="moon" class="hdr__moon" /><Icon name="sun" class="hdr__sun" /></button>
         <button class="btn btn--tertiary btn--small btn--rounded btn--icon" type="button" data-search-open aria-label={ui.search[locale]} aria-controls="hdr-search" aria-expanded="false"><Icon name="search" /></button>
         <button class="btn btn--tertiary btn--small btn--rounded btn--icon" type="button" data-menu-open aria-label={ui.openMenu[locale]} aria-controls="site-menu" aria-expanded="false"><Icon name="menu" /></button>
       </div>

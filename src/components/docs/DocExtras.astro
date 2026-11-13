@@ -33,7 +33,7 @@ const fmt = new Intl.NumberFormat(locale === 'uz' ? 'uz-Latn' : locale);
 
 {kind === 'brand' && (
   <section aria-labelledby="dx-brand" class="dx-brand">
-    <div class="rule-row"><h2 class="t-caption-bold" id="dx-brand">{D.files[locale]}</h2></div>
+    <div class="rule-row"><h2 class="t-caption-bold" id="dx-brand">{D.files[locale]}</h2><a class="t-caption link-quiet fg-3" href="https://github.com/wonmortech/brand" target="_blank" rel="noopener">github.com/wonmortech/brand</a></div>
     <ul class="dx-files" role="list">
       {brandFiles.map((f) => (
         <li><a class="dx-file" href={asset(`/brand/${f.file}`)} download>
@@ -95,7 +95,7 @@ const fmt = new Intl.NumberFormat(locale === 'uz' ? 'uz-Latn' : locale);
   .dx-colours { list-style: none; display: grid; gap: var(--grid-gutter); margin-top: 28px; }
   @media (min-width: 768px) { .dx-colours { grid-template-columns: repeat(3, 1fr); } }
   .dx-colour { display: grid; align-content: end; gap: 6px; aspect-ratio: 16 / 9; padding: 20px; border-radius: var(--radius-media); box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .1); }
-  .dx-colour code { font: 400 14px/1 var(--mono); opacity: .8; }
+  .dx-colour code { font: 400 14px/1 var(--mono); }
   .dx-nums { display: grid; gap: 32px var(--grid-gutter); margin-top: 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (min-width: 1024px) { .dx-nums { grid-template-columns: repeat(3, 1fr); } }
   .dx-num { display: grid; gap: 6px; overflow-wrap: anywhere; padding-top: 16px; border-top: 1px solid var(--theme-border-primary); }

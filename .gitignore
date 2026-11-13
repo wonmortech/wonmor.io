@@ -7,3 +7,4 @@ node_modules/
 __pycache__/
 site/.taste-skill/
 .playwright-cli/
+site-external-links.txt
