@@ -21,10 +21,13 @@ const chosen = new Set(Array.isArray(value) ? value : value !== undefined ? [val
 const first = options.find((o) => chosen.has(o.value));
 const shown = multiple ? (chosen.size ? `${placeholder ?? label} · ${chosen.size}` : placeholder ?? label) : first?.label ?? '';
 const id = `sel-${Math.random().toString(36).slice(2, 8)}`;
+// the trigger's name is "label + shown value", so it contains the visible text (WCAG 2.5.3); a multiple select whose
+// placeholder is the label already shows it
+const named = multiple && (placeholder ?? label) === label ? `${id}-v` : `${id}-l ${id}-v`;
 ---
 <div class:list={['sel', `sel--${align}`, cls]} data-select data-multiple={multiple ? '' : undefined} data-value={[...chosen].join(',')} data-placeholder={placeholder ?? label}>
-  <button type="button" class="sel__trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls={id} aria-labelledby={`${id}-l ${id}-v`}>
-    {prefix ? <span class="sel__pre" id={`${id}-l`}>{label}</span> : <span id={`${id}-l`} hidden>{label}</span>}
+  <button type="button" class="sel__trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls={id} aria-labelledby={named}>
+    {prefix ? <span class="sel__pre" id={`${id}-l`}>{label}</span> : <span class="sr-only" id={`${id}-l`}>{label}</span>}
     <span class="sel__value" id={`${id}-v`}>{shown}</span>
     <Icon name="arrow-down" size={12} />
   </button>
