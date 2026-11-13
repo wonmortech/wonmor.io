@@ -23,9 +23,9 @@ const shown = multiple ? (chosen.size ? `${placeholder ?? label} · ${chosen.siz
 const id = `sel-${Math.random().toString(36).slice(2, 8)}`;
 ---
 <div class:list={['sel', `sel--${align}`, cls]} data-select data-multiple={multiple ? '' : undefined} data-value={[...chosen].join(',')} data-placeholder={placeholder ?? label}>
-  <button type="button" class="sel__trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls={id} aria-label={label}>
-    {prefix && <span class="sel__pre">{label}</span>}
-    <span class="sel__value">{shown}</span>
+  <button type="button" class="sel__trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls={id} aria-labelledby={`${id}-l ${id}-v`}>
+    {prefix ? <span class="sel__pre" id={`${id}-l`}>{label}</span> : <span id={`${id}-l`} hidden>{label}</span>}
+    <span class="sel__value" id={`${id}-v`}>{shown}</span>
     <Icon name="arrow-down" size={12} />
   </button>
   <ul class="sel__pop" role="listbox" id={id} aria-label={label} aria-multiselectable={multiple ? 'true' : undefined} tabindex="-1" hidden>
