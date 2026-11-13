@@ -1,0 +1,63 @@
+---
+/* One flat geometric mark per research area (paper ground + ink lines), so every area card has its own picture. */
+import type { Area } from '../../data/research';
+interface Props { area: Area; color: string; class?: string }
+const { area, color, class: cls } = Astro.props;
+const ink = '#141413';
+---
+<div class:list={['amark', cls]} style={`--c:${color}`} aria-hidden="true">
+  <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+    <rect width="320" height="200" fill="var(--c)" />
+    {area === 'agents' && (
+      <g fill="none" stroke={ink} stroke-width="2.5">
+        {[[70, 50], [250, 48], [62, 150], [258, 152], [160, 20], [160, 180]].map(([x, y]) => <><line x1="160" y1="100" x2={x} y2={y} /><circle cx={x} cy={y} r="11" fill="#faf9f5" /></>)}
+        <circle cx="160" cy="100" r="22" fill="#faf9f5" />
+        <circle cx="160" cy="100" r="8" fill={ink} />
+      </g>
+    )}
+    {area === 'language' && (
+      <g fill={ink}>
+        <text x="48" y="138" font-family="Georgia, serif" font-size="110">oʻ</text>
+        <path d="M178 92h44l-14-14M222 92l-14 14" fill="none" stroke={ink} stroke-width="3" />
+        <text x="236" y="138" font-family="Georgia, serif" font-size="110">ō</text>
+      </g>
+    )}
+    {area === 'infrastructure' && (
+      <g fill="#faf9f5" stroke={ink} stroke-width="2.5">
+        {[0, 1, 2, 3].map((i) => <><rect x="88" y={34 + i * 34} width="144" height="26" rx="4" /><circle cx="108" cy={47 + i * 34} r="4" fill={ink} /><line x1="128" y1={47 + i * 34} x2="210" y2={47 + i * 34} /></>)}
+      </g>
+    )}
+    {area === 'supply-chain' && (
+      <g fill="none" stroke={ink} stroke-width="3">
+        {[0, 1, 2, 3].map((i) => <rect x={40 + i * 54} y={i % 2 ? 84 : 72} width="78" height={i % 2 ? 32 : 56} rx={i % 2 ? 16 : 28} fill={i % 2 ? 'none' : '#faf9f5'} />)}
+        <path d="M262 46l14 14 26-30" stroke-width="4" />
+      </g>
+    )}
+    {area === 'interfaces' && (
+      <g fill="none" stroke={ink} stroke-width="2.5" stroke-linejoin="round">
+        <path d="M160 30l70 40v62l-70 40-70-40V70z" fill="#faf9f5" />
+        <path d="M90 70l70 40 70-40M160 110v62" />
+        <path d="M125 50l70 40M195 50l-70 40" stroke-dasharray="4 6" />
+      </g>
+    )}
+    {area === 'faith-society' && (
+      <g fill="#faf9f5" stroke={ink} stroke-width="2.5">
+        <path d="M110 180V110a50 50 0 0 1 100 0v70z" />
+        <path d="M140 180v-50a20 20 0 0 1 40 0v50" fill="none" />
+        <line x1="236" y1="180" x2="236" y2="70" /><path d="M228 70h16l-8-22z" />
+        <line x1="40" y1="180" x2="280" y2="180" />
+      </g>
+    )}
+    {area === 'digital-assets' && (
+      <g fill="none" stroke={ink} stroke-width="2.5">
+        <path d="M160 34l52 30-52 102-52-102z" fill="#faf9f5" />
+        <path d="M108 64h104M134 64l26 102 26-102M134 64l26-30 26 30" />
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .amark { aspect-ratio: 16 / 10; border-radius: var(--radius-media); overflow: hidden; }
+  .amark svg { display: block; width: 100%; height: 100%; }
+</style>

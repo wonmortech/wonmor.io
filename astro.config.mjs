@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import { unified } from '@astrojs/markdown-remark';
+import remarkSteps from './tools/remark-steps.mjs';
 
 // Static build straight into ./site — the folder deploy/deploy.sh ships (build output is committed).
 export default defineConfig({
@@ -9,6 +11,11 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'auto', assets: 'assets' },
   compressHTML: true,
+  markdown: {
+    // remark pipeline: ```steps blocks become build-time flow diagrams (tools/remark-steps.mjs)
+    processor: unified({ remarkPlugins: [remarkSteps] }),
+    shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: 'light', wrap: false },
+  },
   integrations: [
     sitemap({
       i18n: { defaultLocale: 'en', locales: { en: 'en', uz: 'uz-Latn', ru: 'ru' } },

@@ -1,0 +1,86 @@
+---
+/* /research: lede, the seven areas as picture cards with counts, a dark featured strip, then every post. */
+import Icon from '../Icon.astro';
+import AreaMark from './AreaMark.astro';
+import PostRow, { type PostLite } from './PostRow.astro';
+import { href, type Locale } from '../../i18n/config';
+import { pageByKey, type PageDef } from '../../i18n/pages';
+import { areaList, areaPageKey, postCount, researchUi as R } from '../../data/research';
+interface Props { locale: Locale; page: PageDef; posts: PostLite[] }
+const { locale, page, posts } = Astro.props;
+const featured = [...posts.filter((p) => p.featured), ...posts.filter((p) => !p.featured)].slice(0, 3);
+const count = (a: string) => posts.filter((p) => p.area === a).length;
+const color = Object.fromEntries(areaList.map((a) => [a.key, a.color]));
+---
+<article class="ri">
+  <header class="container page-top">
+    <h1 class="t-headline-1 ri__title">{page.lede[locale]}</h1>
+  </header>
+
+  <section class="container section-lg" aria-labelledby="ri-a">
+    <div class="rule-row"><h2 class="t-caption-bold" id="ri-a">{R.areas[locale]}</h2><a class="t-caption link-quiet fg-3" href={href(locale, '/engineering')}>{pageByKey['engineering'].title[locale]}</a></div>
+    <ul class="ri__areas" role="list">
+      {areaList.map((a, i) => {
+        const pg = pageByKey[areaPageKey(a.key)];
+        return (
+          <li class="reveal-up" style={`transition-delay:${(i % 4) * 70}ms`}>
+            <a class="acard" href={href(locale, pg.path)}>
+              <AreaMark area={a.key} color={a.color} />
+              <span class="acard__top"><span class="t-headline-5">{pg.title[locale]}</span>{pg.chip && <span class="chip">{pg.chip[locale]}</span>}</span>
+              <span class="t-caption fg-3">{postCount(count(a.key), locale)}</span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+
+  {featured.length > 0 && (
+    <section class="ri__feat" aria-labelledby="ri-f">
+      <div class="container">
+        <div class="rule-row ri__feat-rule"><h2 class="t-caption-bold" id="ri-f">{R.featured[locale]}</h2></div>
+        <ul class="ri__feat-row" role="list">
+          {featured.map((p) => (
+            <li><a class="fcard" href={href(locale, `/${p.kind}/${p.slug}`)}>
+              <AreaMark area={p.area} color={color[p.area]} />
+              <span class="t-caption fcard__meta">{pageByKey[areaPageKey(p.area)].title[locale]} · {R[p.kind][locale]}</span>
+              <span class="fcard__title">{p.title}</span>
+              <span class="t-body-4 fcard__desc">{p.description}</span>
+              <span class="t-caption fcard__cta">{R.readPost[locale]}<Icon name="arrow-right" size={14} /></span>
+            </a></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <section class="container section-lg" aria-labelledby="ri-all">
+    <div class="rule-row"><h2 class="t-caption-bold" id="ri-all">{R.all[locale]}</h2><span class="t-caption fg-3">{posts.length}</span></div>
+    {posts.length ? <ol class="ri__list" role="list">{posts.map((p) => <PostRow locale={locale} post={p} />)}</ol> : <p class="t-body-4 fg-3">{R.noPosts[locale]}</p>}
+  </section>
+</article>
+
+<style>
+  .ri__title { max-width: 20ch; text-wrap: balance; }
+  .ri__areas { list-style: none; display: grid; gap: 40px var(--grid-gutter); margin-top: 28px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .ri__areas { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1280px) { .ri__areas { grid-template-columns: repeat(4, 1fr); } }
+  .acard { display: grid; gap: 10px; text-decoration: none; color: inherit; }
+  .acard :global(.amark) { margin-bottom: 6px; transition: transform .6s var(--ease-out-quart); }
+  .acard__top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+  @media (hover: hover) { .acard:hover :global(.amark) { transform: translateY(-4px); } }
+
+  .ri__feat { background: #141413; color: #faf9f5; padding-block: 64px 80px; }
+  .ri__feat-rule { border-color: rgba(250, 249, 245, .18) !important; }
+  .ri__feat-row { list-style: none; display: grid; gap: var(--grid-gutter); margin-top: 32px; grid-auto-flow: column; grid-auto-columns: minmax(280px, calc((100% - 2 * var(--grid-gutter)) / 3));
+    overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; }
+  .ri__feat-row > li { scroll-snap-align: start; }
+  .fcard { display: grid; gap: 12px; text-decoration: none; color: inherit; }
+  .fcard :global(.amark) { margin-bottom: 8px; opacity: .92; }
+  .fcard__meta, .fcard__cta { color: rgba(250, 249, 245, .6); }
+  .fcard__title { font: 500 clamp(22px, calc(22px + 6 * ((100vw - 390px) / 1530)), 28px)/1.2 var(--serif); letter-spacing: -.01em; }
+  .fcard__desc { color: rgba(250, 249, 245, .75); }
+  .fcard__cta { display: inline-flex; align-items: center; gap: 6px; }
+  @media (hover: hover) { .fcard:hover .fcard__title { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; } }
+  .ri__list { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
+</style>

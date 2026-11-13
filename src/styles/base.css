@@ -17,6 +17,8 @@ img, video { height: auto; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd, ul, ol { margin: 0; }
+/* Long single words (ru "Конфиденциальность") must not push a 390px page sideways. */
+h1, h2, h3 { overflow-wrap: break-word; hyphens: auto; }
 ul, ol { padding: 0; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: 4px; }
