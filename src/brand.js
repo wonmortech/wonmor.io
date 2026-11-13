@@ -24,13 +24,14 @@ export function lockupSVG({ mark = '#2969FF', text = 'currentColor', cls = '' } 
 }
 
 // One diamond -> crown + V -> the V doubles -> one crown over a W.
+// Step 3 animates in CSS (.wm-cmp-*): one V splits in two, the left one sinks into shadow.
 export function stepSVG(n) {
   const p = (d) => `<path d="${d}"/>`;
   const two = p(PATHS.vCrown) + p(PATHS.vChev);
   const s = {
     1: p(PATHS.diamond),
     2: two,
-    3: `<g opacity=".45">${two}</g><g transform="translate(${B.o} 0)">${two}</g>`,
+    3: `<g class="wm-cmp-ghost" opacity=".45">${two}</g><g class="wm-cmp-front" transform="translate(${B.o} 0)">${two}</g>`,
     4: p(PATHS.crown) + p(PATHS.chev),
   }[n];
   const dx = n < 3 ? B.o / 2 : 0;
