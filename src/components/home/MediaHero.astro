@@ -15,7 +15,7 @@ const { locale, line1, line2, body, label, cta1, cta2 } = Astro.props;
   <div class="mh__sentinel" data-media-sentinel aria-hidden="true"></div>
   <div class="mh__card theme-slate" data-media-card>
     <video class="mh__video" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"
-      poster={asset('/film/wonmor_16x9.jpg')} data-media-video>
+      data-poster-light={asset('/film/wonmor_16x9.jpg')} data-poster-dark={asset('/film/wonmor_16x9_dark.jpg')} data-poster-tall={asset('/film/wonmor_9x16_poster.jpg')} data-media-video>
       <source src={asset('/film/wonmor_screen_9x16.mp4')} type="video/mp4" media="(max-aspect-ratio: 4/5)" />
       <source src={asset('/film/wonmor_16x9.mp4')} type="video/mp4" />
     </video>
@@ -45,6 +45,18 @@ const { locale, line1, line2, body, label, cta1, cta2 } = Astro.props;
   const toggle = root?.querySelector<HTMLButtonElement>('[data-media-toggle]');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (root && card && sentinel && video && toggle) {
+    const html = document.documentElement;
+    /* Portrait screens play the 9:16 cut, so they get its frame; landscape picks the light or dark 16:9 frame by theme. */
+    const tall = matchMedia('(max-aspect-ratio: 4/5)');
+    const setPoster = () => {
+      const dark = getComputedStyle(html).colorScheme.includes('dark');
+      const src = tall.matches ? video.dataset.posterTall : dark ? video.dataset.posterDark : video.dataset.posterLight;
+      if (src && video.getAttribute('poster') !== src) video.setAttribute('poster', src);
+    };
+    setPoster();
+    new MutationObserver(setPoster).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setPoster);
+    tall.addEventListener('change', setPoster);
     let userPaused = reduce;
     const sync = () => {
       const playing = !video.paused;
@@ -91,6 +103,8 @@ const { locale, line1, line2, body, label, cta1, cta2 } = Astro.props;
   @media (max-width: 767px) { .mh__card { min-height: 88svh; } }
   @media (prefers-reduced-motion: reduce) { .mh__card { --grow: 1; } }
   .mh__video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+  /* Portrait: the 9:16 cut keeps its action near the middle, where the title sits; lift it so the mark clears the text. */
+  @media (max-aspect-ratio: 4/5) { .mh__video { inset: -24% 0 auto; height: 124%; } }
   .mh__scrim { position: absolute; inset: 0; z-index: -1; pointer-events: none;
     background: linear-gradient(180deg, rgba(9, 10, 30, 0) 40%, rgba(9, 10, 30, .55) 72%, rgba(9, 10, 30, .85) 100%),
       linear-gradient(90deg, rgba(9, 10, 30, .55) 0%, rgba(9, 10, 30, 0) 60%); }

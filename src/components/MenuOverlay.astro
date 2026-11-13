@@ -100,6 +100,8 @@ const small = footerGroups.slice(4);
   .acc ul { list-style: none; display: grid; gap: 2px; padding: 0 0 16px; }
   .acc a { display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; font: 400 var(--fs-caption-1)/1.5 var(--sans); color: var(--theme-foreground-secondary); text-decoration: none; }
   .acc a:hover { color: var(--theme-foreground-primary); text-decoration: underline; text-underline-offset: .2em; }
+  /* touch: every submenu link is a full-width 44px row */
+  @media (pointer: coarse) { .acc ul { gap: 0; } .acc a { display: flex; min-height: 44px; padding-block: 0; } }
   .site-menu__langs { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 24px; font: 400 var(--fs-caption-1)/1.5 var(--sans); }
   .site-menu__langs a { color: var(--theme-foreground-tertiary); text-decoration: none; }
   .site-menu__langs a[aria-current], .site-menu__langs a:hover { color: var(--theme-foreground-primary); }

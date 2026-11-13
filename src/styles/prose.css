@@ -14,6 +14,17 @@
 .prose table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font: 400 15px/1.45 var(--sans); display: block; overflow-x: auto; }
 .prose :is(th, td) { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--theme-border-secondary); vertical-align: top; }
 .prose th { font-weight: 600; }
+/* 3+ column tables (tools/rehype-table-labels.mjs): on phones each row becomes a card, first cell as its title. */
+@media (max-width: 640px) {
+  .prose table.table--stack { display: block; overflow: visible; font-size: 15px; }
+  .prose .table--stack :is(thead, tbody, tr, td) { display: block; }
+  .prose .table--stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .prose .table--stack tr { padding: 14px 0; border-bottom: 1px solid var(--theme-border-secondary); }
+  .prose .table--stack td { border: 0; padding: 3px 0; display: grid; grid-template-columns: minmax(6.5em, 34%) minmax(0, 1fr); gap: 12px; overflow-wrap: anywhere; }
+  .prose .table--stack td::before { content: attr(data-label); color: var(--theme-foreground-secondary); font-size: 13px; line-height: 1.6; }
+  .prose .table--stack td:first-child { display: block; font-weight: 600; padding-bottom: 6px; }
+  .prose .table--stack td:first-child::before { content: none; }
+}
 
 /* ```steps diagrams (tools/remark-steps.mjs) */
 .prose .flow { margin: 2em 0; padding: 28px 24px; border-radius: var(--radius-card); background: var(--theme-background-secondary); }
