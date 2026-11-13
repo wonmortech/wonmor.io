@@ -1,8 +1,8 @@
 // Writes the vector kit (SVG for Figma/AE) and geo.json (Blender, AE script, film comp).
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, COLORS, MARK, markFinal, wordmark, lockup, svgPath, bbox, sample } from '../lib/geo.mjs';
-import { DIAMOND, CAP, V_OUTER, V, CAP_UNION, W } from '../../src/geometry.js';
+import { ROOT, COLORS, MARK, markFinal, wordB, lockup, svgPath, bbox, sample } from '../lib/geo.mjs';
+import { DIAMOND, CAP, V_OUTER, V, CAP_UNION, W } from '../lib/markB.mjs';
 
 const OUT = path.join(ROOT, 'out');
 const VEC = path.join(OUT, 'vectors');
@@ -38,8 +38,9 @@ write('lockup_white.svg', lockupSvg(COLORS.white, COLORS.white));
 write('lockup_on-paper.svg', lockupSvg(COLORS.blue, COLORS.ink, COLORS.paper));
 write('lockup_on-ink.svg', lockupSvg(COLORS.blue, COLORS.white, COLORS.ink));
 
-// No standalone wordmark: the mark is the w, so the word only ever appears next to it.
-const WMK = wordmark();
+// Wordmark "wonmor" (variant B), also used alone for the giant type shot.
+const WMK = wordB();
+write('wordmark_ink.svg', svg(Math.round(WMK.width * 2 + 80), 300, `<path fill="${COLORS.ink}" transform="translate(40 250) scale(2)" d="${WMK.letters.map((l) => svgPath(l.contours, 2)).join('')}"/>`));
 {
   const R = 500, m = markFinal(), b = bbox(m), s = (R * 1.1) / b.w;
   write('badge_ink.svg', svg(R * 2, R * 2, `<circle cx="${R}" cy="${R}" r="${R}" fill="${COLORS.ink}"/><path fill="${COLORS.blue}" transform="translate(${R - b.w * s / 2} ${R - b.h * s / 2 + 10}) scale(${s})" d="${svgPath(m, 3)}"/>`));
@@ -47,7 +48,7 @@ const WMK = wordmark();
 
 const letters = (ls) => ls.map((l) => ({ ch: l.ch, x0: l.x0, x1: l.x1, contours: l.contours }));
 const geo = {
-  units: 'mark: 164 x 100 (y down). wordmark/lockup: x-height = 100, baseline y = 0, y down.',
+  units: 'mark: variant B, 141.78 x 115.65 (y down). wordmark/lockup: x-height = 100, baseline y = 0, y down.',
   colors: COLORS,
   mark: { w: MARK.W, h: MARK.H, offset: MARK.OFFSET, diamond: MARK.diamond, crown: MARK.crown, v: MARK.v, crownW: MARK.crownW, wShape: MARK.w },
   wordmark: { width: WMK.width, letters: letters(WMK.letters) },

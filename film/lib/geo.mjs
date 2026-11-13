@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import opentype from 'opentype.js';
-import { DIAMOND, CAP, V, CAP_UNION, W, CAP_R, V_R, W_R, MARK_W, MARK_H, OFFSET } from '../../src/geometry.js';
+import { DIAMOND, CAP, V, CAP_UNION, W, CAP_R, V_R, W_R, MARK_W, MARK_H, OFFSET, BRAND, K as MK } from './markB.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(here, '..');
@@ -111,18 +111,72 @@ export function wordmark(text = 'onmor', tracking = -0.03) {
   return { letters, width: letters[letters.length - 1].x1, xHeight: 100 };
 }
 
-// Horizontal lockup, x-height = 100. The mark IS the letter w: mark + "onmor".
-// Crown top on the x-height, W tip below the baseline (mark height 1.24 x-height), gap = one letter space.
+// SVG path (M H V L C A Z, absolute) -> contours of cubic segments.
+export function parsePath(d) {
+  const tok = d.match(/[MHVLCAZ]|-?\d*\.?\d+(?:e-?\d+)?/gi);
+  const out = [];
+  let i = 0, cmd = null, pen = [0, 0], start = [0, 0], cur = null;
+  const num = () => parseFloat(tok[i++]);
+  const close = () => { if (cur) { if (dist(pen, start) > 1e-6) cur.push(line(pen, start)); if (cur.length) out.push(cur); } cur = null; pen = start; };
+  while (i < tok.length) {
+    if (/[A-Z]/i.test(tok[i])) cmd = tok[i++];
+    if (cmd === 'M') { if (cur) close(); start = pen = [num(), num()]; cur = []; cmd = 'L'; }
+    else if (cmd === 'L') { const p = [num(), num()]; cur.push(line(pen, p)); pen = p; }
+    else if (cmd === 'H') { const p = [num(), pen[1]]; cur.push(line(pen, p)); pen = p; }
+    else if (cmd === 'V') { const p = [pen[0], num()]; cur.push(line(pen, p)); pen = p; }
+    else if (cmd === 'C') { const a = [num(), num()], b = [num(), num()], p = [num(), num()]; cur.push([pen, a, b, p]); pen = p; }
+    else if (cmd === 'A') { const rx = num(), ry = num(); num(); const large = num(), sweep = num(); const p = [num(), num()]; cur.push(...arcToCubics(pen, rx, ry, large, sweep, p)); pen = p; }
+    else if (cmd === 'Z') { close(); }
+  }
+  if (cur) close();
+  return out;
+}
+
+// Axis-aligned elliptical arc (no rotation) -> cubic segments of at most 90 degrees.
+function arcToCubics(p0, rx, ry, large, sweep, p1) {
+  const x1p = (p0[0] - p1[0]) / 2, y1p = (p0[1] - p1[1]) / 2;
+  let lam = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
+  if (lam > 1) { rx *= Math.sqrt(lam); ry *= Math.sqrt(lam); }
+  const num = rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p;
+  let co = Math.sqrt(Math.max(0, num / (rx * rx * y1p * y1p + ry * ry * x1p * x1p)));
+  if (large === sweep) co = -co;
+  const cxp = co * (rx * y1p) / ry, cyp = co * -(ry * x1p) / rx;
+  const cx = cxp + (p0[0] + p1[0]) / 2, cy = cyp + (p0[1] + p1[1]) / 2;
+  const ang = (ux, uy, vx, vy) => Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy);
+  const t1 = ang(1, 0, (x1p - cxp) / rx, (y1p - cyp) / ry);
+  let dt = ang((x1p - cxp) / rx, (y1p - cyp) / ry, (-x1p - cxp) / rx, (-y1p - cyp) / ry);
+  if (!sweep && dt > 0) dt -= 2 * Math.PI; else if (sweep && dt < 0) dt += 2 * Math.PI;
+  const n = Math.ceil(Math.abs(dt) / (Math.PI / 2) - 1e-9);
+  const segs = [];
+  const step = dt / n, kk = (4 / 3) * Math.tan(step / 4);
+  let a = t1, prev = p0;
+  for (let j = 0; j < n; j++) {
+    const b = a + step;
+    const e = j === n - 1 ? p1 : [cx + rx * Math.cos(b), cy + ry * Math.sin(b)];
+    segs.push([prev, [prev[0] - kk * rx * Math.sin(a), prev[1] + kk * ry * Math.cos(a)], [e[0] + kk * rx * Math.sin(b), e[1] - kk * ry * Math.cos(b)], e]);
+    prev = e; a = b;
+  }
+  return segs;
+}
+
+// The wordmark "wonmor" (variant B, Vetric letter metrics). Units: x-height = 100, baseline y = 0, y down.
+const WB = BRAND.variants.b;
+const XH_TOP = 6.6303, XH_BASE = 23.0068;
+const WS = 100 / (XH_BASE - XH_TOP);
+export function wordB() {
+  const x0 = WB.letters[0].x0;
+  const letters = WB.letters.map((l) => ({ ch: l.ch, contours: transform(parsePath(l.d), WS, -x0 * WS, -XH_BASE * WS), x0: (l.x0 - x0) * WS, x1: (l.x1 - x0) * WS }));
+  return { letters, width: letters[letters.length - 1].x1, xHeight: 100 };
+}
+
+// Horizontal lockup exactly as the brand file: mark + "wonmor", x-height = 100, baseline y = 0.
 export function lockup() {
-  const wm = wordmark();
-  const mh = 124;
-  const ms = mh / MARK_H;
-  const mw = MARK_W * ms;
-  const gap = 7.2;
-  const top = -100;
-  const mark = transform(markFinal(), ms, 0, top);
-  const letters = wm.letters.map((l) => ({ ...l, contours: transform(l.contours, 1, mw + gap, 0), x0: l.x0 + mw + gap, x1: l.x1 + mw + gap }));
-  return { mark, letters, markW: mw, markH: mh, width: mw + gap + wm.width, top, bottom: top + mh };
+  const ms = (BRAND.K * WS) / MK;
+  const dy = (BRAND.TY + 3 * BRAND.K - XH_BASE) * WS;
+  const mark = transform(markFinal(), ms, 0, dy);
+  const letters = WB.letters.map((l) => ({ ch: l.ch, contours: transform(parsePath(l.d), WS, 0, -XH_BASE * WS), x0: l.x0 * WS, x1: l.x1 * WS }));
+  const mh = MARK_H * ms;
+  return { mark, letters, markW: MARK_W * ms, markH: mh, width: letters[letters.length - 1].x1, top: dy, bottom: dy + mh };
 }
 
 export function svgPath(contours, digits = 2) {

@@ -2,8 +2,12 @@
 // Usage: node film/tools/timeline.mjs  -> out/data/timeline_9x16.json, timeline_16x9.json
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, COLORS as K, MARK, polyContour, transform, wordmark, lockup, bbox } from '../lib/geo.mjs';
-import { DIAMOND, CAP, V_OUTER, V, CAP_UNION, W, CAP_R, V_R, W_R } from '../../src/geometry.js';
+import { ROOT, COLORS as K, MARK, polyContour, transform, wordmark, wordB, lockup, bbox } from '../lib/geo.mjs';
+import { DIAMOND, CAP, V_OUTER, V, V_NOTCH, CAP_UNION, W, CAP_R, V_R, W_R, MARK_W, MARK_H, OFFSET, CAP_BOTTOM, V_TOP, FACET_L, FACET_R } from '../lib/markB.mjs';
+
+const MW0 = MARK_W, MC = [MARK_W / 2, MARK_H / 2], HO = OFFSET / 2;
+const CB = CAP_BOTTOM, VT = V_TOP, MH = MARK_H;
+const [N1, N2, N3] = V_NOTCH;
 
 const FPS = 30;
 const DUR = 19.4;
@@ -57,47 +61,47 @@ export function build(fmt) {
   [[-132, -118], [0, -118], [132, -118], [132, 0], [132, 118], [0, 118], [-132, 118], [-132, 0]].forEach(([x, y], i) =>
     shape({ name: 'Handle ' + (i + 1), parent: selG, contours: square(4.5), fill: K.white, stroke: K.blue, strokeWidth: 1.2, x, y }));
 
-  // ---------- S02-S08: construction in diamond units (diamond 0..100), anchor = centre of the final W
-  const U = 2.55;
-  const con = group({ name: 'Construction', in: 0.57, out: 4.60, x: cx, y: cy, unit: U, anchor: [50, 50],
+  // ---------- S02-S08: construction in diamond units (diamond 0..100 wide), anchor = centre of the diamond
+  const U = 2.55 * 100 / MH;
+  const con = group({ name: 'Construction', in: 0.57, out: 4.60, x: cx, y: cy, unit: U, anchor: [50, MH / 2],
     scale: kf([0.57, 1, E.hold], [0.95, 1, E.out], [1.45, 1.62, E.hold]) });
   const NAVY = { fill: K.navy, fillOpacity: 0.62, stroke: K.blue, strokeWidth: 2 };
   shape({ name: 'Diamond outline', parent: con, in: 0.57, out: 1.60, contours: [polyContour(DIAMOND)], ...NAVY });
   DIAMOND.forEach(([x, y], i) => shape({ name: 'Anchor ' + (i + 1), parent: con, in: 0.6 + i * 0.02, out: 1.60, contours: square(1.9), fill: K.white, stroke: K.blue, strokeWidth: 1, x, y }));
-  shape({ name: 'Top edge highlight', parent: con, in: 0.95, out: 1.60, contours: lineC([[18, 0], [82, 0]]), stroke: K.white, strokeWidth: 3, trimEnd: kf([0.95, 0, E.inout], [1.35, 1, E.hold]) });
-  shape({ name: 'Cut line', parent: con, in: 1.36, out: 2.33, contours: lineC([[-6, 22], [106, 22]]), stroke: K.white, strokeWidth: 1.6, trimEnd: kf([1.36, 0, E.out], [1.58, 1, E.hold]) });
+  shape({ name: 'Top edge highlight', parent: con, in: 0.95, out: 1.60, contours: lineC([DIAMOND[0], DIAMOND[1]]), stroke: K.white, strokeWidth: 3, trimEnd: kf([0.95, 0, E.inout], [1.35, 1, E.hold]) });
+  shape({ name: 'Cut line', parent: con, in: 1.36, out: 2.33, contours: lineC([[-6, CB], [106, CB]]), stroke: K.white, strokeWidth: 1.6, trimEnd: kf([1.36, 0, E.out], [1.58, 1, E.hold]) });
 
   // crown + lower piece separate (S04)
   const crownSharp = shape({ name: 'Crown (sharp)', parent: con, in: 1.60, out: 3.25, contours: [polyContour(CAP)], ...NAVY });
   const lower = shape({ name: 'Lower piece', parent: con, in: 1.60, out: 3.0, contours: [polyContour(V_OUTER)], ...NAVY,
-    y: kf([1.60, -8, E.hold], [1.70, -8, E.out], [2.10, 0, E.hold]) });
-  shape({ name: 'Dim line', parent: con, in: 1.62, out: 2.40, contours: lineC([[-10, 0], [-10, 22]]), stroke: K.blue, strokeWidth: 1.4, trimEnd: kf([1.62, 0, E.out], [1.85, 1, E.hold]) });
+    y: kf([1.60, CB - VT, E.hold], [1.70, CB - VT, E.out], [2.10, 0, E.hold]) });
+  shape({ name: 'Dim line', parent: con, in: 1.62, out: 2.40, contours: lineC([[-10, 0], [-10, CB]]), stroke: K.blue, strokeWidth: 1.4, trimEnd: kf([1.62, 0, E.out], [1.85, 1, E.hold]) });
   shape({ name: 'Dim tick top', parent: con, in: 1.62, out: 2.40, contours: lineC([[-13, 0], [-7, 0]]), stroke: K.blue, strokeWidth: 1.4 });
-  shape({ name: 'Dim tick bottom', parent: con, in: 1.62, out: 2.40, contours: lineC([[-13, 22], [-7, 22]]), stroke: K.blue, strokeWidth: 1.4 });
+  shape({ name: 'Dim tick bottom', parent: con, in: 1.62, out: 2.40, contours: lineC([[-13, CB], [-7, CB]]), stroke: K.blue, strokeWidth: 1.4 });
   shape({ name: 'Label 10', parent: con, in: 1.66, out: 2.40, contours: DIGITS('10'), fill: K.blue, unit: 0.045, x: 45, y: -4 });
-  shape({ name: 'Gap bracket', parent: con, in: 1.80, out: 2.45, contours: lineC([[106, 22], [106, 30]]), stroke: K.measure, strokeWidth: 1.4 });
-  shape({ name: 'Label 4.4', parent: con, in: 1.80, out: 2.05, contours: DIGITS('4.4'), fill: K.measure, unit: 0.04, x: 109, y: 28.5 });
-  shape({ name: 'Label 5', parent: con, in: 2.05, out: 2.45, contours: DIGITS('5'), fill: K.measure, unit: 0.04, x: 109, y: 28.5 });
+  shape({ name: 'Gap bracket', parent: con, in: 1.80, out: 2.45, contours: lineC([[106, CB], [106, VT]]), stroke: K.measure, strokeWidth: 1.4 });
+  shape({ name: 'Label 4.4', parent: con, in: 1.80, out: 2.05, contours: DIGITS('4.4'), fill: K.measure, unit: 0.04, x: 109, y: (CB + VT) / 2 + 6.5 });
+  shape({ name: 'Label 5', parent: con, in: 2.05, out: 2.45, contours: DIGITS('5'), fill: K.measure, unit: 0.04, x: 109, y: (CB + VT) / 2 + 6.5 });
 
   // V notch (S05)
-  [[18, 30, 2.36], [82, 30, 2.44], [50, 62, 2.54]].forEach(([x, y, t], i) =>
+  [[...N1, 2.36], [...N3, 2.44], [...N2, 2.54]].forEach(([x, y, t], i) =>
     shape({ name: 'Notch anchor ' + (i + 1), parent: con, in: t, out: 3.12, contours: square(1.9), fill: K.white, stroke: K.blue, strokeWidth: 1, x, y }));
-  shape({ name: 'Notch path', parent: con, in: 2.58, out: 3.02, contours: lineC([[18, 30], [50, 62], [82, 30]]), stroke: K.white, strokeWidth: 2.2, trimEnd: kf([2.58, 0, E.inout], [2.95, 1, E.hold]) });
-  shape({ name: 'Helper L', parent: con, in: 2.62, out: 3.10, contours: lineC([[6, 18], [62, 74]]), stroke: K.blue, strokeWidth: 1, opacity: 0.55 });
-  shape({ name: 'Helper R', parent: con, in: 2.66, out: 3.10, contours: lineC([[94, 18], [38, 74]]), stroke: K.blue, strokeWidth: 1, opacity: 0.55 });
+  shape({ name: 'Notch path', parent: con, in: 2.58, out: 3.02, contours: lineC([N1, N2, N3]), stroke: K.white, strokeWidth: 2.2, trimEnd: kf([2.58, 0, E.inout], [2.95, 1, E.hold]) });
+  shape({ name: 'Helper L', parent: con, in: 2.62, out: 3.10, contours: lineC([[N1[0] - 12 * (N2[0] - N1[0]) / (N2[1] - N1[1]), N1[1] - 12], [N2[0] + 12 * (N2[0] - N1[0]) / (N2[1] - N1[1]), N2[1] + 12]]), stroke: K.blue, strokeWidth: 1, opacity: 0.55 });
+  shape({ name: 'Helper R', parent: con, in: 2.66, out: 3.10, contours: lineC([[N3[0] + 12 * (N2[0] - N1[0]) / (N2[1] - N1[1]), N3[1] - 12], [N2[0] - 12 * (N2[0] - N1[0]) / (N2[1] - N1[1]), N2[1] + 12]]), stroke: K.blue, strokeWidth: 1, opacity: 0.55 });
   const vSharp = shape({ name: 'V (sharp)', parent: con, in: 3.0, out: 3.25, contours: [polyContour(V)], ...NAVY });
 
   // corner rounding (S06)
-  shape({ name: 'Radius handle', parent: con, in: 3.10, out: 3.45, contours: circle(2.6), stroke: K.white, strokeWidth: 1.4, x: kf([3.1, 18, E.out], [3.3, 21, E.hold]), y: kf([3.1, 0, E.out], [3.3, 3, E.hold]) });
+  shape({ name: 'Radius handle', parent: con, in: 3.10, out: 3.45, contours: circle(2.6), stroke: K.white, strokeWidth: 1.4, x: kf([3.1, CAP[0][0], E.out], [3.3, CAP[0][0] + 4, E.hold]), y: kf([3.1, 0, E.out], [3.3, 4, E.hold]) });
   shape({ name: 'Crown', parent: con, in: 3.25, out: 4.60, ...NAVY,
-    contours: kf([3.25, [polyContour(CAP, CAP_R)], E.hold], [3.55, [polyContour(CAP, CAP_R)], E.out], [4.15, shift([polyContour(CAP_UNION, CAP_R)], -32), E.hold]) });
+    contours: kf([3.25, [polyContour(CAP, CAP_R)], E.hold], [3.55, [polyContour(CAP, CAP_R)], E.out], [4.15, shift([polyContour(CAP_UNION, CAP_R)], -HO), E.hold]) });
 
   // V doubles into W (S07)
   const vR = [polyContour(V, V_R)];
-  shape({ name: 'V left', parent: con, in: 3.25, out: 4.18, contours: vR, ...NAVY, x: kf([3.25, 0, E.hold], [3.55, 0, E.out], [4.15, -32, E.hold]) });
-  shape({ name: 'V right (copy)', parent: con, in: 3.50, out: 4.18, contours: vR, ...NAVY, x: kf([3.50, 0, E.hold], [3.55, 0, E.out], [4.15, 32, E.hold]) });
-  shape({ name: 'W', parent: con, in: 4.15, out: 4.60, contours: shift([polyContour(W, W_R)], -32), ...NAVY });
-  shape({ name: 'W selection', parent: con, in: 3.42, out: 4.40, contours: kf([3.42, rect(-3, 27, 103, 103), E.hold], [3.55, rect(-3, 27, 103, 103), E.out], [4.15, rect(-35, -3, 135, 103), E.hold]), stroke: '#9AA7C7', strokeWidth: 1.2, opacity: 0.85 });
+  shape({ name: 'V left', parent: con, in: 3.25, out: 4.18, contours: vR, ...NAVY, x: kf([3.25, 0, E.hold], [3.55, 0, E.out], [4.15, -HO, E.hold]) });
+  shape({ name: 'V right (copy)', parent: con, in: 3.50, out: 4.18, contours: vR, ...NAVY, x: kf([3.50, 0, E.hold], [3.55, 0, E.out], [4.15, HO, E.hold]) });
+  shape({ name: 'W', parent: con, in: 4.15, out: 4.60, contours: shift([polyContour(W, W_R)], -HO), ...NAVY });
+  shape({ name: 'W selection', parent: con, in: 3.42, out: 4.40, contours: kf([3.42, rect(-3, VT - 3, 103, MH + 3), E.hold], [3.55, rect(-3, VT - 3, 103, MH + 3), E.out], [4.15, rect(-HO - 3, -3, 100 + HO + 3, MH + 3), E.hold]), stroke: '#9AA7C7', strokeWidth: 1.2, opacity: 0.85 });
 
   // cursor through the construction
   shape({ name: 'Cursor', in: 0.0, out: 4.45, contours: CURSOR, fill: K.white, stroke: '#111', strokeWidth: 1, unit: 1.45,
@@ -105,19 +109,19 @@ export function build(fmt) {
     y: kf([0, cy - 150, E.soft], [0.55, cy - 165, E.soft], [0.95, cy - 205, E.inout], [1.35, cy - 205, E.soft], [1.65, cy + 40, E.soft], [2.10, cy + 60, E.soft], [2.36, cy - 40, E.inout], [2.6, cy - 40, E.inout], [2.95, cy - 40, E.soft], [3.15, cy - 200, E.soft], [3.5, cy + 60, E.inout], [4.15, cy + 70, E.soft]) });
 
   // ---------- S08/S09: blue metal fill, sweep, scale-down (Blender seq, transparent)
-  const MW = 164 * U * 1.62; // W width on screen at the end of construction
-  const metalUnit = MW / (1100 * 0.8 * (1.64 / 1.95));
+  const MW = MW0 * U * 1.62; // W width on screen at the end of construction
+  const metalUnit = MW / (1100 * 0.8 * ((MW0 / 100) / 1.95));
   seq({ name: 'Metal mark', in: 4.43, out: 5.57, dir: 'render/metal', count: 34, iw: 880, ih: 608, anchor: [440, 304], x: cx, y: cy,
     opacity: kf([4.43, 0, E.lin], [4.60, 1, E.hold]), unit: metalUnit,
     scale: kf([4.60, 1, E.out], [5.0, 0.43, E.soft], [5.57, 0.41, E.hold]), frame: kf([4.43, 0, E.lin], [5.57, 33, E.hold]) });
 
   // ---------- S10: paper, faceted blue/dark mark, crown darkens
-  const MU = 300 / 164; // small mark: 300 px wide
-  const pm = group({ name: 'Paper mark', in: 5.57, out: 6.57, x: cx, y: cy, unit: MU, anchor: [82, 50], scale: kf([5.57, 1, E.lin], [6.57, 1.04, E.hold]) });
+  const MU = 300 / MW0; // small mark: 300 px wide
+  const pm = group({ name: 'Paper mark', in: 5.57, out: 6.57, x: cx, y: cy, unit: MU, anchor: MC, scale: kf([5.57, 1, E.lin], [6.57, 1.04, E.hold]) });
   shape({ name: 'Crown', parent: pm, contours: [polyContour(CAP_UNION, CAP_R)], fill: kf([5.57, K.blue, E.hold], [6.05, K.blue, E.inout], [6.45, K.ink, E.hold]) });
-  shape({ name: 'W gradient', parent: pm, contours: [polyContour(W, W_R)], fill: K.blue, gradient: { x0: 82, y0: 30, x1: 82, y1: 100, c0: K.blue, c1: K.navy } });
-  shape({ name: 'W facet L', parent: pm, contours: [polyContour([[0, 30], [18, 30], [50, 62], [50, 100]])], fill: '#000000', fillOpacity: 0.22 });
-  shape({ name: 'W facet R', parent: pm, contours: [polyContour([[114, 62], [146, 30], [164, 30], [114, 100]])], fill: '#FFFFFF', fillOpacity: 0.10 });
+  shape({ name: 'W gradient', parent: pm, contours: [polyContour(W, W_R)], fill: K.blue, gradient: { x0: MC[0], y0: VT, x1: MC[0], y1: MH, c0: K.blue, c1: K.navy } });
+  shape({ name: 'W facet L', parent: pm, contours: [polyContour(FACET_L)], fill: '#000000', fillOpacity: 0.22 });
+  shape({ name: 'W facet R', parent: pm, contours: [polyContour(FACET_R)], fill: '#FFFFFF', fillOpacity: 0.10 });
 
   // ---------- S11-S13: giant lockup outline, letter by letter, then fill + scale-down
   const LK = lockup();
@@ -150,11 +154,11 @@ export function build(fmt) {
   shape({ name: 'Wordmark', parent: lk2, contours: LK.letters.flatMap((l) => l.contours), fill: K.ink });
 
   // ---------- S15: giant white type, mark over it, blue dot grows (match cut to avatar)
-  const WM = wordmark();
+  const WM = wordB();
   const GU = (portrait ? 5.2 : 4.4);
   shape({ name: 'Giant wordmark', in: 12.07, out: 13.07, contours: WM.letters.flatMap((l) => l.contours), fill: K.white, unit: GU, anchor: [0, -50], y: cy,
     x: kf([12.07, cx - 0.30 * WM.width * GU, E.lin], [13.07, cx - 0.62 * WM.width * GU, E.hold]) });
-  const gm = group({ name: 'Mark over type', in: 12.07, out: 13.07, unit: 300 / 164, anchor: [82, 50], x: cx, y: cy });
+  const gm = group({ name: 'Mark over type', in: 12.07, out: 13.07, unit: 300 / MW0, anchor: MC, x: cx, y: cy });
   shape({ name: 'Mark solid', parent: gm, out: 12.35, contours: [...MARK.crownW, ...MARK.w], fill: K.blue });
   shape({ name: 'Mark outline', parent: gm, in: 12.35, out: 12.95, contours: [...MARK.crownW, ...MARK.w], stroke: K.blue, strokeWidth: 2 });
   let av = portrait ? { x: 300, y: 560, r: 95, w: 1080, h: 1920 } : { x: 700, y: 420, r: 80, w: 1920, h: 1080 };
@@ -172,7 +176,7 @@ export function build(fmt) {
   plate('Hoodie', 'hoodie', 14.07, 15.07, 1.0, 1.05, { y: kf([14.07, Hd / 2, E.lin], [15.07, Hd / 2 - 25, E.hold]) });
 
   // ---------- S18: lone white mark, glow, 1-frame dip
-  shape({ name: 'White mark glow', in: 15.07, out: 15.57, contours: [...MARK.crownW, ...MARK.w], fill: K.white, unit: 330 / 164, anchor: [82, 50], x: cx, y: cy,
+  shape({ name: 'White mark glow', in: 15.07, out: 15.57, contours: [...MARK.crownW, ...MARK.w], fill: K.white, unit: 330 / MW0, anchor: MC, x: cx, y: cy,
     glow: { r: 34, color: K.white, alpha: 0.55 }, opacity: kf([15.07, 1, E.hold], [15.30, 0.12, E.hold], [15.334, 1, E.hold]), scale: kf([15.07, 1, E.lin], [15.57, 1.03, E.hold]) });
 
   // ---------- S19/S20: 3D renders
@@ -180,8 +184,8 @@ export function build(fmt) {
   seq({ name: '3D dark', in: 16.07, out: 16.57, dir: 'render/dark3d', count: 15, iw: 960, ih: 960, anchor: [480, 480], x: cx, y: cy, unit: (portrait ? 860 : 900) / (960 * 0.57), frame: kf([16.07, 0, E.lin], [16.57, 14, E.hold]) });
 
   // ---------- S21: isometric outline (front + back + connectors)
-  const IU = 380 / 164;
-  const iso = group({ name: 'Iso outline', in: 16.57, out: 17.07, unit: IU, anchor: [82, 50], x: cx, y: cy, rotation: kf([16.57, -1.5, E.lin], [17.07, 1.5, E.hold]) });
+  const IU = 380 / MW0;
+  const iso = group({ name: 'Iso outline', in: 16.57, out: 17.07, unit: IU, anchor: MC, x: cx, y: cy, rotation: kf([16.57, -1.5, E.lin], [17.07, 1.5, E.hold]) });
   const dx = 9, dy = -8;
   const markRaw = [CAP_UNION, W];
   shape({ name: 'Back', parent: iso, contours: shift([polyContour(CAP_UNION, CAP_R), polyContour(W, W_R)], dx, dy), fill: K.paper, stroke: K.ink, strokeWidth: 1.6 });
@@ -190,11 +194,11 @@ export function build(fmt) {
 
   // ---------- S22-S25: embroidery, black solid, notebook, badge
   plate('Embroidery', 'embroidery', 17.07, 17.33, 1.0, 1.03);
-  shape({ name: 'Black solid mark', in: 17.33, out: 17.57, contours: [...MARK.crownW, ...MARK.w], fill: K.ink, unit: 330 / 164, anchor: [82, 50], x: cx, y: cy });
+  shape({ name: 'Black solid mark', in: 17.33, out: 17.57, contours: [...MARK.crownW, ...MARK.w], fill: K.ink, unit: 330 / MW0, anchor: MC, x: cx, y: cy });
   plate('Notebook', 'notebook', 17.57, 17.83, 1.0, 1.02, { rotation: kf([17.57, 0, E.lin], [17.83, -0.6, E.hold]) });
   shape({ name: 'Badge circle', in: 17.83, out: 18.13, contours: circle(1), x: cx, y: cy,
     fill: kf([17.83, K.ink, E.hold], [18.07, K.blue, E.hold]), scale: kf([17.83, 235, E.hold], [18.07, 235, E.in], [18.13, Math.hypot(Wd, Hd) * 0.62, E.hold]) });
-  shape({ name: 'Badge mark', in: 17.83, out: 18.07, contours: [...MARK.crownW, ...MARK.w], fill: K.blue, unit: 270 / 164, anchor: [82, 46], x: cx, y: cy });
+  shape({ name: 'Badge mark', in: 17.83, out: 18.07, contours: [...MARK.crownW, ...MARK.w], fill: K.blue, unit: 270 / MW0, anchor: [MC[0], MC[1] - 4], x: cx, y: cy });
 
   // ---------- S27: clear glass diamond on blue
   seq({ name: 'Glass diamond (blue)', in: 18.13, out: 18.93, dir: 'render/glassblue', count: 24, iw: 800, ih: 800, anchor: [400, 400], x: cx, y: cy, unit: 700 / (800 * 0.55),

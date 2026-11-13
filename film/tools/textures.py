@@ -21,9 +21,10 @@ def pencil(size=2048, seed=7):
     rnd = random.Random(seed)
     ss = 2
     S = size * ss
-    scale = S * 0.78 / 164
-    ox = S * 0.11
-    oy = S * 0.5 - 50 * scale
+    mw, mh = geo["mark"]["w"], geo["mark"]["h"]
+    scale = S * 0.70 / mh if mh / mw > 0.7 else S * 0.78 / mw
+    ox = S * 0.5 - mw / 2 * scale
+    oy = S * 0.5 - mh / 2 * scale
     tf = lambda p: (ox + p[0] * scale, oy + p[1] * scale)
     polys = [[tf(p) for p in c] for c in geo["polygons"]["crownW"] + geo["polygons"]["w"]]
 

@@ -19,10 +19,8 @@ await build({
   logLevel: 'info',
 });
 
-for (const w of [700, 800]) {
-  copyFileSync(
-    `node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-${w}-normal.woff2`,
-    `${out}/fonts/plus-jakarta-sans-${w}.woff2`,
-  );
-}
-copyFileSync('node_modules/@fontsource/plus-jakarta-sans/LICENSE', `${out}/fonts/LICENSE.txt`);
+const fs = 'node_modules/@fontsource';
+copyFileSync(`${fs}/noto-serif/files/noto-serif-latin-400-normal.woff2`, `${out}/fonts/noto-serif-400.woff2`);
+for (const w of [400, 500, 600, 700]) copyFileSync(`${fs}/manrope/files/manrope-latin-${w}-normal.woff2`, `${out}/fonts/manrope-${w}.woff2`);
+copyFileSync(`${fs}/noto-serif/LICENSE`, `${out}/fonts/LICENSE-noto-serif.txt`);
+copyFileSync(`${fs}/manrope/LICENSE`, `${out}/fonts/LICENSE-manrope.txt`);

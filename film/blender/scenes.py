@@ -172,8 +172,9 @@ def camera(loc, look, lens=50, ortho=None, dof=None):
 
 
 # ---------------------------------------------------------------- geometry
-def polys_to_mesh(name, polys, depth, bevel=0.0, seg=3, unit=0.01, center=(82, 50)):
+def polys_to_mesh(name, polys, depth, bevel=0.0, seg=3, unit=0.01, center=None):
     """Mark polygons (mark units, y down) -> extruded mesh, front face +Z, centred on origin."""
+    center = center or (GEO["mark"]["w"] / 2, GEO["mark"]["h"] / 2)
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     for pts in polys:
@@ -580,7 +581,7 @@ def shot_hoodie():
     cloth = cloth_plane("Hoodie", pw, ph, (260, 340), [(1.4, 0.28), (0.45, 0.06)])
     fab, nt, bump = fabric_material("Fleece", srgb("#0F1013"), 1400, 0.35)
     img = image_node(nt, TEX / "mark-w_blue.png")
-    uv_decal(nt, img, 0.30, 0.52, 0.60, pw, ph, 164 / 100)
+    uv_decal(nt, img, 0.30, 0.52, 0.60, pw, ph, GEO["mark"]["w"] / GEO["mark"]["h"])
     pr = nt.nodes.new("ShaderNodeBsdfPrincipled")
     pr.inputs["Base Color"].default_value = (*srgb("#2A63FF"), 1)
     pr.inputs["Roughness"].default_value = 0.55

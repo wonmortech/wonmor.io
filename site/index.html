@@ -1,112 +1,265 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-type="software">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>wonmor — brand system</title>
-<meta name="description" content="wonmor brand system: one diamond, one V, one W. Mark, wordmark, colour, type and motion.">
+<title>wonmor — win-loss intelligence for B2B sales teams</title>
+<meta name="description" content="wonmor reads your sales calls, emails and CRM, finds the real reasons you win and lose deals, and turns them into the next play for every open deal.">
+<meta name="page-type" content="software">
+<meta name="site-kind" content="software">
 <link rel="canonical" href="https://wonmor.io/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wonmor.io/">
-<meta property="og:title" content="wonmor">
-<meta property="og:description" content="One diamond. One V. One W.">
-<meta name="theme-color" content="#07080D">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="wonmor — every lost deal holds your next win">
+<meta property="og:description" content="Win-loss intelligence for B2B sales teams.">
 <meta property="og:image" content="https://wonmor.io/film/wonmor_16x9.jpg">
-<meta property="og:video" content="https://wonmor.io/film/wonmor_16x9.mp4">
-<link rel="preload" href="/assets/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/noto-serif-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/manrope-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/styles.css">
 <script type="module" src="/assets/app.js"></script>
 </head>
 <body>
+<!-- kind: software · palette: Vetric tokens (#090A1E ink, #2969FF blue, pastel pairs) · pairing: Noto Serif 400 / Manrope · hero: centred headline + product frame -->
 <a class="wm-skip" href="#wm-main">Skip to content</a>
 
-<header class="wm-nav">
-  <a class="wm-logo" href="/" aria-label="wonmor home"><span data-lockup data-mk="#1F5BFF" data-text="currentColor"></span></a>
-  <nav aria-label="Sections">
-    <a href="#mark">Mark</a><a href="#lockup">Lockup</a><a href="#color">Colour</a><a href="#type">Wordmark</a><a href="#three">3D</a>
-  </nav>
+<header class="wm-nav" id="wm-nav">
+  <div class="wm-wrap wm-nav-in">
+    <a class="wm-logo" href="/" data-lockup aria-label="wonmor home"></a>
+    <nav class="wm-links" aria-label="Main">
+      <a href="#product">Product</a><a href="#how">How it works</a><a href="#integrations">Integrations</a><a href="#pricing">Pricing</a><a href="#film">Brand film</a>
+    </nav>
+    <div class="wm-nav-cta">
+      <a class="wm-btn wm-btn-ghost" href="#pricing">Start free trial</a>
+      <a class="wm-btn wm-btn-dark" href="#demo">Book a demo</a>
+    </div>
+    <button class="wm-burger" type="button" aria-expanded="false" aria-controls="wm-menu" aria-label="Open menu"><i></i><i></i></button>
+  </div>
+  <div class="wm-menu" id="wm-menu" hidden>
+    <a href="#product">Product</a><a href="#how">How it works</a><a href="#integrations">Integrations</a><a href="#pricing">Pricing</a><a href="#film">Brand film</a>
+    <a class="wm-btn wm-btn-dark" href="#demo">Book a demo</a>
+  </div>
 </header>
 
-<section id="wm-stage" class="wm-stage wm-film-stage" aria-label="wonmor brand film">
-  <video id="wm-film" class="wm-layer wm-film" muted playsinline loop autoplay preload="auto" poster="/film/wonmor_16x9.jpg" aria-label="wonmor brand film: one diamond becomes a V, the V doubles into the W">
-    <source src="/film/wonmor_16x9.mp4" type="video/mp4">
-  </video>
-  <div class="wm-film-ctl">
-    <button id="wm-play" type="button" aria-pressed="false">Pause</button>
-    <button id="wm-sound" type="button" aria-pressed="false">Sound on</button>
-  </div>
-</section>
-
 <main id="wm-main">
-  <section class="wm-sec wm-intro wm-reveal">
-    <p class="wm-kicker">Brand system · 2026</p>
-    <h1>One diamond.<br>One <em>V</em>. One <em>W</em>.</h1>
-    <p class="wm-lead">The wonmor mark starts as a single cut diamond. It splits into a crown and a V. Then the V doubles: the two halves slide apart until their inner arms lock, the crowns join into one, and the V becomes a W.</p>
-  </section>
-
-  <section id="mark" class="wm-sec wm-reveal">
-    <h2 class="wm-h2"><span>01</span>Construction</h2>
-    <ol class="wm-steps">
-      <li><div class="wm-step" data-step="1"></div><b>One diamond</b><span>One grid, 100 × 100.</span></li>
-      <li><div class="wm-step" data-step="2"></div><b>Split the girdle</b><span>A crown on top, a V below.</span></li>
-      <li><div class="wm-step" data-step="3"></div><b>Cut the V</b><span>The notch drops to 62 % of the height.</span></li>
-      <li><div class="wm-step" data-step="4"></div><b>V becomes W</b><span>The V doubles at offset 64: inner arms coincide, the crowns join.</span></li>
-    </ol>
-  </section>
-
-  <section id="lockup" class="wm-sec wm-reveal">
-    <h2 class="wm-h2"><span>02</span>Lockup</h2>
-    <div class="wm-locks">
-      <div class="wm-lock wm-lock-dark"><span data-lockup data-mk="#1F5BFF" data-text="#F7F9FC"></span></div>
-      <div class="wm-lock wm-lock-light"><span data-lockup data-mk="#1F5BFF" data-text="#15163F"></span></div>
-      <div class="wm-lock wm-lock-blue"><span data-lockup data-mk="#F7F9FC" data-text="#F7F9FC"></span></div>
+  <section class="wm-hero">
+    <div class="wm-aura" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="wm-wrap wm-hero-in">
+      <p class="wm-chip"><span class="wm-dot"></span>Win-loss intelligence for B2B sales teams</p>
+      <h1>Every lost deal holds your next <em>win</em>.</h1>
+      <p class="wm-lead">wonmor reads your calls, emails and CRM, finds the real reasons you win and lose, and turns them into the next play for every open deal. Set up in one afternoon.</p>
+      <div class="wm-actions">
+        <a class="wm-btn wm-btn-dark wm-btn-lg" href="#demo">Book a demo</a>
+        <a class="wm-btn wm-btn-ghost wm-btn-lg" href="#film"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" fill="currentColor"/></svg>Watch the film</a>
+      </div>
     </div>
-    <div class="wm-variants">
-      <div class="wm-var wm-v1"><span data-mark data-fill="#1F5BFF"></span><small>Primary</small></div>
-      <div class="wm-var wm-v2"><span data-mark data-outline data-fill="#2A2D44"></span><small>Outline</small></div>
-      <div class="wm-var wm-v3"><span data-mark data-fill="#0B0B12"></span><small>Mono</small></div>
-      <div class="wm-var wm-v4"><span data-mark data-fill="#F7F9FC"></span><small>Reverse</small></div>
-      <div class="wm-var wm-v5"><i class="wm-badge"><span data-mark data-fill="#1F5BFF"></span></i><small>Badge</small></div>
+    <div class="wm-wrap">
+      <div class="wm-app" aria-label="wonmor deal review screen">
+        <aside class="wm-app-side">
+          <span class="wm-app-logo" data-mark></span>
+          <b class="wm-on">Deals</b><b>Reasons</b><b>Competitors</b><b>Playbooks</b><b>Digests</b>
+        </aside>
+        <div class="wm-app-main">
+          <div class="wm-app-top">
+            <div><small>Deal review</small><h3>Northwind Logistics · Renewal</h3></div>
+            <span class="wm-tag wm-tag-lost">Closed lost · $48,000 ARR</span>
+          </div>
+          <div class="wm-app-grid">
+            <div class="wm-panel">
+              <h4>Why we lost <span>from 9 calls, 31 emails</span></h4>
+              <ol class="wm-reasons">
+                <li><b>Onboarding took too long</b><q>We were still not live after six weeks.</q><em>Call · 14 Oct · VP Operations</em><i style="--w:88%"></i></li>
+                <li><b>Per-seat price above Rival&nbsp;X</b><q>Their quote was lower for forty seats.</q><em>Email · 2 Oct · Procurement</em><i style="--w:61%"></i></li>
+                <li><b>No SSO on the Team plan</b><q>IT will not sign off without SSO.</q><em>Call · 21 Sep · IT lead</em><i style="--w:42%"></i></li>
+              </ol>
+            </div>
+            <div class="wm-panel wm-play">
+              <h4>Next play</h4>
+              <p>4 open deals show the same onboarding risk.</p>
+              <ul><li>Acme Freight <span>$62k</span></li><li>Bluepeak <span>$31k</span></li><li>Orbit Supply <span>$27k</span></li><li>Kestrel <span>$19k</span></li></ul>
+              <button class="wm-btn wm-btn-blue" type="button">Send play to Slack</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section id="color" class="wm-sec wm-reveal">
-    <h2 class="wm-h2"><span>03</span>Colour</h2>
-    <div class="wm-swatches">
-      <button type="button" class="wm-sw" data-copy="#1F5BFF" style="--c:#1F5BFF;--t:#fff"><b>Electric</b><span>#1F5BFF</span></button>
-      <button type="button" class="wm-sw" data-copy="#6FD3FF" style="--c:#6FD3FF;--t:#07080D"><b>Cyan glint</b><span>#6FD3FF</span></button>
-      <button type="button" class="wm-sw" data-copy="#15163F" style="--c:#15163F;--t:#fff"><b>Navy</b><span>#15163F</span></button>
-      <button type="button" class="wm-sw" data-copy="#07080D" style="--c:#07080D;--t:#fff"><b>Ink</b><span>#07080D</span></button>
-      <button type="button" class="wm-sw" data-copy="#EEF2F8" style="--c:#EEF2F8;--t:#07080D"><b>Paper</b><span>#EEF2F8</span></button>
+  <section id="product" class="wm-sec">
+    <div class="wm-wrap">
+      <p class="wm-eyebrow">The problem</p>
+      <h2>Your CRM says “price”.<br>Your calls say something else.</h2>
+      <div class="wm-cards3">
+        <article class="wm-card wm-pink">
+          <h3>Loss reasons are guesses</h3>
+          <p>A drop-down filled in at 6 pm on the last day of the quarter. “Price” covers a dozen different stories.</p>
+          <div class="wm-frag"><span class="wm-pill">Closed lost reason</span><b>Price ▾</b></div>
+        </article>
+        <article class="wm-card wm-yellow">
+          <h3>The truth sits in calls</h3>
+          <p>Buyers say why they hesitate, out loud, weeks before they leave. Nobody has time to listen to all of it.</p>
+          <div class="wm-frag wm-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </article>
+        <article class="wm-card wm-green">
+          <h3>Lessons never reach reps</h3>
+          <p>A win-loss deck once a quarter is too late for the deals that are open today.</p>
+          <div class="wm-frag"><span class="wm-pill">Q3 win-loss.pdf</span><b>Opened by 2 of 38</b></div>
+        </article>
+      </div>
     </div>
-    <p class="wm-note">Click a swatch to copy.</p>
   </section>
 
-  <section id="type" class="wm-sec wm-reveal">
-    <h2 class="wm-h2"><span>04</span>Wordmark</h2>
-    <div class="wm-word-hero" data-lockup data-mk="#1F5BFF" data-text="#F7F9FC"></div>
-    <ol class="wm-rules">
-      <li><b>10</b><span>One stroke weight. Every letter uses the width of the mark&rsquo;s arm.</span></li>
-      <li><b>5</b><span>Letter spacing is half the stroke, the same gap that splits the crown from the V.</span></li>
-      <li><b>x</b><span>The crown sits on the x-height, the tip of the W drops below the baseline.</span></li>
-      <li><b>w</b><span>The mark is the w. The lockup reads mark + <em>onmor</em>; the word never repeats the w.</span></li>
-    </ol>
-    <p class="wm-note">The wordmark is drawn, not typed. Interface text uses Plus Jakarta Sans (SIL OFL 1.1), self-hosted.</p>
+  <section id="how" class="wm-sec wm-sec-tint">
+    <div class="wm-wrap">
+      <p class="wm-eyebrow">How it works</p>
+      <h2>From one raw deal to the W.</h2>
+      <p class="wm-sub">Our mark tells the method: one diamond is cut into a crown and a V, and the V doubles into a W.</p>
+      <ol class="wm-steps">
+        <li class="wm-card"><div class="wm-step" data-step="1"></div><span>01</span><h3>Capture</h3><p>Connect your CRM, call recorder and inbox. Every closed deal arrives with its full history.</p></li>
+        <li class="wm-card"><div class="wm-step" data-step="2"></div><span>02</span><h3>Cut</h3><p>wonmor separates what buyers said from what reps logged, and ranks each reason with its evidence.</p></li>
+        <li class="wm-card"><div class="wm-step" data-step="3"></div><span>03</span><h3>Compare</h3><p>Lost deals sit next to won ones with the same profile, so the difference shows.</p></li>
+        <li class="wm-card"><div class="wm-step" data-step="4"></div><span>04</span><h3>Win</h3><p>The lesson becomes a play on every open deal at risk, in Slack and in the CRM.</p></li>
+      </ol>
+    </div>
   </section>
 
-  <section id="three" class="wm-sec wm-reveal">
-    <h2 class="wm-h2"><span>05</span>In 3D</h2>
-    <div class="wm-viewer-wrap">
-      <canvas id="wm-viewer" class="wm-viewer" aria-label="3D wonmor mark, drag to rotate"></canvas>
-      <span class="wm-hint">Drag to rotate</span>
+  <section id="features" class="wm-sec">
+    <div class="wm-wrap">
+      <p class="wm-eyebrow">Product</p>
+      <h2>Everything a revenue team needs to win the next one.</h2>
+      <div class="wm-grid">
+        <article class="wm-card wm-feat wm-span2">
+          <div class="wm-diagram" aria-hidden="true">
+            <div class="wm-src"><b>Calls</b><b>Emails</b><b>CRM</b></div>
+            <svg class="wm-lines" viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M0 20C80 20 90 60 150 60M0 60H150M0 100C80 100 90 60 150 60M150 60C210 60 220 20 300 20M150 60H300M150 60C210 60 220 100 300 100"/><circle r="3" class="wm-pulse"><animateMotion dur="3s" repeatCount="indefinite" path="M0 20C80 20 90 60 150 60C210 60 220 20 300 20"/></circle><circle r="3" class="wm-pulse"><animateMotion dur="3s" begin="1s" repeatCount="indefinite" path="M0 60H300"/></circle><circle r="3" class="wm-pulse"><animateMotion dur="3s" begin="2s" repeatCount="indefinite" path="M0 100C80 100 90 60 150 60C210 60 220 100 300 100"/></circle></svg>
+            <div class="wm-core" data-mark></div>
+            <div class="wm-out"><b>Reasons</b><b>Competitors</b><b>Plays</b></div>
+          </div>
+          <h3>Reasons with receipts</h3>
+          <p>Every reason links to the call minute or email line it came from. No guessing, no black box.</p>
+        </article>
+        <article class="wm-card wm-feat">
+          <div class="wm-radar" aria-hidden="true"><i style="--a:20deg;--r:46px"></i><i style="--a:140deg;--r:28px"></i><i style="--a:250deg;--r:60px"></i></div>
+          <h3>Competitor radar</h3>
+          <p>See which rival shows up, at which stage, and what buyers say about them.</p>
+        </article>
+        <article class="wm-card wm-feat">
+          <div class="wm-risk" aria-hidden="true"><b>Deal risk</b><span class="wm-meter"><i></i></span><em>High · onboarding</em></div>
+          <h3>Risk on open deals</h3>
+          <p>Open deals that repeat a known loss pattern are flagged before the buyer goes quiet.</p>
+        </article>
+        <article class="wm-card wm-feat">
+          <div class="wm-slack" aria-hidden="true"><span data-si="slack"></span><p><b>wonmor</b> New play for <u>Acme Freight</u>: offer guided onboarding.</p></div>
+          <h3>Plays where reps work</h3>
+          <p>Weekly digests and deal alerts in Slack, notes written back to the CRM record.</p>
+        </article>
+        <article class="wm-card wm-feat">
+          <div class="wm-lock" aria-hidden="true"><b>SSO</b><b>SCIM</b><b>EU / US hosting</b></div>
+          <h3>Built for security reviews</h3>
+          <p>Single sign-on, role-based access, data kept in the region you choose.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="integrations" class="wm-sec wm-sec-tint">
+    <div class="wm-wrap wm-int">
+      <div>
+        <p class="wm-eyebrow">Integrations</p>
+        <h2>Plugs into the stack you already run.</h2>
+        <p class="wm-sub">Read access to your CRM, call recordings and inbox. Plays go back to the tools your reps open every day.</p>
+        <a class="wm-btn wm-btn-dark" href="#demo">See it with your data</a>
+      </div>
+      <ul class="wm-icons">
+        <li data-si="salesforce">Salesforce</li><li data-si="hubspot">HubSpot</li><li data-si="slack">Slack</li><li data-si="zoom">Zoom</li><li data-si="googlemeet">Google Meet</li>
+        <li data-si="gmail">Gmail</li><li data-si="zendesk">Zendesk</li><li data-si="notion">Notion</li><li data-si="jira">Jira</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="film" class="wm-sec wm-dark">
+    <div class="wm-aura wm-aura-dark" aria-hidden="true"><i></i><i></i></div>
+    <div class="wm-wrap wm-film">
+      <div class="wm-film-copy">
+        <p class="wm-eyebrow">Brand film</p>
+        <h2>One diamond. One W.</h2>
+        <p class="wm-sub">The mark is a single cut diamond. Its V doubles until the arms lock into a W: the deal you lost, cut open, becomes the one you win.</p>
+        <div class="wm-film-ctl">
+          <button class="wm-btn wm-btn-light" id="wm-play" type="button" aria-pressed="false">Pause film</button>
+          <button class="wm-btn wm-btn-outline" id="wm-sound" type="button" aria-pressed="false">Turn sound on</button>
+        </div>
+      </div>
+      <div class="wm-film-frames">
+        <video id="wm-film" class="wm-video" muted playsinline loop autoplay preload="metadata" poster="/film/wonmor_16x9.jpg" aria-label="wonmor brand film"><source src="/film/wonmor_16x9.mp4" type="video/mp4"></video>
+        <video id="wm-film-phone" class="wm-phone" muted playsinline loop autoplay preload="metadata" poster="/film/wonmor_screen_9x16.jpg" aria-label="wonmor brand film, filmed on a laptop"><source src="/film/wonmor_screen_9x16.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="wm-sec">
+    <div class="wm-wrap">
+      <p class="wm-eyebrow">Pricing</p>
+      <h2>Start with one team. Grow when it pays.</h2>
+      <div class="wm-cards3 wm-prices">
+        <article class="wm-card">
+          <h3>Starter</h3><p class="wm-price"><b>$39</b> per seat / month</p>
+          <ul><li>CRM and one call recorder</li><li>Loss reasons with evidence</li><li>Weekly Slack digest</li><li>Up to 10 seats</li></ul>
+          <a class="wm-btn wm-btn-ghost" href="#demo">Start free trial</a>
+        </article>
+        <article class="wm-card wm-best">
+          <span class="wm-tag">Most teams</span>
+          <h3>Team</h3><p class="wm-price"><b>$79</b> per seat / month</p>
+          <ul><li>Everything in Starter</li><li>Competitor radar</li><li>Risk on open deals</li><li>SSO and role-based access</li></ul>
+          <a class="wm-btn wm-btn-dark" href="#demo">Start free trial</a>
+        </article>
+        <article class="wm-card">
+          <h3>Enterprise</h3><p class="wm-price"><b>Custom</b> annual contract</p>
+          <ul><li>Everything in Team</li><li>SCIM, audit log, data region</li><li>Custom reason taxonomy</li><li>Named success manager</li></ul>
+          <a class="wm-btn wm-btn-ghost" href="#demo">Talk to sales</a>
+        </article>
+      </div>
+      <p class="wm-note">14-day free trial on Starter and Team. No card needed.</p>
+    </div>
+  </section>
+
+  <section id="faq" class="wm-sec wm-sec-tint">
+    <div class="wm-wrap wm-faq">
+      <div><p class="wm-eyebrow">FAQ</p><h2>Questions sales leaders ask first.</h2></div>
+      <div class="wm-qa">
+        <details open><summary>Does wonmor replace our call recorder?</summary><p>No. wonmor reads recordings and transcripts from the tool you already use and adds the win-loss layer on top.</p></details>
+        <details><summary>How long does setup take?</summary><p>Connecting the CRM and call recorder takes about an hour. The first report covers your last two quarters of closed deals.</p></details>
+        <details><summary>Who can see call content?</summary><p>Access follows roles you set. Reps see their own deals; leaders see the team; quotes can be limited to managers.</p></details>
+        <details><summary>Can we keep our own loss categories?</summary><p>Yes. Enterprise lets you map reasons to your own taxonomy so reports match the board deck.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo" class="wm-sec wm-cta">
+    <div class="wm-aura" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="wm-wrap wm-cta-in">
+      <span class="wm-cta-mark" data-mark></span>
+      <h2>See what your lost deals are telling you.</h2>
+      <p class="wm-sub">Bring one quarter of closed deals. We will show the reasons in 30 minutes.</p>
+      <form class="wm-form" action="mailto:hello@wonmor.example" method="post" enctype="text/plain">
+        <label class="wm-sr" for="wm-email">Work email</label>
+        <input id="wm-email" name="email" type="email" required placeholder="you@company.com" autocomplete="email">
+        <button class="wm-btn wm-btn-dark" type="submit">Book a demo</button>
+      </form>
     </div>
   </section>
 </main>
 
 <footer class="wm-foot">
-  <span class="wm-logo"><span data-lockup data-mk="#1F5BFF" data-text="currentColor"></span></span>
-  <span>&copy; 2026 wonmor · wonmor.io</span>
+  <div class="wm-wrap">
+    <div class="wm-foot-top">
+      <div><a class="wm-logo" href="/" data-lockup data-text="#FFFFFF" aria-label="wonmor home"></a><p>Win-loss intelligence for B2B sales teams.</p></div>
+      <nav aria-label="Product"><b>Product</b><a href="#features">Features</a><a href="#integrations">Integrations</a><a href="#pricing">Pricing</a></nav>
+      <nav aria-label="Company"><b>Company</b><a href="#film">Brand film</a><a href="#faq">FAQ</a><a href="mailto:hello@wonmor.example">Contact</a></nav>
+    </div>
+    <div class="wm-foot-big" data-lockup data-text="#FFFFFF" aria-hidden="true"></div>
+    <p class="wm-foot-line">© 2026 wonmor · Integration logos via Simple Icons (CC0), trademarks of their owners.</p>
+  </div>
 </footer>
 </body>
 </html>
