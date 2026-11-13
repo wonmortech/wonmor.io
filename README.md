@@ -1,19 +1,32 @@
-# wonmor
+# wonmor.io
 
-https://wonmor.io landing sahifasi — statik HTML, build yo'q.
+Wonmor studiyasining sayti — https://wonmor.io. Astro (statik), uch til: en `/`, uz `/uz/`, ru `/ru/`.
 
-- `site/` — sahifa fayllari (Caddy `file_server`).
-- `deploy/` — `wonmor-site` konteyneri (caddy:2-alpine, `dtwin-prod_default` tarmog'i). Edge: dtwin `deploy/Caddyfile` (`{$WONMOR_ADDRESS:wonmor.io}`).
-- Deploy: toza `origin/main` dan `bash deploy/deploy.sh` → `/opt/wonmor-site`.
-- DNS (Namecheap BasicDNS): A `@` va A `www` → 185.191.141.233.
+## Tuzilma
 
-## Build
+| Yo'l | Nima |
+|---|---|
+| `src/i18n/` | Barcha matn: `ui.ts` (interfeys), `pages.ts` (sahifalar, navigatsiya, footer), `home.ts` (bosh sahifa) |
+| `src/content/news/<slug>/{en,uz,ru}.md` | Yangiliklar. Har postda `source` (manba) majburiy |
+| `src/components/` | Header (logo animatsiyasi), MenuOverlay, Footer, NewsCard, SectionPage, Collage |
+| `src/styles/` | `tokens.css` (rang, shrift, grid), `base.css` (tipografiya, tugmalar) |
+| `brand/source/wonmor_b.json` | Logo geometriyasining yagona manbasi |
+| `tools/gen-brand.mjs` | Logo → `src/brand/geometry.json`, favicon, ikonlar, OG rasm |
+| `tools/check-site.mjs` | Build'dan keyingi tekshiruv: CSP, ichki havolalar, maxfiy ma'lumot (IP, token, ichki host) |
+| `site/` | Build natijasi (commit qilinadi — deploy build qilmaydi) |
+| `deploy/` | `wonmor-site` konteyneri (caddy:2-alpine) va deploy skripti |
 
-The site is static. `src/` (GSAP timeline, three.js stage, mark geometry) is bundled into `site/assets/` with esbuild:
+Brend ranglari (`--wm-blue`, `--wm-ink`) va logo shrifti faqat logoda ishlatiladi; sayt interfeysi o'z neytral palitrasida.
+
+## Ishlash
 
 ```sh
 npm ci
-npm run build
+npm run assets   # logo/ikon/shriftlarni qayta yaratish (manba o'zgarganda)
+npm run dev      # http://localhost:4321
+npm run build    # site/ + Pagefind qidiruv indeksi + check-site
 ```
 
-The build output is committed, so deploy stays no-build. Preview any frame of the hero animation with `/?shot=<seconds>`.
+## Deploy
+
+Faqat toza `origin/main` dan: `bash deploy/deploy.sh dtwin` → `/opt/wonmor-site`, keyin `https://wonmor.io/version.txt` commit SHA ni qaytarishi tekshiriladi. Edge: dtwin `deploy/Caddyfile` (`{$WONMOR_ADDRESS:wonmor.io}`).

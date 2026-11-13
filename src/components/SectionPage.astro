@@ -1,0 +1,102 @@
+---
+/* Shared template for section pages in P1: eyebrow, title, lede, optional external link,
+   child cards for overview pages, and an honest "being written" note. */
+import Icon from './Icon.astro';
+import Collage from './Collage.astro';
+import { href, type Locale } from '../i18n/config';
+import { groups, pages, type PageDef } from '../i18n/pages';
+import { ui } from '../i18n/ui';
+
+interface Props { locale: Locale; page: PageDef }
+const { locale, page } = Astro.props;
+const children = page.key === 'research'
+  ? pages.filter((p) => p.group === 'research' && p.key !== 'research')
+  : page.key === 'products'
+    ? pages.filter((p) => p.group === 'products' && p.key !== 'products')
+    : page.key === 'company'
+      ? pages.filter((p) => p.group === 'company' && p.key !== 'company')
+      : page.key === 'legal'
+        ? pages.filter((p) => p.group === 'legal' && p.key !== 'legal')
+        : [];
+const parent = page.path.split('/').length > 2 ? pages.find((p) => p.path === '/' + page.path.split('/')[1]) : undefined;
+const arts = ['research', 'charter', 'careers', 'sponsorship'] as const;
+const art = arts[[...page.key].reduce((a, c) => a + c.charCodeAt(0), 0) % arts.length];
+const host = page.url?.replace(/^https?:\/\//, '');
+---
+<article class="sp">
+  <header class="container sp__head page-top">
+    <p class="t-caption fg-3 sp__crumb">
+      {parent ? <a class="link-quiet" href={href(locale, parent.path)}>{parent.title[locale]}</a> : <span>{groups[page.group][locale]}</span>}
+    </p>
+    <h1 class="t-headline-2 sp__title">{page.title[locale]}</h1>
+    <div class="sp__lede-row">
+      <p class="t-sub-3 sp__lede">{page.lede[locale]}</p>
+      <div class="sp__aside">
+        {page.chip && <span class="chip chip--dot">{page.chip[locale]}</span>}
+        {page.url && (
+          <a class="btn btn--primary btn--medium btn--rounded btn--trailing" href={page.url} target="_blank" rel="noopener">
+            {ui.visit[locale]} {host}<Icon name="arrow-up-right" /><span class="sr-only">{ui.external[locale]}</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </header>
+
+  {children.length > 0 ? (
+    <section class="container section-lg">
+      <ul class="sp__grid dim-list" role="list">
+        {children.map((c) => (
+          <li class="dim-item">
+            <a class="sp__card" href={href(locale, c.path)}>
+              <span class="sp__card-top">
+                <span class="t-headline-5 sp__card-title">{c.title[locale]}</span>
+                {c.chip && <span class="chip">{c.chip[locale]}</span>}
+              </span>
+              <span class="t-body-4 sp__card-desc">{c.lede[locale]}</span>
+              <span class="sp__card-go t-caption">{ui.readMore[locale]}<Icon name="arrow-right" size={12} /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ) : (
+    <section class="container section-lg sp__body">
+      <div class="sp__art"><Collage art={art} ratio="16/9" drift /></div>
+    </section>
+  )}
+
+  <aside class="container sp__note-wrap">
+    <div class="sp__note" role="note">
+      <p class="t-caption-bold">{ui.inProgressTitle[locale]}</p>
+      <p class="t-body-4 fg-2">{ui.inProgressBody[locale]}</p>
+    </div>
+  </aside>
+</article>
+
+<style>
+  .sp__crumb { margin-bottom: 20px; }
+  .sp__title { max-width: 18ch; }
+  .sp__lede-row { display: grid; gap: 24px; margin-top: 32px; align-items: start; }
+  .sp__lede { color: var(--theme-foreground-secondary); max-width: 38em; }
+  .sp__aside { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  @media (min-width: 1024px) {
+    .sp__lede-row { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); column-gap: var(--grid-gutter); }
+    .sp__aside { justify-content: flex-end; padding-top: 6px; }
+  }
+  .sp__grid { list-style: none; display: grid; gap: var(--grid-gutter); grid-template-columns: 1fr; }
+  @media (min-width: 768px) { .sp__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1280px) { .sp__grid { grid-template-columns: repeat(3, 1fr); } }
+  .sp__card { display: flex; flex-direction: column; gap: 12px; height: 100%; padding: 28px 32px; border-radius: var(--radius-card);
+    background: var(--theme-background-secondary); text-decoration: none; color: var(--theme-foreground-primary); }
+  .sp__card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .sp__card-desc { color: var(--theme-foreground-secondary); transition: color .2s; }
+  .sp__card-title { transition: color .2s; }
+  .sp__card-go { margin-top: auto; padding-top: 16px; display: inline-flex; align-items: center; gap: 6px; color: var(--theme-foreground-tertiary); }
+  @media (hover: hover) {
+    .sp__card:hover :is(.sp__card-title, .sp__card-desc) { color: var(--theme-foreground-quaternary); }
+    .dim-list:has(.dim-item:hover) .dim-item:not(:hover) .sp__card { opacity: 1; }
+  }
+  .sp__art { max-width: 1100px; }
+  .sp__note-wrap { padding-bottom: var(--section-spacer-lg); }
+  .sp__note { display: grid; gap: 6px; max-width: 720px; padding: 20px 24px; border-top: 1px solid var(--theme-border-secondary); border-bottom: 1px solid var(--theme-border-secondary); }
+</style>

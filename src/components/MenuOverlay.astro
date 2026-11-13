@@ -1,0 +1,115 @@
+---
+/* Full-screen menu (DESIGN.md §5.3): slate theme, editorial column on the left,
+   large navigation on the right, small accordions + language below. */
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { href, locales, localeNames, stripLocale, type Locale } from '../i18n/config';
+import { navStart, navEnd, footerGroups } from '../i18n/pages';
+import { resolve } from '../i18n/nav';
+import { ui } from '../i18n/ui';
+
+export interface Featured { title: string; href: string; meta: string; cover?: string }
+interface Props { locale: Locale; featured: Featured[] }
+const { locale, featured } = Astro.props;
+const here = stripLocale(Astro.url.pathname);
+const menus = [...navStart, ...navEnd.filter((m) => m.id !== 'try')];
+const small = footerGroups.slice(4);
+---
+<div class="site-menu theme-slate" id="site-menu" role="dialog" aria-modal="true" aria-label={ui.primaryNav[locale]} hidden data-menu-panel>
+  <div class="site-menu__bar">
+    <Logo locale={locale} />
+    <button class="btn btn--tertiary btn--small btn--rounded btn--icon" type="button" data-menu-close aria-label={ui.closeMenu[locale]}><Icon name="close" /></button>
+  </div>
+  <div class="site-menu__body">
+    <aside class="site-menu__featured" aria-label={ui.latestNews[locale]}>
+      <p class="t-caption-bold">{ui.latestNews[locale]}</p>
+      <ul role="list" class="dim-list">
+        {featured.map((f) => (
+          <li class="dim-item"><a href={f.href}><span class="t-caption fg-3">{f.meta}</span><span class="t-headline-5">{f.title}</span></a></li>
+        ))}
+      </ul>
+    </aside>
+    <nav class="site-menu__nav" aria-label={ui.primaryNav[locale]}>
+      <ul role="list" class="site-menu__big dim-list">
+        <li class="dim-item"><a href={href(locale, '/')} aria-current={here === '/' ? 'page' : undefined}>{ui.home[locale]}</a></li>
+        {menus.map((m) => m.href ? (
+          <li class="dim-item"><a href={href(locale, m.href)} aria-current={here.startsWith(m.href) ? 'page' : undefined}>{m.label[locale]}</a></li>
+        ) : (
+          <li class="dim-item">
+            <details>
+              <summary>{m.label[locale]}<Icon name="chevron-down" size={24} /></summary>
+              <ul role="list" class="site-menu__sub">
+                {(m.items ?? []).map((it) => { const l = resolve(it, locale); return (
+                  <li><a href={l.href} target={l.external ? '_blank' : undefined} rel={l.external ? 'noopener' : undefined}>{l.label}{l.external && <Icon name="arrow-up-right" size={12} />}</a></li>
+                ); })}
+              </ul>
+            </details>
+          </li>
+        ))}
+      </ul>
+      <div class="site-menu__small">
+        {small.map((g) => (
+          <details class="acc">
+            <summary>{g.label[locale]}<Icon name="chevron-down" /></summary>
+            <ul role="list">
+              {g.items.map((it) => { const l = resolve(it, locale); return <li><a href={l.href} target={l.external ? '_blank' : undefined} rel={l.external ? 'noopener' : undefined}>{l.label}{l.external && <Icon name="arrow-up-right" size={12} />}</a></li>; })}
+            </ul>
+          </details>
+        ))}
+        <div class="site-menu__langs" role="group" aria-label={ui.language[locale]}>
+          {locales.map((l) => <a href={href(l, here)} hreflang={l} lang={l} aria-current={l === locale ? 'true' : undefined}>{localeNames[l]}</a>)}
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+
+<style is:global>
+  .site-menu { position: fixed; inset: 0; z-index: 200; overflow-y: auto; overscroll-behavior: contain; opacity: 1; transition: opacity .15s ease; }
+  .site-menu[hidden] { display: none; }
+  .site-menu[data-starting] { opacity: 0; }
+  .site-menu__bar { position: sticky; top: 0; z-index: 1; height: var(--header-nav-height); display: flex; align-items: center; justify-content: space-between;
+    padding-inline: var(--grid-margin); background: var(--theme-background-primary); max-width: var(--grid-max-width); margin-inline: auto; }
+  .site-menu__body { max-width: var(--grid-max-width); margin-inline: auto; padding: 16px var(--grid-margin) 64px; display: grid; gap: 48px; }
+  .site-menu__featured { order: 2; }
+  .site-menu__featured ul { list-style: none; margin-top: 16px; display: grid; gap: 0; }
+  .site-menu__featured li { border-top: 1px solid var(--theme-border-secondary); }
+  .site-menu__featured a { display: grid; gap: 6px; padding: 16px 0; text-decoration: none; transition: color .2s; }
+  .site-menu__big { list-style: none; display: grid; }
+  .site-menu__big > li > a, .site-menu__big summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 6px 0;
+    font: 700 clamp(28px, calc(28px + 8 * ((100vw - 390px) / 1530)), 36px)/1.2 var(--sans); letter-spacing: -.02em;
+    color: var(--theme-foreground-secondary); text-decoration: none; cursor: pointer; list-style: none; transition: color .2s;
+  }
+  .site-menu__big summary::-webkit-details-marker { display: none; }
+  .site-menu__big a[aria-current], .site-menu__big a:hover, .site-menu__big summary:hover, .site-menu__big details[open] > summary { color: var(--theme-foreground-primary); }
+  .site-menu__big summary .icon { transition: transform .15s var(--ease-out-quart); flex: none; }
+  .site-menu__big details[open] > summary .icon { transform: rotate(180deg); }
+  .site-menu__sub { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px 16px; padding: 4px 0 18px; }
+  .site-menu__sub a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; font: 400 var(--fs-body-4)/1.4 var(--sans); color: var(--theme-foreground-secondary); text-decoration: none; }
+  .site-menu__sub a:hover { color: var(--theme-foreground-primary); text-decoration: underline; text-underline-offset: .2em; }
+  .site-menu__small { margin-top: 40px; }
+  .acc { border-top: 1px solid var(--theme-border-secondary); }
+  .acc:last-of-type { border-bottom: 1px solid var(--theme-border-secondary); }
+  .acc summary { display: flex; align-items: center; justify-content: space-between; height: 52px; cursor: pointer; list-style: none;
+    font: 400 var(--fs-caption-1)/1 var(--sans); letter-spacing: .01em; color: var(--theme-foreground-tertiary); transition: color .2s; }
+  .acc summary::-webkit-details-marker { display: none; }
+  .acc summary:hover, .acc[open] summary { color: var(--theme-foreground-primary); }
+  .acc summary .icon { transition: transform .15s var(--ease-out-quart); }
+  .acc[open] summary .icon { transform: rotate(180deg); }
+  .acc ul { list-style: none; display: grid; gap: 2px; padding: 0 0 16px; }
+  .acc a { display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; font: 400 var(--fs-caption-1)/1.5 var(--sans); color: var(--theme-foreground-secondary); text-decoration: none; }
+  .acc a:hover { color: var(--theme-foreground-primary); text-decoration: underline; text-underline-offset: .2em; }
+  .site-menu__langs { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 24px; font: 400 var(--fs-caption-1)/1.5 var(--sans); }
+  .site-menu__langs a { color: var(--theme-foreground-tertiary); text-decoration: none; }
+  .site-menu__langs a[aria-current], .site-menu__langs a:hover { color: var(--theme-foreground-primary); }
+  @media (min-width: 1024px) {
+    .site-menu__body { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); padding-top: 48px; }
+    .site-menu__featured { order: 0; grid-column: 1 / span 4; }
+    .site-menu__nav { grid-column: 6 / span 7; }
+  }
+  @media (hover: hover) {
+    .dim-list:has(.dim-item:hover) .dim-item:not(:hover) :is(a, summary, span) { color: var(--theme-foreground-quaternary); }
+  }
+  html[data-menu-open] { overflow: hidden; }
+</style>

@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Collage from '../components/Collage.astro';
+import { href } from '../i18n/config';
+import { ui } from '../i18n/ui';
+const locale = 'en' as const;
+---
+<Base locale={locale} title="Page not found · Wonmor" description={ui.notFoundBody[locale]} noindex>
+  <section class="container page-top section-lg nf">
+    <div class="nf__text">
+      <p class="t-eyebrow">404</p>
+      <h1 class="t-headline-2">{ui.notFoundTitle[locale]}</h1>
+      <p class="t-body-2 fg-2">{ui.notFoundBody[locale]}</p>
+      <p class="t-body-4 fg-3" lang="uz">{ui.notFoundTitle.uz}. <a class="link-underline" href={href('uz', '/')}>{ui.backHome.uz}</a></p>
+      <p class="t-body-4 fg-3" lang="ru">{ui.notFoundTitle.ru}. <a class="link-underline" href={href('ru', '/')}>{ui.backHome.ru}</a></p>
+      <div><a class="btn btn--primary btn--medium btn--rounded" href={href(locale, '/')}>{ui.backHome[locale]}</a></div>
+    </div>
+    <div class="nf__art"><Collage art="default" /></div>
+  </section>
+</Base>
+
+<style>
+  .nf { display: grid; gap: 48px; align-items: center; }
+  .nf__text { display: grid; gap: 20px; max-width: 34em; }
+  .nf__art { max-width: 360px; }
+  @media (min-width: 1024px) { .nf { grid-template-columns: 7fr 4fr; } .nf__art { justify-self: end; width: 100%; } }
+</style>

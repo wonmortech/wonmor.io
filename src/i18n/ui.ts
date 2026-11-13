@@ -1,0 +1,55 @@
+import type { T } from './config';
+
+/** Interface strings. Content pages live in pages.ts; news in src/content/news. */
+export const ui = {
+  skip: { en: 'Skip to content', uz: 'Asosiy qismga oʻtish', ru: 'Перейти к содержанию' },
+  home: { en: 'Home', uz: 'Bosh sahifa', ru: 'Главная' },
+  primaryNav: { en: 'Primary', uz: 'Asosiy menyu', ru: 'Основное меню' },
+  openMenu: { en: 'Open menu', uz: 'Menyuni ochish', ru: 'Открыть меню' },
+  closeMenu: { en: 'Close menu', uz: 'Menyuni yopish', ru: 'Закрыть меню' },
+  search: { en: 'Search', uz: 'Qidiruv', ru: 'Поиск' },
+  searchPlaceholder: { en: 'Search wonmor.io', uz: 'wonmor.io boʻyicha qidirish', ru: 'Поиск по wonmor.io' },
+  closeSearch: { en: 'Close search', uz: 'Qidiruvni yopish', ru: 'Закрыть поиск' },
+  language: { en: 'Language', uz: 'Til', ru: 'Язык' },
+  external: { en: '(opens in a new tab)', uz: '(yangi oynada ochiladi)', ru: '(откроется в новой вкладке)' },
+  readMore: { en: 'Read more', uz: 'Batafsil', ru: 'Подробнее' },
+  readAnnouncement: { en: 'Read announcement', uz: 'Eʼlonni oʻqish', ru: 'Читать анонс' },
+  readPost: { en: 'Read post', uz: 'Maqolani oʻqish', ru: 'Читать статью' },
+  learnMore: { en: 'Learn more', uz: 'Batafsil maʼlumot', ru: 'Узнать больше' },
+  latestNews: { en: 'Latest news', uz: 'Soʻnggi yangiliklar', ru: 'Последние новости' },
+  allNews: { en: 'All news', uz: 'Barcha yangiliklar', ru: 'Все новости' },
+  visit: { en: 'Visit', uz: 'Ochish', ru: 'Открыть' },
+  published: { en: 'Published', uz: 'Eʼlon qilingan', ru: 'Опубликовано' },
+  category: { en: 'Category', uz: 'Turkum', ru: 'Категория' },
+  product: { en: 'Product', uz: 'Mahsulot', ru: 'Продукт' },
+  status: { en: 'Status', uz: 'Holat', ru: 'Статус' },
+  related: { en: 'Related', uz: 'Bogʻliq', ru: 'По теме' },
+  play: { en: 'Play video', uz: 'Videoni yoqish', ru: 'Воспроизвести видео' },
+  pause: { en: 'Pause video', uz: 'Videoni toʻxtatish', ru: 'Приостановить видео' },
+  prev: { en: 'Previous', uz: 'Oldingi', ru: 'Назад' },
+  next: { en: 'Next', uz: 'Keyingi', ru: 'Вперёд' },
+  inProgressTitle: { en: 'This page is being written', uz: 'Bu sahifa yozilmoqda', ru: 'Эта страница в работе' },
+  inProgressBody: {
+    en: 'The full page publishes with an upcoming release. The summary above is accurate as of November 13, 2026.',
+    uz: 'Toʻliq sahifa navbatdagi relizlardan birida chiqadi. Yuqoridagi qisqa maʼlumot 2026-yil 13-noyabr holatiga toʻgʻri.',
+    ru: 'Полная версия выйдет в одном из ближайших релизов. Краткое описание выше актуально на 13 ноября 2026 года.',
+  },
+  notFoundTitle: { en: 'This page does not exist', uz: 'Bunday sahifa yoʻq', ru: 'Такой страницы нет' },
+  notFoundBody: {
+    en: 'The link may be old, or the page may have moved. Everything Wonmor publishes is reachable from the home page.',
+    uz: 'Havola eskirgan yoki sahifa koʻchirilgan boʻlishi mumkin. Wonmor eʼlon qiladigan hamma narsaga bosh sahifadan oʻtish mumkin.',
+    ru: 'Ссылка могла устареть, или страница переехала. Всё, что публикует Wonmor, доступно с главной страницы.',
+  },
+  backHome: { en: 'Back to home', uz: 'Bosh sahifaga qaytish', ru: 'На главную' },
+  ourMission: { en: 'Our mission', uz: 'Bizning maqsad', ru: 'Наша миссия' },
+  mission: {
+    en: 'Wonmor is an independent studio from Uzbekistan. It builds and supports the dtwin ecosystem, and publishes what it learns along the way.',
+    uz: 'Wonmor — Oʻzbekistondagi mustaqil studiya. U dtwin ekotizimini yaratadi va qoʻllab-quvvatlaydi, yoʻl-yoʻlakay oʻrganganlarini ochiq eʼlon qiladi.',
+    ru: 'Wonmor — независимая студия из Узбекистана. Она создаёт и поддерживает экосистему dtwin и открыто публикует то, чему учится по пути.',
+  },
+  rights: { en: 'Wonmor. Independent studio.', uz: 'Wonmor. Mustaqil studiya.', ru: 'Wonmor. Независимая студия.' },
+  social: { en: 'Social', uz: 'Ijtimoiy tarmoqlar', ru: 'Соцсети' },
+  searchEmpty: { en: 'Type to search pages and posts.', uz: 'Sahifa va maqolalarni qidirish uchun yozing.', ru: 'Начните вводить, чтобы найти страницы и статьи.' },
+} satisfies Record<string, T>;
+
+export type UiKey = keyof typeof ui;

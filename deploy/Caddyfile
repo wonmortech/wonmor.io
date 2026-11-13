@@ -7,18 +7,23 @@
 	root * /srv
 	encode zstd gzip
 
-	@html path / *.html /version.txt /styles.css /assets/app.js
-	header @html Cache-Control "no-cache"
+	# Pages, feeds and the search entry point change on every deploy.
+	@fresh path / *.html */ *.xml /version.txt /pagefind/pagefind.js /pagefind/pagefind-entry.json
+	header @fresh Cache-Control "no-cache"
 
-	@hashed path /assets/chunk-* /assets/fonts/*
+	# Astro emits content-hashed file names under /assets/.
+	@hashed path /assets/*
 	header @hashed Cache-Control "public, max-age=31536000, immutable"
 
-	@static path /favicon.svg /robots.txt /sitemap.xml
-	header @static Cache-Control "public, max-age=3600"
+	@static path /fonts/* /brand/* /og/* /film/* /js/* /favicon.svg /apple-touch-icon.png /site.webmanifest /robots.txt /pagefind/*
+	header @static Cache-Control "public, max-age=86400"
 
 	header {
-		Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'none'"
+		# 'wasm-unsafe-eval' is required by the Pagefind search index (WebAssembly).
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
 		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Content-Type-Options nosniff
 		Cross-Origin-Opener-Policy same-origin
 		-Server
 	}

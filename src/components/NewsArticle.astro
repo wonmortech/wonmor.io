@@ -1,0 +1,66 @@
+---
+/* Article page (DESIGN.md §5.11): centred sans title, serif reading column, meta panel on the right. */
+import Icon from './Icon.astro';
+import NewsCard from './NewsCard.astro';
+import { formatDate, href, type Locale } from '../i18n/config';
+import { categories } from '../i18n/home';
+import { ui } from '../i18n/ui';
+
+interface Props { locale: Locale; title: string; description: string; date: Date; category: string; product?: string;
+  links: { label: string; text: string; href: string; kind: 'external' | 'download' | 'internal' }[];
+  related: { slug: string; title: string; description: string; date: Date; category: string; links: any[] }[] }
+const { locale, title, description, date, category, links, related } = Astro.props;
+---
+<article class="art">
+  <header class="container art__head page-top">
+    <p class="t-caption fg-3"><a class="link-quiet" href={href(locale, '/news')}>{categories[category][locale]}</a> · <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date, locale)}</time></p>
+    <h1 class="art__title">{title}</h1>
+    <p class="art__dek t-body-1 fg-2">{description}</p>
+  </header>
+  <div class="container art__grid">
+    <div class="art__body prose"><slot /></div>
+    <aside class="art__meta t-caption" aria-label={ui.published[locale]}>
+      <dl>
+        <div><dt>{ui.published[locale]}</dt><dd>{formatDate(date, locale)}</dd></div>
+        <div><dt>{ui.category[locale]}</dt><dd>{categories[category][locale]}</dd></div>
+        {links.map((l) => (
+          <div><dt>{l.label}</dt><dd><a class="link-underline" href={l.href} target="_blank" rel="noopener">{l.text}</a>{' '}<Icon name={l.kind === 'download' ? 'download' : 'arrow-up-right'} size={12} /></dd></div>
+        ))}
+      </dl>
+    </aside>
+  </div>
+  {related.length > 0 && (
+    <section class="container section-lg" aria-labelledby="rel-h">
+      <div class="rule-row"><h2 class="t-caption-bold" id="rel-h">{ui.related[locale]}</h2></div>
+      <div class="art__related">
+        {related.map((r) => <NewsCard locale={locale} slug={r.slug} title={r.title} description={r.description} date={r.date} category={r.category} links={r.links} cta={ui.readPost[locale]} />)}
+      </div>
+    </section>
+  )}
+</article>
+
+<style>
+  .art__head { display: grid; justify-items: center; text-align: center; gap: 20px; padding-bottom: 48px; }
+  .art__title { font: 700 clamp(30px, calc(30px + 18 * ((100vw - 390px) / 1530)), 48px)/1.12 var(--sans); letter-spacing: -.024em; max-width: 22ch; text-wrap: balance; }
+  .art__dek { max-width: 36em; }
+  .art__grid { display: grid; gap: 40px; padding-bottom: var(--section-spacer-lg); }
+  @media (min-width: 1024px) {
+    .art__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
+    .art__body { grid-column: 4 / span 6; }
+    .art__meta { grid-column: 11 / span 2; }
+  }
+  .art__body { max-width: var(--reading-width); width: 100%; margin-inline: auto; }
+  .art__meta dl > div { display: grid; gap: 2px; padding: 12px 0; border-top: 1px solid var(--theme-border-secondary); }
+  .art__meta dt { color: var(--theme-foreground-primary); }
+  .art__meta dd { color: var(--theme-foreground-tertiary); display: flex; align-items: center; gap: 4px; }
+  .art__related { display: grid; gap: var(--grid-gutter); margin-top: 24px; }
+  @media (min-width: 1024px) { .art__related { grid-template-columns: repeat(2, 1fr); } }
+
+  .prose :global(p), .prose :global(li) { font: 400 clamp(17px, calc(17px + 2 * ((100vw - 390px) / 1530)), 19px)/1.6 var(--serif); font-variation-settings: 'opsz' 16; color: var(--theme-foreground-primary); text-wrap: pretty; }
+  .prose :global(p + p) { margin-top: 1.1em; }
+  .prose :global(h2) { font: 700 clamp(20px, calc(20px + 4 * ((100vw - 390px) / 1530)), 24px)/1.25 var(--sans); letter-spacing: -.01em; margin: 2em 0 .7em; }
+  .prose :global(ul) { padding-left: 1.2em; margin: 1em 0; display: grid; gap: .5em; }
+  .prose :global(strong) { font-weight: 600; }
+  .prose :global(a) { text-decoration: underline; text-decoration-thickness: 1.3px; text-underline-offset: .2em; }
+  .prose :global(code) { font: 400 .86em/1 var(--mono); background: var(--theme-background-secondary); border: 1px solid var(--theme-border-secondary); padding: .12em .35em; border-radius: 4px; }
+</style>

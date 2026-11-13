@@ -1,18 +1,28 @@
 {
-  "name": "wonmor-site",
+  "name": "wonmor-io",
   "private": true,
   "type": "module",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
-    "build": "node tools/build.mjs"
+    "assets": "node tools/gen-brand.mjs && node tools/copy-fonts.mjs",
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site site --output-subdir pagefind && node tools/check-site.mjs",
+    "preview": "astro preview",
+    "check": "node tools/check-site.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/hanken-grotesk": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/onest": "^5.3.1",
+    "@fontsource-variable/source-serif-4": "^5.3.1",
+    "astro": "^7.4.11"
   },
   "devDependencies": {
-    "@fontsource/manrope": "^5.3.0",
-    "@fontsource/noto-serif": "^5.3.0",
-    "@fontsource/plus-jakarta-sans": "5.2.8",
-    "esbuild": "0.25.12",
-    "gsap": "3.13.0",
-    "opentype.js": "^1.3.4",
-    "simple-icons": "^13.21.0",
-    "three": "0.186.1"
+    "pagefind": "^1.6.0"
   }
 }
