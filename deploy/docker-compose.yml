@@ -4,8 +4,9 @@ services:
     container_name: wonmor-site
     restart: unless-stopped
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./site:/srv:ro
+      # Config directory (not a single file) so a replaced Caddyfile is visible to `caddy reload`.
+      - ./conf:/etc/caddy:ro
+      - ./releases:/srv/releases:ro
     networks:
       - edge
 

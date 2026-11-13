@@ -187,3 +187,9 @@ a { color: inherit; }
 /* quiet and underlined links outside running text are at least 24px tall to tap (WCAG 2.5.8) */
 a:is(.link-quiet, .link-underline) { padding-block: 2px; }
 dd > a.link-underline { display: inline-block; min-width: 24px; }
+
+/* Empty result panel (news table, post browser): headline, hint, one way out. */
+.empty { display: grid; justify-items: start; gap: 8px; padding: 40px 32px; margin-top: 24px; border: 1px solid var(--theme-border-secondary); border-radius: var(--radius-card); background: var(--theme-background-secondary); }
+.empty[hidden] { display: none; }
+.empty .btn { margin-top: 8px; }
+@media (max-width: 599px) { .empty { padding: 28px 20px; } }

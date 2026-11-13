@@ -313,7 +313,7 @@ export const footerGroups: { label: T; items: NavItem[] }[] = [
 ];
 
 export const socials = [
-  { name: 'GitHub', href: 'https://github.com/dtwinuz', icon: 'github' },
+  { name: 'GitHub', href: 'https://github.com/wonmortech', icon: 'github' },
   { name: 'Telegram', href: 'https://t.me/xnosir', icon: 'telegram' },
   { name: 'X', href: 'https://x.com/XNosirbek', icon: 'x' },
   { name: 'LinkedIn', href: 'https://www.linkedin.com/in/nosirbek-xakimov-a64b72265/', icon: 'linkedin' },

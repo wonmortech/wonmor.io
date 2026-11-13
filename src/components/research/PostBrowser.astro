@@ -37,7 +37,7 @@ const more = { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать е�
   <ol class="pb__list" role="list" data-plist-list hidden>
     {posts.map((p) => <PostRow locale={locale} post={p} />)}
   </ol>
-  <p class="pb__none t-body-4 fg-3" data-plist-none hidden>{R.noMatch[locale]}</p>
+  <div class="empty" data-plist-none hidden><p class="t-headline-5">{R.noMatch[locale]}</p><p class="t-body-4 fg-2">{R.noMatchHint[locale]}</p><button type="button" class="btn btn--secondary btn--sm" data-plist-clear>{R.clearSearch[locale]}</button></div>
   <div class="pb__more"><button type="button" class="btn btn--secondary btn--small btn--rounded btn--trailing" data-plist-more hidden>{more}<Icon name="arrow-down" size={14} /></button></div>
 </div>
 
@@ -71,6 +71,7 @@ const more = { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать е�
       views.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.plistView === view)));
     };
     q.addEventListener('input', () => { shown = per; render(); });
+    root.querySelector('[data-plist-clear]')?.addEventListener('click', () => { q.value = ''; shown = per; render(); q.focus(); });
     sort.addEventListener('change', render);
     views.forEach((b) => b.addEventListener('click', () => {
       view = b.dataset.plistView ?? 'grid';
@@ -104,7 +105,6 @@ const more = { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать е�
   @media (max-width: 479px) { .pb__grid { grid-template-columns: 1fr; } }
   .pb__grid > [hidden], .pb__list > [hidden], .pb__grid[hidden], .pb__list[hidden] { display: none; }
   .pb__list { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
-  .pb__none { margin-top: 32px; }
   .pb__more [hidden] { display: none; }
   .pb__more { display: flex; justify-content: center; margin-top: 40px; }
 </style>

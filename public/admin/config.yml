@@ -1,0 +1,103 @@
+# Sveltia CMS for wonmor.io. Sign in with a GitHub token ("Sign In Using Access Token") that has
+# Contents: read and write on wonmortech/wonmor.io. Every save is a commit to main, and the Deploy
+# workflow publishes it; a commit that fails the build is never deployed.
+# Fields mirror src/content.config.ts: change both together.
+# Files: src/content/<news|research|docs>/<slug>/<en|uz|ru>.md, one collection per language.
+backend:
+  name: github
+  repo: wonmortech/wonmor.io
+  branch: main
+  commit_messages:
+    create: "content: add {{collection}} {{slug}}"
+    update: "content: update {{collection}} {{slug}}"
+    delete: "content: delete {{collection}} {{slug}}"
+    uploadMedia: "content: upload {{path}}"
+    deleteMedia: "content: delete {{path}}"
+
+site_url: https://wonmor.io
+display_url: https://wonmor.io
+logo:
+  src: /favicon.svg
+media_folder: public/media
+public_folder: /media
+
+slug:
+  encoding: ascii
+  clean_accents: true
+
+collections:
+  - name: news_en
+    label: "News · English"
+    label_singular: "News post"
+    folder: src/content/news
+    path: "{{slug}}/en"
+    create: true
+    identifier_field: title
+    sortable_fields: [date, title]
+    summary: "{{date}} · {{title}}"
+    fields: &news_fields
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Description, widget: text, hint: "One or two sentences. Shown in cards, search and social previews." }
+      - { name: date, label: Date, widget: datetime, type: date, format: YYYY-MM-DD }
+      - { name: category, label: Category, widget: select, options: [announcements, product, research, engineering, company] }
+      - { name: product, label: Product key, widget: string, required: false, hint: "Key from src/data/products.json, e.g. bitg" }
+      - name: links
+        label: Links
+        widget: list
+        required: false
+        fields:
+          - { name: label, label: Label, widget: string }
+          - { name: text, label: Text, widget: string }
+          - { name: href, label: URL, widget: string }
+          - { name: kind, label: Kind, widget: select, options: [external, download, internal], default: external }
+      - { name: source, label: Sources, widget: list, field: { name: item, label: Source, widget: string }, hint: "At least one. Every post is a dated fact with a source." }
+      - { name: featured, label: Featured, widget: boolean, default: false, required: false }
+      - { name: body, label: Body, widget: markdown }
+  - { name: news_uz, label: "News · Oʻzbekcha", label_singular: "News post", folder: src/content/news, path: "{{slug}}/uz", create: true, identifier_field: title, sortable_fields: [date, title], summary: "{{date}} · {{title}}", fields: *news_fields }
+  - { name: news_ru, label: "News · Russian", label_singular: "News post", folder: src/content/news, path: "{{slug}}/ru", create: true, identifier_field: title, sortable_fields: [date, title], summary: "{{date}} · {{title}}", fields: *news_fields }
+
+  - name: research_en
+    label: "Research · English"
+    label_singular: "Post"
+    folder: src/content/research
+    path: "{{slug}}/en"
+    create: true
+    identifier_field: title
+    sortable_fields: [date, title]
+    summary: "{{date}} · {{kind}} · {{title}}"
+    fields: &research_fields
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Description, widget: text }
+      - { name: date, label: Date, widget: datetime, type: date, format: YYYY-MM-DD }
+      - { name: kind, label: Kind, widget: select, options: [research, engineering], hint: "Decides the URL: /research/<slug> or /engineering/<slug>" }
+      - { name: area, label: Area, widget: select, options: [agents, language, infrastructure, supply-chain, interfaces, faith-society, digital-assets] }
+      - { name: featured, label: Featured, widget: boolean, default: false, required: false }
+      - { name: source, label: Sources, widget: list, field: { name: item, label: Source, widget: string } }
+      - name: reproduce
+        label: Reproduce
+        widget: object
+        required: false
+        fields:
+          - { name: repo, label: Repository URL, widget: string, required: false }
+          - { name: commit, label: Commit, widget: string, required: false }
+          - { name: note, label: Note, widget: text, required: false }
+          - { name: commands, label: Commands, widget: list, required: false, field: { name: cmd, label: Command, widget: string } }
+      - { name: body, label: Body, widget: markdown }
+  - { name: research_uz, label: "Research · Oʻzbekcha", label_singular: "Post", folder: src/content/research, path: "{{slug}}/uz", create: true, identifier_field: title, sortable_fields: [date, title], summary: "{{date}} · {{kind}} · {{title}}", fields: *research_fields }
+  - { name: research_ru, label: "Research · Russian", label_singular: "Post", folder: src/content/research, path: "{{slug}}/ru", create: true, identifier_field: title, sortable_fields: [date, title], summary: "{{date}} · {{kind}} · {{title}}", fields: *research_fields }
+
+  - name: docs_en
+    label: "Pages · English"
+    label_singular: "Page"
+    folder: src/content/docs
+    path: "{{slug}}/en"
+    create: false
+    delete: false
+    identifier_field: summary
+    summary: "{{slug}}"
+    fields: &docs_fields
+      - { name: updated, label: Updated, widget: datetime, type: date, format: YYYY-MM-DD }
+      - { name: summary, label: Summary, widget: text, required: false }
+      - { name: body, label: Body, widget: markdown }
+  - { name: docs_uz, label: "Pages · Oʻzbekcha", label_singular: "Page", folder: src/content/docs, path: "{{slug}}/uz", create: false, delete: false, identifier_field: summary, summary: "{{slug}}", fields: *docs_fields }
+  - { name: docs_ru, label: "Pages · Russian", label_singular: "Page", folder: src/content/docs, path: "{{slug}}/ru", create: false, delete: false, identifier_field: summary, summary: "{{slug}}", fields: *docs_fields }

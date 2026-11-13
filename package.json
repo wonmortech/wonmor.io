@@ -9,7 +9,7 @@
   "scripts": {
     "assets": "node tools/gen-brand.mjs && node tools/copy-fonts.mjs",
     "dev": "astro dev",
-    "build": "astro build && pagefind --site site --output-subdir pagefind && node tools/check-site.mjs && node tools/check-links.mjs",
+    "build": "astro build && node tools/copy-cms.mjs && pagefind --site site --output-subdir pagefind && node tools/check-site.mjs && node tools/check-links.mjs",
     "preview": "astro preview",
     "check": "node tools/check-site.mjs && node tools/check-links.mjs",
     "astro": "astro"
@@ -25,6 +25,7 @@
     "three": "^0.181.0"
   },
   "devDependencies": {
+    "@sveltia/cms": "0.255.1",
     "pagefind": "^1.6.0"
   }
 }

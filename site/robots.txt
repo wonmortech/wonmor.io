@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /search/
-Disallow: /uz/search/
-Disallow: /ru/search/
-
-Sitemap: https://wonmor.io/sitemap-index.xml
