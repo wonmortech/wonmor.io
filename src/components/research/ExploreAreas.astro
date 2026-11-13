@@ -16,10 +16,10 @@ const items = [
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 <section class="ex container section-lg" data-carousel aria-labelledby="ex-h">
-  <h2 class="t-headline-3 ex__h" id="ex-h">{R.explore[locale]}</h2>
+  <h2 class="t-headline-3 ex__h reveal-fade" id="ex-h">{R.explore[locale]}</h2>
   <ul class="ex__track" role="list" data-track>
-    {items.map((x) => (
-      <li class="ex__item" data-slide>
+    {items.map((x, i) => (
+      <li class="ex__item reveal-up" style={`--i:${i}`} data-slide>
         <a class="ex__link" href={href(locale, x.page.path)}>
           <span class="ex__top"><AreaIcon name={x.key === 'engineering' ? 'engineering' : x.key} /><span class="ex__title t-headline-5">{x.page.title[locale]}<span class="ex__arrow" aria-hidden="true"> →</span></span></span>
           <span class="ex__count t-caption">{postCount(counts[x.key] ?? 0, locale)}</span>
