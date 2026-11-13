@@ -1,4 +1,9 @@
 node_modules/
-film/out/
+.astro/
+.vscode/
+*.log
+.DS_Store
+.env*
 __pycache__/
 site/.taste-skill/
+.playwright-cli/

@@ -1,0 +1,25 @@
+---
+/* "Lead + statement" hero (DESIGN.md §3.4), revealed word by word (§6.4). */
+interface Props { lead: string; statement: string }
+const { lead, statement } = Astro.props;
+const words = (s: string, start: number) => s.split(/\s+/).map((w, i) => ({ w, d: (start + i) * 34 }));
+const lw = words(lead, 0);
+const sw = words(statement, lw.length);
+---
+<section class="container manifest-wrap page-top">
+  <h1 class="manifest reveal-words">
+    <span class="sr-only">{lead} {statement}</span>
+    <span class="manifest__lead" aria-hidden="true">{lw.map((x) => <><span class="w" style={`--d:${x.d}ms`}>{x.w}</span>{' '}</>)}</span>
+    <span class="manifest__statement" aria-hidden="true">{sw.map((x) => <><span class="w" style={`--d:${x.d}ms`}>{x.w}</span>{' '}</>)}</span>
+  </h1>
+</section>
+
+<style>
+  .manifest-wrap { padding-bottom: 8px; }
+  .manifest {
+    font: 400 var(--fs-manifest)/1.25 var(--serif); font-variation-settings: 'opsz' 48; letter-spacing: -.01em;
+    color: var(--theme-foreground-primary); max-width: 32em; text-wrap: pretty;
+  }
+  .manifest__lead { font-family: var(--sans); font-weight: 600; letter-spacing: -.02em; }
+  @media (min-width: 1280px) { .manifest { max-width: 30em; } }
+</style>

@@ -1,0 +1,119 @@
+---
+/* Single router for every localised page: home, section pages, news index, news posts, search.
+   en lives at "/", uz at "/uz/", ru at "/ru/". */
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Manifest from '../components/home/Manifest.astro';
+import MediaHero from '../components/home/MediaHero.astro';
+import LearnMore from '../components/home/LearnMore.astro';
+import NewsCard from '../components/NewsCard.astro';
+import SectionPage from '../components/SectionPage.astro';
+import NewsArticle from '../components/NewsArticle.astro';
+import Icon from '../components/Icon.astro';
+import { locales, defaultLocale, href, formatDate, type Locale } from '../i18n/config';
+import { pages, groups, type PageDef } from '../i18n/pages';
+import { home } from '../i18n/home';
+import { ui } from '../i18n/ui';
+
+export async function getStaticPaths() {
+  const all = await getCollection('news');
+  const out: { params: { slug: string | undefined }; props: Record<string, unknown> }[] = [];
+  for (const locale of locales) {
+    const pre = locale === defaultLocale ? '' : locale;
+    const join = (p: string) => [pre, p.replace(/^\//, '')].filter(Boolean).join('/') || undefined;
+    out.push({ params: { slug: join('') }, props: { kind: 'home', locale } });
+    out.push({ params: { slug: join('news') }, props: { kind: 'news', locale } });
+    out.push({ params: { slug: join('search') }, props: { kind: 'search', locale } });
+    for (const page of pages) out.push({ params: { slug: join(page.path) }, props: { kind: 'page', locale, page } });
+    for (const entry of all.filter((e) => e.id.endsWith(`/${locale}`))) {
+      out.push({ params: { slug: join(`news/${entry.id.split('/')[0]}`) }, props: { kind: 'post', locale, id: entry.id } });
+    }
+  }
+  return out;
+}
+
+const { kind, locale, page, id } = Astro.props as { kind: string; locale: Locale; page?: PageDef; id?: string };
+const news = (await getCollection('news', (e) => e.id.endsWith(`/${locale}`)))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || Number(b.data.featured) - Number(a.data.featured));
+const card = (n: (typeof news)[number]) => ({ slug: n.id.split('/')[0], ...n.data });
+
+let post: (typeof news)[number] | undefined, Content: any;
+if (kind === 'post') { post = news.find((n) => n.id === id)!; ({ Content } = await render(post)); }
+
+const meta = kind === 'home'
+  ? { title: home.title[locale], description: home.description[locale] }
+  : kind === 'news' ? { title: `${groups.news[locale]} · Wonmor`, description: ui.latestNews[locale] }
+  : kind === 'search' ? { title: `${ui.search[locale]} · Wonmor`, description: ui.searchPlaceholder[locale] }
+  : kind === 'post' ? { title: `${post!.data.title} · Wonmor`, description: post!.data.description }
+  : { title: `${page!.title[locale]} · Wonmor`, description: page!.lede[locale] };
+---
+<Base locale={locale} title={meta.title} description={meta.description} type={kind === 'post' ? 'article' : 'website'} published={post?.data.date} noindex={kind === 'search'}>
+  {kind === 'home' && (
+    <>
+      <Manifest lead={home.lead[locale]} statement={home.statement[locale]} />
+      <MediaHero locale={locale} line1={home.heroLine1[locale]} line2={home.heroLine2[locale]} body={home.heroBody[locale]} label={home.filmLabel[locale]}
+        cta1={{ text: home.heroCta1[locale], href: 'https://dtwin.uz', external: true }} cta2={{ text: home.heroCta2[locale], href: href(locale, '/products') }} />
+      <section class="container section-lg" aria-labelledby="news-h">
+        <div class="rule-row">
+          <h2 class="t-caption-bold" id="news-h">{ui.latestNews[locale]}</h2>
+          <a class="t-caption link-quiet fg-3" href={href(locale, '/news')}>{ui.allNews[locale]}</a>
+        </div>
+        <div class="home-cards">
+          {news.slice(0, 3).map((n) => { const c = card(n); return <NewsCard locale={locale} {...c} />; })}
+        </div>
+      </section>
+      <LearnMore locale={locale} />
+    </>
+  )}
+
+  {kind === 'news' && (
+    <section class="container page-top section-lg">
+      <div class="rule-row"><h1 class="t-caption-bold">{ui.latestNews[locale]}</h1><span class="t-caption fg-3">{formatDate(news[0].data.date, locale)}</span></div>
+      <h2 class="t-headline-2 news-h">{groups.news[locale]}</h2>
+      <div class="home-cards">
+        {news.map((n) => { const c = card(n); return <NewsCard locale={locale} {...c} cta={ui.readPost[locale]} />; })}
+      </div>
+    </section>
+  )}
+
+  {kind === 'post' && post && (
+    <NewsArticle locale={locale} title={post.data.title} description={post.data.description} date={post.data.date} category={post.data.category}
+      links={post.data.links} related={news.filter((n) => n.id !== post!.id).slice(0, 2).map(card)}>
+      <Content />
+    </NewsArticle>
+  )}
+
+  {kind === 'page' && page && <SectionPage locale={locale} page={page} />}
+
+  {kind === 'search' && (
+    <section class="container page-top section-lg search-page" data-search-page>
+      <h1 class="t-headline-2">{ui.search[locale]}</h1>
+      <form class="search-page__form" role="search" data-search-form>
+        <Icon name="search" size={20} />
+        <label class="sr-only" for="sq">{ui.search[locale]}</label>
+        <input id="sq" name="q" type="search" autocomplete="off" placeholder={ui.searchPlaceholder[locale]} />
+      </form>
+      <p class="t-body-4 fg-3" data-search-status aria-live="polite">{ui.searchEmpty[locale]}</p>
+      <ol class="search-page__results dim-list" data-search-results role="list"></ol>
+    </section>
+  )}
+</Base>
+
+<script>
+  import '../scripts/search';
+</script>
+
+<style>
+  .home-cards { display: grid; gap: var(--grid-gutter); margin-top: 24px; grid-template-columns: 1fr; }
+  @media (min-width: 768px) and (max-width: 1279px) { .home-cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1280px) { .home-cards { grid-template-columns: repeat(3, 1fr); } }
+  .news-h { margin: 40px 0 8px; }
+  .search-page { display: grid; gap: 24px; max-width: 980px; margin-inline: 0; }
+  .search-page__form { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; border: 1px solid var(--theme-border-primary); border-radius: 12px; background: var(--gray-000); }
+  .search-page__form input { flex: 1; border: 0; outline: 0; background: transparent; font: 400 var(--fs-body-2)/1 var(--sans); min-width: 0; }
+  .search-page__form:focus-within { outline: 2px solid var(--theme-focus-ring); outline-offset: 2px; }
+  .search-page__results { list-style: none; display: grid; }
+  .search-page__results :global(li) { border-top: 1px solid var(--theme-border-secondary); }
+  .search-page__results :global(a) { display: grid; gap: 6px; padding: 20px 0; text-decoration: none; transition: color .2s; }
+  .search-page__results :global(mark) { background: var(--ill-oat); color: inherit; padding: 0 .1em; border-radius: 2px; }
+</style>

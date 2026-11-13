@@ -1,0 +1,115 @@
+---
+/* Hero media card (DESIGN.md §5.9): sits inside the grid, grows full-bleed as you scroll.
+   Video plays only while visible; play/pause toggle bottom-right; reduced motion = static poster. */
+import Icon from '../Icon.astro';
+import { asset, type Locale } from '../../i18n/config';
+import { ui } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale; line1: string; line2: string; body: string; label: string;
+  cta1: { text: string; href: string; external?: boolean }; cta2: { text: string; href: string };
+}
+const { locale, line1, line2, body, label, cta1, cta2 } = Astro.props;
+---
+<section class="mh" data-media-hero>
+  <div class="mh__sentinel" data-media-sentinel aria-hidden="true"></div>
+  <div class="mh__card theme-slate" data-media-card>
+    <video class="mh__video" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"
+      poster={asset('/film/wonmor_16x9.jpg')} data-media-video>
+      <source src={asset('/film/wonmor_screen_9x16.mp4')} type="video/mp4" media="(max-aspect-ratio: 4/5)" />
+      <source src={asset('/film/wonmor_16x9.mp4')} type="video/mp4" />
+    </video>
+    <span class="sr-only">{label}</span>
+    <div class="mh__scrim" aria-hidden="true"></div>
+    <div class="mh__content">
+      <h2 class="mh__title"><span>{line1}</span><span class="mh__indent">{line2}</span></h2>
+      <p class="mh__body t-body-2">{body}</p>
+      <div class="mh__ctas">
+        <a class="btn btn--primary btn--medium btn--rounded" href={cta1.href} target={cta1.external ? '_blank' : undefined} rel={cta1.external ? 'noopener' : undefined}>
+          {cta1.text}{cta1.external && <span class="sr-only">{ui.external[locale]}</span>}
+        </a>
+        <a class="btn btn--secondary btn--medium btn--rounded" href={cta2.href}>{cta2.text}</a>
+      </div>
+    </div>
+    <button class="mh__toggle" type="button" data-media-toggle aria-label={ui.play[locale]} data-label-play={ui.play[locale]} data-label-pause={ui.pause[locale]} aria-pressed="false">
+      <span class="mh__strip" aria-hidden="true"><Icon name="play" size={20} /><Icon name="pause" size={20} /></span>
+    </button>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-media-hero]');
+  const card = root?.querySelector<HTMLElement>('[data-media-card]');
+  const sentinel = root?.querySelector<HTMLElement>('[data-media-sentinel]');
+  const video = root?.querySelector<HTMLVideoElement>('[data-media-video]');
+  const toggle = root?.querySelector<HTMLButtonElement>('[data-media-toggle]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (root && card && sentinel && video && toggle) {
+    let userPaused = reduce;
+    const sync = () => {
+      const playing = !video.paused;
+      toggle.setAttribute('aria-pressed', String(playing));
+      toggle.setAttribute('aria-label', playing ? toggle.dataset.labelPause! : toggle.dataset.labelPlay!);
+      card.toggleAttribute('data-playing', playing);
+    };
+    video.addEventListener('play', sync); video.addEventListener('pause', sync);
+    toggle.addEventListener('click', () => {
+      if (video.paused) { userPaused = false; video.play().catch(() => {}); } else { userPaused = true; video.pause(); }
+    });
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !userPaused) video.play().catch(() => {});
+      else if (!e.isIntersecting) video.pause();
+    }, { threshold: .25 }).observe(card);
+
+    if (!reduce) {
+      let raf = 0;
+      const update = () => {
+        raf = 0;
+        const r = sentinel.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (innerHeight - r.bottom) / Math.max(1, r.height)));
+        card.style.setProperty('--scroll-grow', p.toFixed(4));
+      };
+      addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+      addEventListener('resize', update, { passive: true });
+      update();
+    }
+  }
+</script>
+
+<style>
+  .mh { position: relative; overflow-x: clip; padding-top: 48px; container: mh / inline-size; }
+  .mh__sentinel { position: absolute; top: 48px; left: 0; width: 1px; height: min(45svh, 420px); pointer-events: none; }
+  .mh__card {
+    --grow: var(--scroll-grow, 0);
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: min(90svh, 56.25cqi); display: grid; align-items: end;
+    padding-block: 112px 56px;
+    clip-path: inset(0 calc(var(--grid-margin) * (1 - var(--grow))) round calc(4px * (1 - var(--grow))));
+    background: var(--wm-ink);
+  }
+  @media (min-width: 1280px) { .mh__card { padding-block: 200px 72px; } }
+  @media (max-width: 767px) { .mh__card { min-height: 88svh; } }
+  @media (prefers-reduced-motion: reduce) { .mh__card { --grow: 1; } }
+  .mh__video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+  .mh__scrim { position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(180deg, rgba(9, 10, 30, 0) 40%, rgba(9, 10, 30, .55) 72%, rgba(9, 10, 30, .85) 100%),
+      linear-gradient(90deg, rgba(9, 10, 30, .55) 0%, rgba(9, 10, 30, 0) 60%); }
+  .mh__content { width: 100%; max-width: var(--grid-max-width); margin-inline: auto; padding-inline: calc(var(--grid-margin) * 2) 72px;
+    display: grid; justify-items: start; text-align: left; gap: 20px; }
+  .mh__title { display: grid; font: 500 var(--fs-display)/1 var(--serif); font-variation-settings: 'opsz' 48; letter-spacing: -.01em; color: #fff; text-wrap: balance; }
+  .mh__indent { padding-inline-start: 1.25em; }
+  @media (min-width: 768px) { .mh__indent { padding-inline-start: 2.25em; } }
+  .mh__body { max-width: 34em; color: rgba(255, 255, 255, .82); }
+  .mh__ctas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .mh__toggle {
+    position: absolute; z-index: 2; width: 40px; height: 40px; display: grid; place-items: center; overflow: hidden;
+    right: calc(var(--grid-margin) * (1 - var(--grow)) + 16px); bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, .28); border-radius: 10px; background: rgba(20, 20, 19, .35); color: #fff;
+    transition: background-color .2s;
+  }
+  .mh__toggle:hover { background: rgba(20, 20, 19, .6); }
+  .mh__strip { display: grid; height: 20px; overflow: hidden; }
+  .mh__strip :global(svg) { transition: translate .25s var(--ease-icon); }
+  .mh__card[data-playing] .mh__strip :global(svg) { translate: 0 -20px; }
+  .mh__strip :global(svg:first-child) { margin-left: 1px; }
+</style>

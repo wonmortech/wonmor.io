@@ -1,0 +1,71 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MenuOverlay from '../components/MenuOverlay.astro';
+import { getCollection } from 'astro:content';
+import { href, asset, locales, htmlLang, ogLocale, stripLocale, formatDate, type Locale } from '../i18n/config';
+import { categories } from '../i18n/home';
+import { ui } from '../i18n/ui';
+
+interface Props { locale: Locale; title: string; description: string; type?: 'website' | 'article'; published?: Date; noindex?: boolean }
+const { locale, title, description, type = 'website', published, noindex = false } = Astro.props;
+const here = stripLocale(Astro.url.pathname);
+const site = Astro.site ?? new URL('https://wonmor.io');
+const canonical = new URL(href(locale, here), site).toString();
+const ogImage = new URL(asset('/og/wonmor.png'), site).toString();
+
+const news = (await getCollection('news', (e) => e.id.endsWith(`/${locale}`)))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const featured = news.slice(0, 3).map((n) => ({
+  title: n.data.title,
+  href: href(locale, `/news/${n.id.split('/')[0]}`),
+  meta: `${categories[n.data.category][locale]} · ${formatDate(n.data.date, locale)}`,
+}));
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': type === 'article' ? 'Article' : 'WebPage',
+  name: title, headline: type === 'article' ? title : undefined, description, url: canonical, inLanguage: htmlLang[locale],
+  datePublished: published?.toISOString().slice(0, 10),
+  publisher: { '@type': 'Organization', name: 'Wonmor', url: 'https://wonmor.io', logo: new URL(asset('/brand/icon-512.png'), site).toString() },
+};
+---
+<!doctype html>
+<html lang={htmlLang[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={new URL(href(l, here), site).toString()} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(href('en', here), site).toString()} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#faf9f5" />
+    <link rel="icon" href={asset('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={asset('/apple-touch-icon.png')} />
+    <link rel="manifest" href={asset('/site.webmanifest')} />
+    <link rel="preload" href={asset('/fonts/sans-latin.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="alternate" type="application/rss+xml" title="Wonmor news" href={asset(locale === 'en' ? '/rss.xml' : `/${locale}/rss.xml`)} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Wonmor" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={ogLocale[locale]} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline src={asset('/js/boot.js')}></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{ui.skip[locale]}</a>
+    <Header locale={locale} />
+    <MenuOverlay locale={locale} featured={featured} />
+    <main id="main" tabindex="-1" data-pagefind-body={noindex ? undefined : ''}>
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

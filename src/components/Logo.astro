@@ -1,0 +1,67 @@
+---
+/* Wonmor lockup: the two V's (mark) + "onmor" (word), split into two SVGs so the
+   word can fold away on scroll while the mark stays centred.
+   Motion (logo.ts): at the top of the page the full lockup shows; on scroll the
+   letters fold away right-to-left and the W closes back into a single V — the
+   brand story (V splits into W) played in reverse. Scrolling back replays it. */
+import g from '../brand/geometry.json';
+import { href, type Locale } from '../i18n/config';
+
+interface Props { locale: Locale; height?: number; collapsible?: boolean; id?: string; class?: string }
+const { locale, height = 30, collapsible = false, id, class: cls } = Astro.props;
+const mw = +(height * g.markRatio).toFixed(2);
+const ww = +(height * g.wordRatio).toFixed(2);
+---
+<a class:list={['wm-logo', cls]} href={href(locale, '/')} aria-label="Wonmor" id={id}
+   data-logo={collapsible ? '' : undefined} style={`--logo-h:${height}px;--mark-w:${mw}px;--word-w:${ww}px`}>
+  <span class="wm-logo__mark" aria-hidden="true">
+    <svg viewBox={g.markVB} width={mw} height={height}>
+      <g transform={g.markTransform} fill="var(--wm-mark)">
+        <g class="wm-v wm-v--back"><path d={g.crown} /><path d={g.chev} /></g>
+        <g class="wm-v wm-v--front"><path d={g.crown} /><path d={g.chev} /></g>
+      </g>
+    </svg>
+  </span>
+  <span class="wm-logo__word" aria-hidden="true">
+    <svg viewBox={g.wordVB} width={ww} height={height}>
+      <g fill="var(--wm-text)" transform={`translate(${g.shift} 0)`}>
+        {g.letters.map((l, i) => <path class="wm-l" d={l.d} style={`--i:${i};--r:${g.letters.length - 1 - i}`} />)}
+      </g>
+    </svg>
+  </span>
+</a>
+
+<style>
+  .wm-logo { --o: 9.4px; display: inline-flex; align-items: center; height: var(--logo-h); text-decoration: none; border-radius: 6px; flex: none; }
+  .wm-logo svg { display: block; height: var(--logo-h); width: auto; overflow: visible; }
+  .wm-logo__mark { display: block; }
+  .wm-logo__word { display: block; overflow: hidden; width: var(--word-w); }
+
+  .wm-v { transform-box: view-box; }
+  .wm-v--back { opacity: .65; transform: translateX(0); }
+  .wm-v--front { transform: translateX(var(--o)); }
+  .wm-l { opacity: 1; transform: none; transform-box: fill-box; }
+
+  /* collapsed: single V centred in the mark box, word folded */
+  .wm-logo[data-collapsed] .wm-v--back { opacity: 0; transform: translateX(calc(var(--o) / 2)); }
+  .wm-logo[data-collapsed] .wm-v--front { transform: translateX(calc(var(--o) / 2)); }
+  .wm-logo[data-collapsed] .wm-logo__word { width: 0; }
+  .wm-logo[data-collapsed] .wm-l { opacity: 0; transform: translateX(-30%); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .wm-v { transition: transform .633s var(--ease-in-out-quart), opacity .5s var(--ease-out-quart); }
+    .wm-logo__word { transition: width .633s var(--ease-in-out-quart); }
+    /* unfold: letters arrive left-to-right after the V has split */
+    .wm-l { transition: opacity .38s var(--ease-out-quart) calc(180ms + var(--i) * 45ms), transform .5s var(--ease-rise) calc(180ms + var(--i) * 45ms); }
+    .wm-logo__word { transition-delay: 120ms; }
+    /* fold: letters leave right-to-left first, then the W closes */
+    .wm-logo[data-collapsed] .wm-l { transition-delay: calc(var(--r) * 35ms), calc(var(--r) * 35ms); transition-duration: .22s, .3s; }
+    .wm-logo[data-collapsed] .wm-logo__word { transition-delay: 60ms; }
+    .wm-logo[data-collapsed] .wm-v { transition-delay: 180ms; }
+    .wm-logo[data-instant], .wm-logo[data-instant] * { transition: none !important; }
+  }
+  @media (hover: hover) {
+    .wm-logo:hover .wm-v--back { opacity: .4; }
+    .wm-logo[data-collapsed]:hover .wm-v--back { opacity: 0; }
+  }
+</style>

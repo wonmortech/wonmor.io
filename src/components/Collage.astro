@@ -1,0 +1,75 @@
+---
+/* Generated editorial illustration: paper ground, one flat colour block and a
+   line-drawn girih (8-fold star) lattice set inside an arch — a nod to the tilework of
+   Samarkand and Bukhara. Deterministic per `art`, no raster assets, works in both themes. */
+interface Props { art: 'charter' | 'sponsorship' | 'research' | 'careers' | 'default'; ratio?: '4/5' | '16/9'; class?: string; drift?: boolean }
+const { art, ratio = '4/5', class: cls, drift = false } = Astro.props;
+const W = ratio === '4/5' ? 400 : 640, H = ratio === '4/5' ? 500 : 360;
+
+const themes = {
+  charter: { paper: '#e3dacc', block: '#788c5d', line: '#141413', accent: '#c9a45c', arch: 'tall', bx: .52, by: .1 },
+  sponsorship: { paper: '#ebcece', block: '#c47a55', line: '#141413', accent: '#3e5f9a', arch: 'dome', bx: .08, by: .46 },
+  research: { paper: '#bcd1ca', block: '#3e5f9a', line: '#141413', accent: '#e3dacc', arch: 'circle', bx: .5, by: .5 },
+  careers: { paper: '#cbcadb', block: '#c9a45c', line: '#141413', accent: '#788c5d', arch: 'tall', bx: .1, by: .08 },
+  default: { paper: '#f0eee6', block: '#bcd1ca', line: '#141413', accent: '#c47a55', arch: 'dome', bx: .4, by: .3 },
+} as const;
+const t = themes[art];
+
+// 8-point star tile (girih): two overlapping squares, repeated on a grid.
+const s = 46;
+const star = (cx: number, cy: number, r: number) => {
+  const pts: string[] = [];
+  for (let i = 0; i < 16; i++) {
+    const a = (Math.PI / 8) * i - Math.PI / 2;
+    const rr = i % 2 === 0 ? r : r * 0.62;
+    pts.push(`${(cx + rr * Math.cos(a)).toFixed(1)},${(cy + rr * Math.sin(a)).toFixed(1)}`);
+  }
+  return `M${pts.join('L')}Z`;
+};
+const tiles: string[] = [];
+for (let y = -s; y < H + s; y += s) for (let x = -s; x < W + s; x += s) {
+  tiles.push(star(x, y, s * 0.5));
+  tiles.push(`M${x - s / 2} ${y}L${x} ${y - s / 2}L${x + s / 2} ${y}L${x} ${y + s / 2}Z`);
+}
+const cx = W / 2, top = H * 0.16, bottom = H * 0.92, aw = W * 0.58;
+const archPath = t.arch === 'circle'
+  ? `M${cx} ${H * 0.5}m${-aw / 2} 0a${aw / 2} ${aw / 2} 0 1 0 ${aw} 0a${aw / 2} ${aw / 2} 0 1 0 ${-aw} 0Z`
+  : t.arch === 'dome'
+    ? `M${cx - aw / 2} ${bottom}V${H * 0.5}A${aw / 2} ${aw / 2} 0 0 1 ${cx + aw / 2} ${H * 0.5}V${bottom}Z`
+    : `M${cx - aw / 2} ${bottom}V${H * 0.42}Q${cx - aw / 2} ${top + 20} ${cx} ${top}Q${cx + aw / 2} ${top + 20} ${cx + aw / 2} ${H * 0.42}V${bottom}Z`;
+const id = `cl-${art}-${ratio.replace('/', '')}`;
+---
+<div class:list={['collage', cls, drift && 'collage--drift']} style={`aspect-ratio:${ratio}`} aria-hidden="true">
+  <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <clipPath id={`${id}-a`}><path d={archPath} /></clipPath>
+      <filter id={`${id}-g`} x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch" />
+        <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0" />
+      </filter>
+    </defs>
+    <rect width={W} height={H} fill={t.paper} />
+    <g class="collage__drift-a">
+      <rect x={W * t.bx} y={H * t.by} width={W * 0.42} height={H * 0.44} fill={t.block} />
+    </g>
+    <g class="collage__drift-b">
+      <path d={archPath} fill={t.accent} opacity=".9" />
+      <g clip-path={`url(#${id}-a)`} fill="none" stroke={t.line} stroke-width="1.1" stroke-linejoin="round" opacity=".85">
+        {tiles.map((d) => <path d={d} />)}
+      </g>
+      <path d={archPath} fill="none" stroke={t.line} stroke-width="1.6" />
+    </g>
+    <rect width={W} height={H} filter={`url(#${id}-g)`} opacity=".22" style="mix-blend-mode:multiply" />
+  </svg>
+</div>
+
+<style>
+  .collage { position: relative; overflow: hidden; border-radius: var(--radius-media); background: var(--gray-150); }
+  .collage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .collage--drift .collage__drift-a { animation: c-drift-a 23s ease-in-out infinite alternate; }
+    .collage--drift .collage__drift-b { animation: c-drift-b 31s ease-in-out infinite alternate; transform-origin: 50% 60%; }
+  }
+  @keyframes c-drift-a { from { transform: translate(-8px, 6px); } to { transform: translate(10px, -8px); } }
+  @keyframes c-drift-b { from { transform: scale(1) rotate(-.6deg); } to { transform: scale(1.025) rotate(.6deg); } }
+</style>

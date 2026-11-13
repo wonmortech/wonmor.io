@@ -1,0 +1,58 @@
+---
+/* News card (DESIGN.md §5.7): meta, title block (whole block clickable), dl link rows, full-width CTA. */
+import Icon from './Icon.astro';
+import { formatDate, href, type Locale } from '../i18n/config';
+import { categories } from '../i18n/home';
+import { ui } from '../i18n/ui';
+
+interface Props { locale: Locale; slug: string; title: string; description: string; date: Date; category: string;
+  links: { label: string; text: string; href: string; kind: 'external' | 'download' | 'internal' }[]; cta?: string }
+const { locale, slug, title, description, date, category, links, cta = ui.readAnnouncement[locale] } = Astro.props;
+const url = href(locale, `/news/${slug}`);
+---
+<article class="ncard">
+  <header class="ncard__meta t-caption">
+    <a class="link-quiet" href={href(locale, '/news')}>{categories[category][locale]}</a>
+    <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date, locale)}</time>
+  </header>
+  <div class="ncard__title-block">
+    <h3 class="ncard__title t-headline-5"><a class="ncard__title-link" href={url}>{title}</a></h3>
+    <p class="ncard__desc t-body-4">{description}</p>
+  </div>
+  <dl class="ncard__details">
+    {links.slice(0, 2).map((l) => (
+      <div class="ncard__row">
+        <dt class="t-caption">{l.label}</dt>
+        <dd>
+          <a class="ncard__link t-caption" href={l.href} target={l.kind === 'internal' ? undefined : '_blank'} rel={l.kind === 'internal' ? undefined : 'noopener'}>
+            <span>{l.text}</span><Icon name={l.kind === 'download' ? 'download' : l.kind === 'internal' ? 'arrow-right' : 'arrow-up-right'} size={12} />
+            {l.kind !== 'internal' && <span class="sr-only">{ui.external[locale]}</span>}
+          </a>
+        </dd>
+      </div>
+    ))}
+  </dl>
+  <a class="btn btn--secondary btn--medium btn--rounded btn--block btn--trailing ncard__cta" href={url} aria-label={`${cta}: ${title}`}>{cta}<Icon name="arrow-right" /></a>
+</article>
+
+<style>
+  .ncard { position: relative; display: flex; flex-direction: column; padding: 32px; border-radius: var(--radius-card);
+    background: var(--theme-background-secondary); color: var(--theme-foreground-primary); min-height: 100%; }
+  .ncard__meta { display: flex; flex-wrap: wrap; column-gap: 16px; color: var(--theme-foreground-tertiary); margin-bottom: 16px; position: relative; z-index: 2; }
+  .ncard__title-block { position: relative; }
+  .ncard__title-link { color: inherit; text-decoration: none; }
+  .ncard__title-link::after { content: ''; position: absolute; inset: 0; }
+  .ncard__title, .ncard__desc { transition: color .2s var(--ease-out-quart); }
+  .ncard__desc { margin-top: 12px; color: var(--theme-foreground-secondary); }
+  .ncard__details { margin-top: auto; padding-top: 48px; }
+  .ncard__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 2px; border-top: 1px solid var(--theme-border-secondary); min-height: 46px; }
+  .ncard__row dt { color: var(--theme-foreground-primary); }
+  .ncard__link { display: inline-flex; align-items: center; gap: 8px; color: var(--theme-foreground-tertiary); text-decoration: none; transition: color .2s; }
+  .ncard__link:hover { color: var(--theme-foreground-primary); }
+  .ncard__link:hover > span:first-child { text-decoration: underline; text-underline-offset: .2em; }
+  .ncard__cta { margin-top: 16px; }
+  @media (hover: hover) {
+    .ncard:has(.ncard__title-link:hover) :is(.ncard__title, .ncard__desc) { color: var(--theme-foreground-quaternary); }
+  }
+  .ncard:has(.ncard__title-link:focus-visible) :is(.ncard__title, .ncard__desc) { color: var(--theme-foreground-quaternary); }
+</style>

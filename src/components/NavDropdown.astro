@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/config';
+import type { NavMenu } from '../i18n/pages';
+import { resolve } from '../i18n/nav';
+import { ui } from '../i18n/ui';
+
+interface Props { m: NavMenu; locale: Locale; active?: boolean; currentHref?: string; align?: 'start' | 'end' }
+const { m, locale, active = false, currentHref, align = 'start' } = Astro.props;
+const links = (m.items ?? []).map((it) => resolve(it, locale));
+const id = `dd-${m.id}`;
+---
+{m.href ? (
+  <a class="btn btn--tertiary btn--small btn--pill" href={href(locale, m.href)} aria-current={active ? 'page' : undefined}>{m.label[locale]}</a>
+) : (
+  <div class="nav-dd" data-dd data-menu={m.id}>
+    <button class="btn btn--tertiary btn--small btn--pill btn--trailing nav-dd__trigger" type="button" aria-expanded="false" aria-controls={id} aria-current={active ? 'page' : undefined}>
+      {m.label[locale]}<Icon name="chevron-down" class="nav-dd__chev" />
+    </button>
+    <div class:list={['nav-dd__popup', align === 'end' && 'nav-dd__popup--end']} id={id} hidden style={m.cols ? `--cols:${m.cols}` : undefined}>
+      <ul role="list">
+        {links.map((l) => (
+          <li>
+            <a class="nav-item" href={l.href} target={l.external ? '_blank' : undefined} rel={l.external ? 'noopener' : undefined} aria-current={currentHref === l.href ? 'page' : undefined}>
+              <span>{l.label}</span>
+              {l.external && <><Icon name="arrow-up-right" /><span class="sr-only">{ui.external[locale]}</span></>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+)}

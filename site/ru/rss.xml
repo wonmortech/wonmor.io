@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>Wonmor</title>
+<link>https://wonmor.io/ru/news/</link>
+<description>Wonmor — независимая студия из Узбекистана. Она создаёт и поддерживает экосистему dtwin — инструменты для веры, языка, работы и повседневной жизни.</description>
+<language>ru</language>
+<item><title>bitg получил серебряный бейдж OpenSSF Best Practices</title><link>https://wonmor.io/ru/news/bitg-openssf-silver/</link><guid>https://wonmor.io/ru/news/bitg-openssf-silver/</guid><pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate><description>bitg 0.3.1 вышел с подписанными аттестациями происхождения сборки и SBOM, а проект теперь выполняет все критерии серебряного уровня OpenSSF.</description></item>
+<item><title>Деплои, которые не обрывают ни одной загрузки</title><link>https://wonmor.io/ru/news/zero-downtime-deploys/</link><guid>https://wonmor.io/ru/news/zero-downtime-deploys/</guid><pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate><description>Статические сайты на edge dtwin теперь обновляются без простоя. 76-секундная загрузка пережила деплой, не прерываясь.</description></item>
+<item><title>bitg 0.3: одна клавиатура для Windows, Linux и macOS</title><link>https://wonmor.io/ru/news/introducing-bitg-0-3/</link><guid>https://wonmor.io/ru/news/introducing-bitg-0-3/</guid><pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate><description>bitg переводит узбекский текст в латиницу 2026 года прямо при наборе, в любом приложении. Версия 0.3 приносит этот движок во все три настольные системы.</description></item>
+</channel></rss>
