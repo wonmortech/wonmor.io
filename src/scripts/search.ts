@@ -36,7 +36,7 @@ if (root) {
       }));
       status.textContent = data.length ? `${data.length} ${data.length === 1 ? words[0] : words[1]}` : `${words[2]} “${q}”`;
     } catch {
-      status.textContent = 'Search index is not available in development. Run a production build.';
+      status.textContent = ({ uz: 'Qidiruv hozir ishlamayapti. Sahifani yangilab koʻring.', ru: 'Поиск сейчас недоступен. Попробуйте обновить страницу.' } as Record<string, string>)[lang] ?? 'Search is not available right now. Try reloading the page.';
     }
   }
   let timer = 0;

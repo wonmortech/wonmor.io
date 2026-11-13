@@ -18,6 +18,7 @@ export const docUi = {
   byLevel: { en: 'Products by release level', uz: 'Reliz darajasi boʻyicha mahsulotlar', ru: 'Продукты по уровню релиза' },
   openssf: { en: 'bitg on OpenSSF Best Practices', uz: 'bitg — OpenSSF Best Practices', ru: 'bitg в OpenSSF Best Practices' },
   public: { en: 'public repositories', uz: 'ochiq repozitoriy', ru: 'открытых репозиториев' },
+  gold: { en: 'Gold', uz: 'Oltin', ru: 'Золото' },
 } satisfies Record<string, T>;
 
 /** Release levels (Responsible Release Policy). */
@@ -39,12 +40,12 @@ export const brandColours = [
 ];
 
 export const brandFiles = [
-  { file: 'lockup-on-light.svg', label: 'Lockup · light', ground: '#faf9f5' },
-  { file: 'lockup-on-dark.svg', label: 'Lockup · dark', ground: '#090A1E' },
-  { file: 'mark-blue.svg', label: 'Mark · blue', ground: '#faf9f5' },
-  { file: 'mark-white.svg', label: 'Mark · white', ground: '#2969FF' },
-  { file: 'icon-blue.svg', label: 'App icon · blue', ground: '#ece9e1' },
-  { file: 'icon-dark.svg', label: 'App icon · dark', ground: '#ece9e1' },
-  { file: 'icon-light.svg', label: 'App icon · light', ground: '#ece9e1' },
-  { file: 'icon-512.png', label: 'App icon · PNG 512', ground: '#ece9e1' },
+  { file: 'lockup-on-light.svg', label: { en: 'Lockup · light', uz: 'Lockup · yorugʻ', ru: 'Локап · светлый' }, ground: '#faf9f5' },
+  { file: 'lockup-on-dark.svg', label: { en: 'Lockup · dark', uz: 'Lockup · qorongʻi', ru: 'Локап · тёмный' }, ground: '#090A1E' },
+  { file: 'mark-blue.svg', label: { en: 'Mark · blue', uz: 'Belgi · koʻk', ru: 'Знак · синий' }, ground: '#faf9f5' },
+  { file: 'mark-white.svg', label: { en: 'Mark · white', uz: 'Belgi · oq', ru: 'Знак · белый' }, ground: '#2969FF' },
+  { file: 'icon-blue.svg', label: { en: 'App icon · blue', uz: 'Ilova ikonkasi · koʻk', ru: 'Иконка · синяя' }, ground: '#ece9e1' },
+  { file: 'icon-dark.svg', label: { en: 'App icon · dark', uz: 'Ilova ikonkasi · qorongʻi', ru: 'Иконка · тёмная' }, ground: '#ece9e1' },
+  { file: 'icon-light.svg', label: { en: 'App icon · light', uz: 'Ilova ikonkasi · yorugʻ', ru: 'Иконка · светлая' }, ground: '#ece9e1' },
+  { file: 'icon-512.png', label: { en: 'App icon · PNG 512', uz: 'Ilova ikonkasi · PNG 512', ru: 'Иконка · PNG 512' }, ground: '#ece9e1' },
 ];

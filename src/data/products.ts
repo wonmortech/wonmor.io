@@ -10,7 +10,7 @@ export interface Product {
   summary: T;
   features: { title: T; body: T }[];
   how: { title: T; body: T }[];
-  facts: { value: string; label: T; source: string }[];
+  facts: { value: string | T; label: T; source: string }[];
   milestones: { date: string; text: T }[];
   accent: string;
 }

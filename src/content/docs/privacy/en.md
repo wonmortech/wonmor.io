@@ -20,7 +20,9 @@ These points are not just promises; the site's security policy (Content-Security
 
 ## What your browser stores
 
-One small value. The first time you open a page in a browser tab, the Wonmor logo plays a short opening animation. To avoid replaying it on every page, the site writes the key `wm-intro` with the value `1` to your browser's session storage. It contains nothing about you, never leaves your device and is deleted when you close the tab. If your browser blocks storage, the animation simply plays again.
+Two small values, both only on your device. The first time you open a page in a browser tab, the Wonmor logo plays a short opening animation. To avoid replaying it on every page, the site writes the key `wm-intro` with the value `1` to your browser's session storage. It contains nothing about you, never leaves your device and is deleted when you close the tab. If your browser blocks storage, the animation simply plays again.
+
+If you switch between the light and dark theme with the button in the header, the site saves your choice as the key `wm-theme` (`light` or `dark`) in your browser's local storage, so the next page opens in the same theme. It stays until you clear this site's data and is never sent anywhere. If you never press the button, nothing is saved and the site follows your system setting.
 
 ## Search
 

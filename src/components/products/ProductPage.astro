@@ -100,7 +100,7 @@ const t = (x: { en: string; uz: string; ru: string }) => x[locale];
           <div class="rule-row"><h2 class="t-caption-bold" id="pp-fx">{U.facts[locale]}</h2></div>
           <dl class="pp__facts">
             {p.facts.map((f) => (
-              <div class="pp__fact reveal-up"><dt class="t-caption fg-2">{t(f.label)}</dt><dd class="pp__fact-v">{f.value}</dd><dd class="t-caption fg-3 pp__fact-src">{f.source}</dd></div>
+              <div class="pp__fact reveal-up"><dt class="t-caption fg-2">{t(f.label)}</dt><dd class="pp__fact-v">{typeof f.value === 'string' ? f.value : t(f.value)}</dd><dd class="t-caption fg-3 pp__fact-src">{f.source}</dd></div>
             ))}
           </dl>
         </section>

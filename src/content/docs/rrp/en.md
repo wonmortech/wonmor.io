@@ -24,7 +24,7 @@ Each level includes everything required by the levels below it.
 
 **Definition.** A working demo that shows an idea. It may be rebuilt, renamed or switched off without notice.
 
-**Required evidence.** The product is reachable and clearly labelled as a prototype, concept or experiment on its product page.
+**Required evidence.** The product is reachable and clearly labelled as a prototype on its product page; the level badge “WRL-1 · Prototype” shown there is that label. A stage label next to it, such as MVP or Preview, describes how complete the features are, not how far you can rely on the product.
 
 **What you can expect.** You can try it and tell us what you think. You should not store anything important in it or enter real personal data. Data may be reset at any time, and there is no promise of uptime or support.
 

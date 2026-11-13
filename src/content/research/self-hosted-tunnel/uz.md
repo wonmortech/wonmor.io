@@ -50,14 +50,14 @@ Klient oddiy HTTPS porti orqali WebSocket bilan oʻzi ulanadi. Demak, veb-brauze
 
 Koʻzga tashlanadigan yechim `*.tunnel.dtwin.uz` uchun bitta wildcard sertifikat. Wildcard DNS-01 sinovini talab qiladi, yaʼni TXT yozuvlarni avtomatik yaratish kerak, bizning DNS provayderimizda esa API yoʻq. Biz edge serverning on-demand TLSʼi orqali har subdomen uchun alohida sertifikatni tanladik. Chiqarishdan oldin edge frpʼdan bu nom haqiqatan roʻyxatdan oʻtganmi deb soʻraydi, shuning uchun hech kim bizni tasodifiy nomlarga sertifikat soʻrashga majbur qila olmaydi.
 
-On-demand chiqarishning narxi bor: birinchi mehmon uni kutadi. Edge jurnallarimizda Letʼs Encrypt yangi nom uchun “olinmoqda”dan “olindi”gacha taxminan 7.8 soniya sarfladi. Birinchi tuzatishimiz prewarm edi: frp yangi tunnelni qabul qilgandan 1.5 soniya keyin gateway oʻsha nom uchun edgeʼga TLS ulanish ochadi va bu chiqarishni hech kim kirmasdan oldin boshlaydi. Bu yetarli boʻlmadi. Havola darhol chiqarilardi va tez bosish baribir tugallanmagan sertifikatga urilardi: birinchi kirish TLS handshakeʼda 5.71 soniya sarfladi.
+On-demand chiqarishning narxi bor: birinchi mehmon uni kutadi. Edge jurnallarimizda Letʼs Encrypt yangi nom uchun “olinmoqda”dan “olindi”gacha taxminan 7,8 soniya sarfladi. Birinchi tuzatishimiz prewarm edi: frp yangi tunnelni qabul qilgandan 1,5 soniya keyin gateway oʻsha nom uchun edgeʼga TLS ulanish ochadi va bu chiqarishni hech kim kirmasdan oldin boshlaydi. Bu yetarli boʻlmadi. Havola darhol chiqarilardi va tez bosish baribir tugallanmagan sertifikatga urilardi: birinchi kirish TLS handshakeʼda 5,71 soniya sarfladi.
 
 Ikkinchi tuzatish kutishni oʻz joyiga koʻchirdi. Gatewayʼga tayyorlik endpointʼi qoʻshildi: u foydalanuvchi ilovasiga hech qanday soʻrov yubormasdan nom uchun TLS handshake qiladi, klient esa havolani chiqarishdan oldin uni soʻrab turadi:
 
 | | Birinchi kirish |
 |---|---|
-| Faqat prewarm | TLS handshake 5.71 s |
-| Havola tayyorlikdan keyin (Windows klient) | havola 9.9 s da chiqdi; TLS 0.06 s, jami 0.13 s |
+| Faqat prewarm | TLS handshake 5,71 s |
+| Havola tayyorlikdan keyin (Windows klient) | havola 9,9 s da chiqdi; TLS 0.06 s, jami 0,13 s |
 | Havola tayyorlikdan keyin (Linux klient) | TLS 0.16 s |
 
 Foydalanuvchi bir marta, terminalda, kutish kutilgan joyda bir necha soniya kutadi. Mehmon hech qachon kutmaydi. Roʻyxatdan oʻtmagan nom uchun endpoint olti soniyadan keyin `ready: false` deb javob beradi, chunki edge unga sertifikat chiqarishni rad etadi.

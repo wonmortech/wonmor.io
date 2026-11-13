@@ -22,9 +22,9 @@ reproduce:
     - "git checkout 432e50f   # v1, the 55 baseline, for comparison"
 ---
 
-Halvet hammom, sauna va basseyn quruvchilari uchun konsept sayt. Uning auditoriyasi qimmat his qilinadigan narsani kutadi: sekin, kinematografik harakat, iliq tosh ustida suzib yuradigan bugʻ. Birinchi versiyada bularning hammasi bor edi va telefonda undan deyarli foydalanib boʻlmasdi. Lighthouseʼning mobil profili unga 55 unumdorlik bahosini berdi: Total Blocking Time 14.4 soniya, sahifa vazni 3.6 MB.
+Halvet hammom, sauna va basseyn quruvchilari uchun konsept sayt. Uning auditoriyasi qimmat his qilinadigan narsani kutadi: sekin, kinematografik harakat, iliq tosh ustida suzib yuradigan bugʻ. Birinchi versiyada bularning hammasi bor edi va telefonda undan deyarli foydalanib boʻlmasdi. Lighthouseʼning mobil profili unga 55 unumdorlik bahosini berdi: Total Blocking Time 14,4 soniya, sahifa vazni 3,6 MB.
 
-Bir relizdan keyin, 2026-yil 9-noyabrda, oʻsha sahifa 100 oldi: Total Blocking Time nol, sahifa 0.65 MB. Keyingi reliz WebGL tuman shaderi va three.js sahnasini qoʻshdi va baribir mobilda 99, desktopda 100 oldi. Bu maqola buning qanday boʻlgani va hikoyaning halol oxiri haqida: baho saqlab qoladigan kubok emas.
+Bir relizdan keyin, 2026-yil 9-noyabrda, oʻsha sahifa 100 oldi: Total Blocking Time nol, sahifa 0,65 MB. Keyingi reliz WebGL tuman shaderi va three.js sahnasini qoʻshdi va baribir mobilda 99, desktopda 100 oldi. Bu maqola buning qanday boʻlgani va hikoyaning halol oxiri haqida: baho saqlab qoladigan kubok emas.
 
 ```steps
 Oʻlchash :: Lighthouseʼni mobil profilda yurgizing va faqat bahoni emas, diagnostikani oʻqing.
@@ -36,9 +36,9 @@ Vauni dangasa qoʻshish :: Ogʻir effektlar faqat kerak boʻlganda yuklanadi, av
 
 ## Butun muammo bitta effekt edi
 
-Hero bu ustidan bugʻ suzib oʻtadigan hammom fotosurati. v1ʼda bu bugʻ 2D canvas edi: har animatsiya kadrida qayta chiziladigan 26 ta yumshoq sprite, qurilma piksel nisbatining 1.5 baravarigacha, fotosurat ustiga `mix-blend-mode: screen` bilan qoʻshilgan.
+Hero bu ustidan bugʻ suzib oʻtadigan hammom fotosurati. v1ʼda bu bugʻ 2D canvas edi: har animatsiya kadrida qayta chiziladigan 26 ta yumshoq sprite, qurilma piksel nisbatining 1,5 baravarigacha, fotosurat ustiga `mix-blend-mode: screen` bilan qoʻshilgan.
 
-Har bir qism oʻz-oʻzidan oqilona edi. Hammasi birga, sekinlashtirilgan oʻrta darajali telefonda, falokat edi. Ekran oʻlchamidagi toʻliq aniqlikdagi canvas sekundiga oltmish marta tozalanib qayta chizilardi, keyin har kadrda ostidagi rasm bilan aralashtirilardi va bu birinchi chizishdan boshlab asosiy oqim va kompozitorni band qilib turardi. Lighthouse birinchi chizishdan keyingi har uzun vazifani Total Blocking Timeʼga qoʻshadi, 14.4 soniyaning deyarli hammasi shu sikldan kelardi.
+Har bir qism oʻz-oʻzidan oqilona edi. Hammasi birga, sekinlashtirilgan oʻrta darajali telefonda, falokat edi. Ekran oʻlchamidagi toʻliq aniqlikdagi canvas sekundiga oltmish marta tozalanib qayta chizilardi, keyin har kadrda ostidagi rasm bilan aralashtirilardi va bu birinchi chizishdan boshlab asosiy oqim va kompozitorni band qilib turardi. Lighthouse birinchi chizishdan keyingi har uzun vazifani Total Blocking Timeʼga qoʻshadi, 14,4 soniyaning deyarli hammasi shu sikldan kelardi.
 
 v1.1ʼdagi tuzatish effektni saqladi va uning narxini oʻzgartirdi:
 
@@ -66,7 +66,7 @@ Blend mode butunlay olib tashlandi, sprite esa yumshoq dogʻlar toʻplami sifati
 
 Asosiy oqim boʻshagach, qolgan ish vazn edi:
 
-- **Moslashuvchan WebP.** 0.3–0.8 MBʼli JPEG boʻlgan har bir fotosurat kichik skript manba rasmlardan yaratadigan 640 dan 2000 pikselgacha kenglikdagi WebP fayllar `srcset`ʼiga aylandi. Telefon 640 yoki 1024 versiyani yuklaydi.
+- **Moslashuvchan WebP.** 0,3–0,8 MBʼli JPEG boʻlgan har bir fotosurat kichik skript manba rasmlardan yaratadigan 640 dan 2000 pikselgacha kenglikdagi WebP fayllar `srcset`ʼiga aylandi. Telefon 640 yoki 1024 versiyani yuklaydi.
 - **Oʻzimizdagi shriftlar.** Shriftlar Google Fontsʼdan saytning oʻziga koʻchdi, birinchi ekranda ishlatiladigan ikki shrift uchun `preload` bilan; hero fotosurati ham `fetchpriority="high"` bilan oldindan yuklanadi. Bu muhim yoʻldan uchinchi tomon ulanishini olib tashladi va kontent xavfsizlik siyosatiga Googleʼni butunlay chiqarib tashlash imkonini berdi.
 - **Oʻzgarmas kesh.** CSS va JavaScript `styles.css?v=<commit>` koʻrinishida chaqiriladi va uzoq oʻzgarmas kesh bilan beriladi, shuning uchun qaytgan mehmon hech narsa yuklamaydi, deploy esa baribir hammasini yangilaydi.
 
@@ -102,8 +102,8 @@ v1.3 har qatlamda CSS oʻzgaruvchisini inline `style="..."` atributi orqali bera
 
 ## Cheklovlar: 100 doimiy emas
 
-Baho bu sahifaning bir kundagi surati, sahifa esa oʻsishda davom etdi. v1.8 tumanni kurnalardan koʻtariladigan bugʻning GPU suyuqlik simulyatsiyasi bilan almashtirdi. Uning shaderlarini kompilyatsiya qilish asosiy oqimni bloklardi, shuning uchun ishga tushirish bosqichma-bosqich: shaderlar `KHR_parallel_shader_compile` kengaytmasi orqali fonda kompilyatsiya qilinadi, simulyatsiya esa taxminan olti millisekundlik boʻlaklarda qizdiriladi, toki birorta vazifa uzoq choʻzilmasin. Shu relizdan keyin jonli sayt mobilda 92 koʻrsatdi: Largest Contentful Paint 2.8 s, Total Blocking Time 210 ms.
+Baho bu sahifaning bir kundagi surati, sahifa esa oʻsishda davom etdi. v1.8 tumanni kurnalardan koʻtariladigan bugʻning GPU suyuqlik simulyatsiyasi bilan almashtirdi. Uning shaderlarini kompilyatsiya qilish asosiy oqimni bloklardi, shuning uchun ishga tushirish bosqichma-bosqich: shaderlar `KHR_parallel_shader_compile` kengaytmasi orqali fonda kompilyatsiya qilinadi, simulyatsiya esa taxminan olti millisekundlik boʻlaklarda qizdiriladi, toki birorta vazifa uzoq choʻzilmasin. Shu relizdan keyin jonli sayt mobilda 92 koʻrsatdi: Largest Contentful Paint 2,8 s, Total Blocking Time 210 ms.
 
-2026-yil 13-noyabrda biz Lighthouse 12.8.2ʼni ish stoli kompyuteridan jonli saytga qarshi standart mobil profilda yana yurgizdik. U unumdorlik 78, foydalanish qulayligi 96, eng yaxshi amaliyotlar 100 va SEO 100 ni koʻrsatdi: Largest Contentful Paint 2.9 s, Total Blocking Time 550 ms, layout siljishi yoʻq, 795 KiB uzatilgan. Laboratoriya baholari kompyuter, tarmoq va Lighthouseʼning oʻz tebranishi bilan oʻzgaradi; GPUʼga ogʻir sahifa koʻpchilikdan koʻproq tebranadi. Biz olgan saboq “100 oling” emas, balki “har effekt qanchaga tushishini biling va uning narxini faqat mehmon qarab turganda toʻlang”.
+2026-yil 13-noyabrda biz Lighthouse 12.8.2ʼni ish stoli kompyuteridan jonli saytga qarshi standart mobil profilda yana yurgizdik. U unumdorlik 78, foydalanish qulayligi 96, eng yaxshi amaliyotlar 100 va SEO 100 ni koʻrsatdi: Largest Contentful Paint 2,9 s, Total Blocking Time 550 ms, layout siljishi yoʻq, 795 KiB uzatilgan. Laboratoriya baholari kompyuter, tarmoq va Lighthouseʼning oʻz tebranishi bilan oʻzgaradi; GPUʼga ogʻir sahifa koʻpchilikdan koʻproq tebranadi. Biz olgan saboq “100 oling” emas, balki “har effekt qanchaga tushishini biling va uning narxini faqat mehmon qarab turganda toʻlang”.
 
 Foydalanish qulayligi ataylab 96–97 da qoladi: scroll bilan boshqariladigan bayonot oʻqiganingiz sari soʻzlarni xiradan yorqinga oʻtkazadi, xira soʻzlar esa yonmaguncha kontrast tekshiruvidan oʻtmaydi.
