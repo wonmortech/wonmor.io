@@ -1,0 +1,102 @@
+# Wonmor
+
+> Wonmor is an independent studio from Uzbekistan. It builds and supports the dtwin ecosystem — tools for faith, language, work and everyday life.
+
+Wonmor is a self-funded brand from Uzbekistan, not a company: no legal entity, investors or board. Pages exist in English (/), Uzbek (/uz/) and Russian (/ru/). Facts on the site are dated; anything not live yet is marked as planned.
+
+## Products
+
+- [Products](https://wonmor.io/products/): Everything Wonmor builds and supports, from a prayer-anchored planner to an Uzbek keyboard and the infrastructure that keeps them running.
+- [dtwin](https://wonmor.io/products/dtwin/): A personal life planner built around the five daily prayers, with an MCP server of 96 tools so Claude and other assistants can work with your day.
+- [bitg](https://wonmor.io/products/bitg/): Type Uzbek in the 2026 Latin alphabet in any app, on Windows, Linux and macOS, without breaking English. One Rust core, open source.
+- [TeleTwin](https://wonmor.io/products/teletwin/): A company layer for Telegram: shared work accounts, roles, and one click to revoke an employee’s access.
+- [Gateway](https://wonmor.io/products/gateway/): One control plane for every AI agent’s tools: personal tokens, masking of personal data, a full audit log and a kill switch.
+- [Tunnel](https://wonmor.io/products/tunnel/): Self-hosted tunnels that put a local service on a public address, with a personal token for every user.
+- [Fam](https://wonmor.io/products/fam/): Self-hosted bug reports with session replay, a browser extension and an MCP server, so your agents can read the bug instead of guessing.
+- [operobot](https://wonmor.io/products/operobot/): An outbound call assistant designed around local rules for consent and calling hours.
+- [shop](https://wonmor.io/products/shop/): An experiment in small-business commerce: a storefront and order flow built on the same stack as the rest of dtwin.
+- [gym](https://wonmor.io/products/gym/): An open-source workout diary: a library of exercises, ready-made plans and your progress, with no account needed.
+- [med](https://wonmor.io/products/med/): An experiment in medical learning: structured study material and practice by specialty.
+- [faktura-twin](https://wonmor.io/products/faktura-twin/): A live 3D digital twin of a working office: servers, services and team activity in one scene that agents can also query.
+- [Attendo](https://wonmor.io/products/attendo/): Face-recognition attendance on Hikvision terminals, rewritten for clarity: who came, when, and what the payroll needs to know.
+- [Oilaviy](https://wonmor.io/products/oilaviy/): Restaurant ordering on the web and inside Telegram, with live order status for guests and staff.
+- [Primus Library](https://wonmor.io/products/primus-library/): A 3D asset library and production board for an animation studio: models, versions, episodes and offsite backups.
+- [Halvet](https://wonmor.io/products/halvet/): A premium site concept for hammam and sauna builders, with a WebGL dome and fog. Concept build with stock imagery.
+- [xnosir.io](https://wonmor.io/products/xnosir-io/): The founder’s portfolio, built as a WebGL descent through the systems behind the founder’s work, in three languages.
+
+## Research and engineering
+
+- [Research](https://wonmor.io/research/): Our work studies how software can serve real communities — and stay trustworthy while it does.
+- [Agents and MCP](https://wonmor.io/research/agents/): How AI agents should reach real systems: one gateway with scoped tokens, masking, audit and a kill switch, and products that expose their own tools — 96 of them in dtwin alone.
+- [Language technology](https://wonmor.io/research/language/): Tools for writing Uzbek well on every device — starting with bitg, a keyboard that converts text to the 2026 Latin alphabet as you type, measured at 98.87% on a public evaluation set.
+- [Infrastructure and reliability](https://wonmor.io/research/infrastructure/): Running many small products on modest hardware without dropping requests: zero-downtime releases, self-hosted tunnels, status checks and restores that are actually tested.
+- [Supply-chain security](https://wonmor.io/research/supply-chain/): Making it possible to check that a download is exactly what the source code says: signed provenance, SBOMs, reproducible packages and the OpenSSF Best Practices gold badge for bitg.
+- [Interfaces and 3D](https://wonmor.io/research/interfaces/): Interfaces people remember: 3D scenes that stay fast, a brand film rendered from code, and pages that score 100 on Lighthouse without losing their motion.
+- [Faith and society](https://wonmor.io/research/faith-society/): Software that respects how people actually organise their day: a planner anchored to the five daily prayers, 2,285 congregations mapped from OpenStreetMap, and missed-prayer planning.
+- [Digital assets](https://wonmor.io/research/digital-assets/): An open question, not a product: whether a community app should have a token at all. Our current answer is no — the reasoning, covering Uzbek law, platform rules and Islamic finance, is written up as an architecture decision.
+- [Engineering](https://wonmor.io/engineering/): Notes from building and running the dtwin ecosystem: deploys, builds, incidents and the fixes behind them, with the commands to reproduce each one.
+- [Making a brand film from code](https://wonmor.io/engineering/brand-film-from-code/): How the 19.4-second wonmor brand film is generated from one timeline file: a canvas renderer for the MP4, a generated After Effects project, Blender for materials, synthesised sound and a web encode.
+- [From zero to OpenSSF gold in under two days](https://wonmor.io/engineering/openssf-gold-in-two-days/): bitg's repository was created on 11 November 2026 at 17:08 UTC. The project reached the OpenSSF Best Practices gold level 36 hours later. Most of the code-side criteria took hours; the hardest ones were about people, and one we marked wrongly before correcting it.
+- [Reproducible MSI and .pkg builds, and the timestamp traps inside](https://wonmor.io/engineering/reproducible-msi-pkg/): Building the bitg installers twice from one commit used to give two different files. We removed the differences layer by layer: compiler, linker, WiX, the OLE container, and the xar archive behind every macOS package. The last four bytes were written by the very call that saved our fix.
+- [Zero-downtime static deploys with Caddy](https://wonmor.io/engineering/zero-downtime-static-deploys/): A deploy used to restart the web server and cut off anyone downloading an installer. The replacement is small: release directories, one atomic rename, a validated config and a graceful reload. The details that make it work are about inodes, bind mounts and a Caddy setting we deliberately left out.
+- [Honest evaluation for transliteration: why our score went down from 99.17% to 98.87%](https://wonmor.io/research/honest-transliteration-eval/): Our Uzbek converter scored 99.17% until we found that its lexicon had counted the evaluation sentences. Removing the leak cost 0.30 points, and the nine sentences that flipped show exactly what the leak had been teaching.
+- [Building an Uzbek keyboard for three operating systems](https://wonmor.io/research/uzbek-keyboard-three-os/): bitg rewrites Uzbek words into the 2026 alphabet as you type, on Windows, Linux and macOS. One Rust core makes the decision; three very different input frameworks decide how hard it is to apply it.
+- [Telegram HTML widgets in production](https://wonmor.io/engineering/telegram-html-widgets/): What it took to ship two live HTML widgets in the dtwin Telegram bot: a 4 KB budget, a 1 KB state, a revision protocol between bot and chat, and a paint limit the documentation does not spell out.
+- [Lighthouse 55 → 100 without losing the wow](https://wonmor.io/engineering/lighthouse-55-to-100/): How the Halvet concept site went from a mobile Lighthouse performance score of 55 to 100 in one release, then got a WebGL hero and a 3D scene back while staying at 99, and why the score did not stay there.
+- [An MCP gateway for AI agents: tokens, masking, audit, kill-switch](https://wonmor.io/research/mcp-gateway-for-agents/): We put one gateway between coding agents and internal systems. Each agent gets its own token and allowlist, every result is masked before it leaves, every call is audited, and one button stops everything.
+- [Building a self-hosted tunnel](https://wonmor.io/engineering/self-hosted-tunnel/): How we built tunnel.dtwin.uz on frp: a small gateway that owns sign-in and subdomains, per-subdomain certificates issued before the link is shown, and a client that installs on networks where GitHub downloads stall.
+- [Should a community app have a token? (ADR-0002)](https://wonmor.io/research/should-a-community-app-have-a-token/): We were asked how to accept crypto and launch our own token for dtwin. We looked at law, platform rules, religious scholarship and the record of earn-tokens, and decided against a token. This is how we reached that decision.
+- [Mosques from OpenStreetMap: 2,285 congregations, one layer](https://wonmor.io/engineering/mosques-from-openstreetmap/): How dtwin imports every mosque in Uzbekistan from OpenStreetMap and keeps congregation times in a layer of their own, separate from the prayer-time calculation.
+- [A personal life OS with an MCP server](https://wonmor.io/research/life-os-with-mcp/): dtwin plans the day around the five daily prayers and exposes it to AI assistants through MCP. How a 10-tool connector grew to 96 tools without giving the model the keys to everything.
+- [Multi-agent orchestration in practice](https://wonmor.io/research/multi-agent-orchestration/): One orchestrator, three narrow roles, and isolated worktrees. What worked when eight agents built eight modules on one branch, and the failure modes we hit on the way.
+- [Controlling Claude Code from Telegram](https://wonmor.io/engineering/claude-code-from-telegram/): A small Python bot turns a phone chat into a remote for Claude Code on a desktop: one headless process per message, hooks for notifications and approvals, and parallel slots. What we built in one day and what we learned about phone-sized requests.
+
+## Commitments
+
+- [The Wonmor Charter](https://wonmor.io/charter/): Seven principles that decide what Wonmor builds and how: build for people you know, ship in the open, measure before you claim, respect faith and privacy, prefer reliable technology, document everything, and put the community first.
+- [Responsible Release Policy](https://wonmor.io/responsible-release-policy/): Four release levels, from prototype to critical. Each level lists what a product must have before it ships — tests, backups, monitoring, rollback, reproducible builds — and every product’s current level is public.
+- [Open source](https://wonmor.io/open-source/): What Wonmor publishes as open source, under which licences, and how to contribute — starting with bitg, gym, teletwin-web and operobot2.
+- [Transparency](https://wonmor.io/transparency/): Live numbers instead of claims: releases, open and closed issues, uptime, security badges and what Wonmor spends support on.
+- [Security and disclosure](https://wonmor.io/security/): How to report a vulnerability in any Wonmor product, what we promise in return, and how fast we answer.
+
+## Company
+
+- [About Wonmor](https://wonmor.io/company/): Wonmor is an independent, self-funded studio from Uzbekistan. It has no investors and no board; it builds the dtwin ecosystem and supports the founder’s other work, and says so plainly.
+- [Founder](https://wonmor.io/company/founder/): Nosirbek Xakimov is a full-stack and DevOps engineer who has been writing software since 2021 — teaching at Ilmhub, building at UZCARD and Fincube, and now working at Faktura.uz while running dtwin.
+- [How Wonmor supports the work](https://wonmor.io/company/sponsorship/): Wonmor pays for what independent products need to stay alive — servers, domains, CI minutes, design and time — first for dtwin and earlier for the founder’s other projects. A yearly report will list what it covered.
+- [Timeline](https://wonmor.io/company/timeline/): From the first line of code in 2021 to sixteen products in 2026 — every step dated and linked to its source.
+- [Careers](https://wonmor.io/careers/): Wonmor is not hiring yet. You can already contribute to its open-source projects, and the roles we expect to open — 3D frontend, .NET, Rust and DevOps — are listed here as soon as they are real.
+- [Events](https://wonmor.io/events/): No events have taken place yet. Planned: an open day, an Uzbek language-technology meetup and a launch stream for bitg 1.0. Dates will be announced here.
+- [Brand](https://wonmor.io/brand/): One diamond becomes a V; the V splits in two and becomes a W. The mark, lockups, colours and film are available for press and partners.
+- [Contact](https://wonmor.io/contact/): The fastest way to reach Wonmor is Telegram. For code, open an issue on GitHub; for security reports, see the disclosure policy.
+
+## News
+
+- [bitg earns the OpenSSF Best Practices silver, then gold badge](https://wonmor.io/news/bitg-openssf-silver/): bitg 0.3.1 ships with signed build provenance and SBOM attestations, and the project now meets every OpenSSF silver and gold criterion.
+- [Introducing wonmor.io](https://wonmor.io/news/introducing-wonmor-io/): Wonmor now has a home of its own — a studio site in three languages for our products, research and news, opened by a short brand film.
+- [Deploys that never drop a download](https://wonmor.io/news/zero-downtime-deploys/): Static sites on the dtwin edge now release without downtime. A 76-second download kept running straight through a deploy.
+- [bitg comes to Linux](https://wonmor.io/news/bitg-comes-to-linux/): bitg 0.2.0 adds two Debian packages, one for IBus and one for Fcitx5, built on the same Rust core as the Windows keyboard.
+- [bitg.uz is live](https://wonmor.io/news/bitg-uz-is-live/): bitg now has its own domain, with downloads, an in-browser converter that never sends your text anywhere, and pages that explain the 2026 Uzbek alphabet.
+- [Introducing bitg 0.3: one keyboard for Windows, Linux and macOS](https://wonmor.io/news/introducing-bitg-0-3/): bitg converts Uzbek to the 2026 Latin alphabet as you type, in any app. Version 0.3 brings the same engine to all three desktop systems.
+- [Introducing bitg](https://wonmor.io/news/introducing-bitg/): bitg is a Windows keyboard that turns Uzbek typed the old way into the 2026 Latin alphabet as you type, in any application. Version 0.1.0 is out.
+- [Introducing Fam, self-hosted bug capture](https://wonmor.io/news/introducing-fam/): Fam records what happened in the browser before a bug report — clicks, network, console — and keeps it on a server you control. It is live at fam.dtwin.uz.
+- [Telegram widgets, now inside dtwin](https://wonmor.io/news/telegram-widgets-in-dtwin/): The dtwin bot now sends live HTML widgets in chat, built on the widgets added in Telegram Bot API 10.4. The first two are /osmon and /tasbih.
+- [A new home for the founder's work: xnosir.io](https://wonmor.io/news/xnosir-io/): The founder's portfolio is now at xnosir.io — a site you descend through, layer by layer, from the surface of the stack down to the root.
+- [operobot: an outbound call assistant built for Uzbek rules](https://wonmor.io/news/introducing-operobot/): operobot calls a list of contacts, connects interested people to a human operator and keeps to Uzbekistan's calling rules in code. A multi-tenant demo lets anyone try it in a private sandbox.
+- [Introducing Gateway, a control plane for AI agents](https://wonmor.io/news/introducing-gateway/): Gateway sits between AI agents and internal systems. Every agent gets its own token, its own list of allowed tools and a full audit trail, and personal data is masked before it reaches the model.
+- [Introducing Tunnel](https://wonmor.io/news/introducing-tunnel/): Tunnel puts a service running on your own machine on a public HTTPS address under tunnel.dtwin.uz, on infrastructure we run ourselves.
+- [One support desk for every product](https://wonmor.io/news/one-support-desk/): The in-app help desk we built for dtwin now serves every site in the ecosystem. One script tag adds it; every message reaches the same inbox, and any ticket can become a GitHub issue in the right repository.
+- [dtwin becomes a GitHub organization](https://wonmor.io/news/dtwinuz-github-organization/): All dtwin repositories now live under one GitHub organization, dtwinuz, with a verified domain, shared teams and the same rules for every repository.
+- [Three new experiments: shop, gym and med](https://wonmor.io/news/shop-gym-med/): Three front-end prototypes went live on dtwin subdomains on the same day — a marketplace for Instagram clothing stores, a workout tracker and a study aid for general medicine.
+- [TeleTwin: a company layer for Telegram](https://wonmor.io/news/introducing-teletwin/): TeleTwin keeps personal chats where they are and adds company chats and announcements that live on the company's own server. When an employee's access is revoked, they are signed out of the company side within seconds.
+- [28 beta fixes in one release](https://wonmor.io/news/28-beta-fixes/): The first beta testers of dtwin filed 28 issues about usability, accessibility and privacy. All 28 shipped together on October 27, 2026, with one database migration.
+- [dtwin.uz opens, with an MCP server for Claude](https://wonmor.io/news/dtwin-uz-opens/): dtwin, a personal planner built around the day's prayers, is now live at dtwin.uz. It comes with an MCP server, so Claude can read your plans and add to them.
+- [Why we started dtwin](https://wonmor.io/news/why-we-started-dtwin/): dtwin began on October 23, 2026, as a personal notebook built around the five daily prayers. Within a day it had a new name, a domain and a server.
+
+## Optional
+
+- [Legal center](https://wonmor.io/legal/): Terms, privacy and policies for wonmor.io. Each product keeps its own terms on its own site.
+- [Privacy](https://wonmor.io/legal/privacy/): wonmor.io sets no cookies, runs no third-party trackers and loads no external scripts or fonts. The only record of a visit is a standard server log, kept for at most 30 days.
+- [Terms of use](https://wonmor.io/legal/terms/): Written content is CC BY 4.0 and code snippets in posts are MIT, unless a page says otherwise. The Wonmor name and mark are not covered by these licences.
+- [RSS feed](https://wonmor.io/rss.xml)
+- [Sitemap](https://wonmor.io/sitemap-index.xml)

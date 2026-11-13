@@ -1,0 +1,108 @@
+---
+/* Data blocks for policy pages: release levels with the products at each level (rrp), brand files and
+   colours (brand), and the transparency figures (transparency). Rendered from repo data at build time. */
+import Icon from '../Icon.astro';
+import { asset, href, type Locale } from '../../i18n/config';
+import { pageByKey } from '../../i18n/pages';
+import { products, wrlLabel } from '../../data/products';
+import { numbers } from '../../data/company';
+import { brandColours, brandFiles, docUi as D, wrlLevels } from '../../data/docs';
+interface Props { locale: Locale; kind: 'rrp' | 'brand' | 'transparency' }
+const { locale, kind } = Astro.props;
+const byLevel = (n: number) => Object.entries(products).filter(([, p]) => p.wrl === n).map(([k]) => ({ k, pg: pageByKey[`p-${k}`] })).filter((x) => x.pg);
+const fmt = new Intl.NumberFormat(locale === 'uz' ? 'uz-Latn' : locale);
+---
+{kind === 'rrp' && (
+  <section aria-labelledby="dx-rrp">
+    <div class="rule-row"><h2 class="t-caption-bold" id="dx-rrp">{D.byLevel[locale]}</h2><span class="t-caption fg-3">{D.asOf[locale]}</span></div>
+    <ol class="dx-levels" role="list">
+      {wrlLevels.map((l) => (
+        <li class="dx-level reveal-up" style={`--lv:${l.n}`}>
+          <span class="dx-level__bar" aria-hidden="true">{[1, 2, 3, 4].map((i) => <i class:list={[i <= l.n && 'on']}></i>)}</span>
+          <h3 class="t-headline-5">WRL-{l.n} · {l.name[locale]}</h3>
+          <p class="t-body-4 fg-2">{l.req[locale]}</p>
+          <p class="t-caption fg-3 dx-level__h">{D.products[locale]}</p>
+          <ul class="dx-level__list" role="list">
+            {byLevel(l.n).length ? byLevel(l.n).map(({ pg }) => <li><a class="chip dx-chip" href={href(locale, pg.path)}>{pg.title[locale]}</a></li>) : <li class="t-caption fg-3">{D.none[locale]}</li>}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}
+
+{kind === 'brand' && (
+  <section aria-labelledby="dx-brand" class="dx-brand">
+    <div class="rule-row"><h2 class="t-caption-bold" id="dx-brand">{D.files[locale]}</h2></div>
+    <ul class="dx-files" role="list">
+      {brandFiles.map((f) => (
+        <li><a class="dx-file" href={asset(`/brand/${f.file}`)} download>
+          <span class="dx-file__img" style={`background:${f.ground}`}><img src={asset(`/brand/${f.file}`)} alt="" loading="lazy" /></span>
+          <span class="dx-file__row"><span class="t-body-4">{f.label}</span><span class="t-caption fg-3">{f.file.split('.').pop()?.toUpperCase()} <Icon name="download" size={12} /></span></span>
+        </a></li>
+      ))}
+    </ul>
+    <div class="rule-row dx-gap"><h2 class="t-caption-bold">{D.colours[locale]}</h2></div>
+    <ul class="dx-colours" role="list">
+      {brandColours.map((c) => <li class="dx-colour" style={`background:${c.hex};color:${c.on}`}><span class="t-headline-5">{c.name}</span><code>{c.hex}</code></li>)}
+    </ul>
+    <div class="rule-row dx-gap"><h2 class="t-caption-bold">{D.film[locale]}</h2></div>
+    <ul class="dx-files dx-films" role="list">
+      <li><a class="dx-file" href={asset('/film/wonmor_16x9.mp4')} download><span class="dx-file__img dx-file__img--photo"><img src={asset('/film/wonmor_16x9.jpg')} alt="" loading="lazy" /></span><span class="dx-file__row"><span class="t-body-4">16:9 · 1920×1080</span><span class="t-caption fg-3">MP4 <Icon name="download" size={12} /></span></span></a></li>
+      <li><a class="dx-file" href={asset('/film/wonmor_screen_9x16.mp4')} download><span class="dx-file__img dx-file__img--photo dx-file__img--tall"><img src={asset('/film/wonmor_screen_9x16.jpg')} alt="" loading="lazy" /></span><span class="dx-file__row"><span class="t-body-4">9:16</span><span class="t-caption fg-3">MP4 <Icon name="download" size={12} /></span></span></a></li>
+    </ul>
+  </section>
+)}
+
+{kind === 'transparency' && (
+  <section aria-labelledby="dx-tr">
+    <div class="rule-row"><h2 class="t-caption-bold" id="dx-tr">{D.asOf[locale]}</h2></div>
+    <dl class="dx-nums">
+      {numbers.map((n) => <div class="dx-num"><dt class="t-caption fg-2">{n.label[locale]}</dt><dd class="dx-num__v">{fmt.format(n.value)}</dd><dd class="t-caption fg-3">{n.source}</dd></div>)}
+      <div class="dx-num"><dt class="t-caption fg-2">{D.openssf[locale]}</dt><dd class="dx-num__v">Gold</dd><dd class="t-caption fg-3"><a class="link-underline" href="https://www.bestpractices.dev/projects/16620" target="_blank" rel="noopener">bestpractices.dev/projects/16620</a></dd></div>
+    </dl>
+    <div class="rule-row dx-gap"><h2 class="t-caption-bold">{D.byLevel[locale]}</h2></div>
+    <ul class="dx-levels-mini" role="list">
+      {wrlLevels.map((l) => <li><span class="t-caption-bold">{wrlLabel[l.n][locale]}</span><span class="dx-mini-n">{byLevel(l.n).length}</span></li>)}
+    </ul>
+  </section>
+)}
+
+<style>
+  .dx-gap { margin-top: 56px; }
+  .dx-levels { list-style: none; display: grid; gap: var(--grid-gutter); margin-top: 28px; }
+  @media (min-width: 768px) { .dx-levels { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1280px) { .dx-levels { grid-template-columns: repeat(4, 1fr); } }
+  .dx-level { display: grid; gap: 10px; align-content: start; padding: 24px; border-radius: var(--radius-card); background: var(--theme-background-secondary); }
+  .dx-level__bar { display: flex; gap: 4px; margin-bottom: 8px; }
+  .dx-level__bar i { flex: 1; height: 6px; border-radius: 3px; background: var(--theme-border-secondary); }
+  .dx-level__bar i.on { background: #2969FF; }
+  .dx-level__h { margin-top: 8px; }
+  .dx-level__list { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .dx-chip { text-decoration: none; }
+  .dx-files { list-style: none; display: grid; gap: 28px var(--grid-gutter); margin-top: 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 1024px) { .dx-files { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .dx-films { grid-template-columns: 2fr 1fr; align-items: end; }
+  @media (min-width: 1024px) { .dx-films { grid-template-columns: 3fr 1fr; max-width: 75%; } }
+  .dx-file { display: grid; gap: 10px; min-width: 0; text-decoration: none; color: inherit; }
+  .dx-file__img { display: grid; place-items: center; overflow: hidden; min-width: 0; aspect-ratio: 4 / 3; border-radius: var(--radius-media); box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .08); padding: 18%; }
+  .dx-file__img img { width: 100%; height: 100%; object-fit: contain; min-width: 0; }
+  .dx-file__img--photo { padding: 0; overflow: hidden; aspect-ratio: 16 / 9; background: #090A1E; }
+  .dx-file__img--photo img { width: 100%; height: 100%; object-fit: cover; max-height: none; }
+  .dx-file__img--tall { aspect-ratio: 9 / 16; }
+  .dx-file__row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  @media (hover: hover) { .dx-file:hover .dx-file__img { box-shadow: inset 0 0 0 2px #2969FF; } }
+  .dx-colours { list-style: none; display: grid; gap: var(--grid-gutter); margin-top: 28px; }
+  @media (min-width: 768px) { .dx-colours { grid-template-columns: repeat(3, 1fr); } }
+  .dx-colour { display: grid; align-content: end; gap: 6px; aspect-ratio: 16 / 9; padding: 20px; border-radius: var(--radius-media); box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .1); }
+  .dx-colour code { font: 400 14px/1 var(--mono); opacity: .8; }
+  .dx-nums { display: grid; gap: 32px var(--grid-gutter); margin-top: 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 1024px) { .dx-nums { grid-template-columns: repeat(3, 1fr); } }
+  .dx-num { display: grid; gap: 6px; overflow-wrap: anywhere; padding-top: 16px; border-top: 1px solid var(--theme-border-primary); }
+  .dx-num dt { order: 2; } .dx-num dd:last-child { order: 3; }
+  .dx-num__v { order: 1; font: 500 clamp(40px, calc(40px + 24 * ((100vw - 390px) / 1530)), 64px)/1 var(--serif); letter-spacing: -.02em; }
+  .dx-levels-mini { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--grid-gutter); margin-top: 24px; }
+  @media (min-width: 1024px) { .dx-levels-mini { grid-template-columns: repeat(4, 1fr); } }
+  .dx-levels-mini li { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--theme-border-secondary); }
+  .dx-mini-n { font: 500 32px/1 var(--serif); }
+</style>

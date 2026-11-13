@@ -19,6 +19,8 @@ import TimelinePage from '../components/company/TimelinePage.astro';
 import ResearchIndex from '../components/research/ResearchIndex.astro';
 import AreaPage from '../components/research/AreaPage.astro';
 import ResearchArticle from '../components/research/ResearchArticle.astro';
+import DocPage from '../components/docs/DocPage.astro';
+import DocExtras from '../components/docs/DocExtras.astro';
 import { readingMinutes, type Area } from '../data/research';
 import { locales, defaultLocale, href, formatDate, type Locale } from '../i18n/config';
 import { pages, groups, type PageDef } from '../i18n/pages';
@@ -61,6 +63,12 @@ const lite = (e: (typeof rposts)[number]) => ({ slug: e.id.split('/')[0], title:
 let rpost: (typeof rposts)[number] | undefined, RContent: any, rheadings: { depth: number; slug: string; text: string }[] = [];
 if (kind === 'rpost') { rpost = rposts.find((n) => n.id === id)!; ({ Content: RContent, headings: rheadings } = await render(rpost)); }
 const areaOf = (k: string) => k.replace(/^research-/, '') as Area;
+
+/* Policy / company documents: a page whose key has src/content/docs/<key>/<locale>.md renders as a document. */
+const doc = kind === 'page' && page ? (await getCollection('docs')).find((d) => d.id === `${page.key}/${locale}`) : undefined;
+let DContent: any, dheadings: { depth: number; slug: string; text: string }[] = [];
+if (doc) ({ Content: DContent, headings: dheadings } = await render(doc));
+const extras = page && ['rrp', 'brand', 'transparency'].includes(page.key) ? (page.key as 'rrp' | 'brand' | 'transparency') : undefined;
 
 const meta = kind === 'home'
   ? { title: home.title[locale], description: home.description[locale] }
@@ -116,6 +124,13 @@ const meta = kind === 'home'
     : page.key === 'company' ? <AboutPage locale={locale} page={page} />
     : page.key === 'founder' ? <FounderPage locale={locale} page={page} />
     : page.key === 'timeline' ? <TimelinePage locale={locale} page={page} />
+    : doc ? (
+      <DocPage locale={locale} page={page} updated={doc.data.updated} summary={doc.data.summary} headings={dheadings}>
+        {extras === 'transparency' && <DocExtras slot="above" locale={locale} kind="transparency" />}
+        <DContent />
+        {extras && extras !== 'transparency' && <DocExtras slot="below" locale={locale} kind={extras} />}
+      </DocPage>
+    )
     : <SectionPage locale={locale} page={page} />
   )}
 
