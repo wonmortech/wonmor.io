@@ -9,7 +9,7 @@
   "scripts": {
     "assets": "node tools/gen-brand.mjs && node tools/copy-fonts.mjs",
     "dev": "astro dev",
-    "build": "astro build && node tools/copy-cms.mjs && pagefind --site site --output-subdir pagefind && node tools/check-site.mjs && node tools/check-links.mjs",
+    "build": "astro build && node tools/copy-cms.mjs && pagefind --site site --output-subdir pagefind && node tools/check-site.mjs && node tools/check-links.mjs && node tools/check-art.mjs",
     "preview": "astro preview",
     "check": "node tools/check-site.mjs && node tools/check-links.mjs",
     "astro": "astro"

@@ -1,38 +1,42 @@
 ---
-/* 32px line icons for research areas and engineering, drawn from the same diamond geometry as the plates (Plate.astro).
-   Inside a link with class "has-icon-anim" the lines redraw and the accent diamond grows on hover/focus. */
-interface Props { name: 'agents' | 'language' | 'infrastructure' | 'supply-chain' | 'interfaces' | 'faith-society' | 'digital-assets' | 'engineering' | 'research' | 'news' | 'changelog'; size?: number }
-const { name, size = 32 } = Astro.props;
-const d = (x: number, y: number, r: number) => `M${x} ${y - r}L${x + r} ${y}L${x} ${y + r}L${x - r} ${y}Z`;
-const G: Record<Props['name'], { lines: string[]; dot: string }> = {
-  agents: { lines: ['M4 16a12 12 0 1 0 24 0a12 12 0 1 0 -24 0', 'M4 16a12 4.5 0 1 0 24 0a12 4.5 0 1 0 -24 0'], dot: d(16, 16, 4) },
-  language: { lines: ['M3 9h10v10h-10z', 'M19 9h10v10h-10z', 'M11 21h10v8h-10z'], dot: d(8, 14, 2.6) },
-  infrastructure: { lines: ['M3 18L16 12L29 18L16 24Z', 'M3 23L16 29L29 23'], dot: 'M3 11L16 5L29 11L16 17Z' },
-  'supply-chain': { lines: [d(9, 9, 6), d(16, 16, 6), d(23, 23, 6)], dot: d(16, 16, 2.6) },
-  interfaces: { lines: ['M3 6h26v20h-26z', 'M3 11h26', 'M7 16h12', 'M7 20h8'], dot: 'M20 17l8 3l-3.5 1.5l2.5 4l-1.8 1l-2.4 -4l-2.8 2.5z' },
-  'faith-society': { lines: ['M4 16a12 12 0 1 0 24 0a12 12 0 1 0 -24 0', 'M16 6v3M26 16h-3M16 26v-3M6 16h3'], dot: d(16, 16, 3.2) },
-  'digital-assets': { lines: ['M6 20a10 3.5 0 1 0 20 0a10 3.5 0 1 0 -20 0', 'M6 25a10 3.5 0 0 0 20 0', 'M6 20v5M26 20v5'], dot: d(16, 9, 5.5) },
-  engineering: { lines: ['M10 8L3 16L10 24', 'M22 8L29 16L22 24', 'M18.5 6L13.5 26'], dot: d(16, 16, 2.6) },
-  research: { lines: ['M16 4L26.4 10L26.4 22L16 28L5.6 22L5.6 10Z', 'M16 16L16 4M16 16L26.4 22M16 16L5.6 22'], dot: d(16, 16, 3.4) },
-  news: { lines: ['M5 5h18l4 4v18h-22z', 'M9 12h10M9 16h14M9 20h9'], dot: d(23, 22, 3) },
-  changelog: { lines: ['M3 16H29', 'M9 12v-6M23 20v6'], dot: d(16, 16, 4) },
-};
-const g = G[name];
+/* Area marks: one original glyph family in the text colour (currentColor), 40px by default.
+   While a mark is on screen it loops: its subject, resolved into flat diamond facets -> an ink drop -> cells growing
+   out of the drop -> a second view of the subject -> back. The frames live in marks/glyphs.mjs and the keyframes in the
+   generated marks/marks.css (CSS `d` morph, cubic-bezier(.65, 0, .35, 1), 12 s). A small observer runs the loop only
+   while the mark is in view; hover never starts it. Reduced motion, and browsers without CSS `d`, show the hero frame. */
+import { hero } from './marks/glyphs.mjs';
+import './marks/marks.css';
+export type AreaName = 'agents' | 'language' | 'infrastructure' | 'supply-chain' | 'interfaces' | 'faith-society' | 'digital-assets' | 'engineering' | 'research' | 'news' | 'changelog';
+interface Props { name: AreaName; size?: number; still?: boolean }
+const { name, size = 40, still = false } = Astro.props;
+const order: AreaName[] = ['agents', 'language', 'infrastructure', 'supply-chain', 'interfaces', 'faith-society', 'digital-assets', 'engineering', 'research', 'news', 'changelog'];
+// neighbours in a strip start a little apart, so the family breathes instead of marching in step
+const delay = `${(((order.indexOf(name) * 7) % 11) * 0.55).toFixed(2)}s`;
 ---
-<svg class="aicon" viewBox="0 0 32 32" width={size} height={size} aria-hidden="true">
-  {g.lines.map((l, i) => <path class="aicon__l" d={l} pathLength="1" style={`--i:${i}`} />)}
-  <path class="aicon__d" d={g.dot} />
+<svg class:list={['aicon', `aicon--${name}`]} viewBox="0 0 40 40" width={size} height={size} aria-hidden="true" focusable="false" data-morph={still ? undefined : ''} style={`--mk-delay:${delay}`}>
+  <path class="aicon__p" d={hero(name)} />
 </svg>
 
-<style>
-  .aicon { flex: none; overflow: visible; }
-  .aicon__l { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; vector-effect: non-scaling-stroke; }
-  .aicon__d { fill: var(--wm-blue); transform-box: fill-box; transform-origin: center; }
-  :global(:root[data-theme="cobalt"]) .aicon__d, :global(.theme-slate) .aicon__d { fill: currentColor; }
-  @media (prefers-reduced-motion: no-preference) {
-    .aicon__d { transition: transform .5s var(--ease-out-quart); }
-    :global(.has-icon-anim:is(:hover, :focus-visible)) .aicon__l { animation: aicon-draw .8s var(--ease-out-quart) both; animation-delay: calc(var(--i) * 90ms); }
-    :global(.has-icon-anim:is(:hover, :focus-visible)) .aicon__d { transform: scale(1.35) rotate(90deg); }
+<script>
+  // Run the morph only while a mark is on screen; off screen it holds its current frame.
+  const marks = document.querySelectorAll<SVGElement>('.aicon[data-morph]');
+  if (marks.length && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) e.target.toggleAttribute('data-on', e.isIntersecting);
+    });
+    marks.forEach((m) => io.observe(m));
   }
-  @keyframes aicon-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+</script>
+
+<style>
+  .aicon { flex: none; display: inline-block; vertical-align: middle; }
+  .aicon__p { fill: currentColor; }
+  @media (prefers-reduced-motion: no-preference) {
+    .aicon[data-morph] .aicon__p {
+      animation-duration: 12s; animation-iteration-count: infinite; animation-timing-function: cubic-bezier(.65, 0, .35, 1);
+      animation-delay: var(--mk-delay, 0s); animation-play-state: paused;
+    }
+    .aicon[data-on] .aicon__p { animation-play-state: running; }
+  }
+  @media (forced-colors: active) { .aicon__p { fill: CanvasText; } }
 </style>
