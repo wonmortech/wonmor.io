@@ -54,7 +54,7 @@ On-demand chiqarishning narxi bor: birinchi mehmon uni kutadi. Edge jurnallarimi
 
 Ikkinchi tuzatish kutishni oʻz joyiga koʻchirdi. Gatewayʼga tayyorlik endpointʼi qoʻshildi: u foydalanuvchi ilovasiga hech qanday soʻrov yubormasdan nom uchun TLS handshake qiladi, klient esa havolani chiqarishdan oldin uni soʻrab turadi:
 
-| | Birinchi kirish |
+| Sozlama | Birinchi kirish |
 |---|---|
 | Faqat prewarm | TLS handshake 5,71 s |
 | Havola tayyorlikdan keyin (Windows klient) | havola 9,9 s da chiqdi; TLS 0.06 s, jami 0,13 s |

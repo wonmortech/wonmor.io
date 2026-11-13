@@ -54,7 +54,7 @@ On-demand issuance has a cost: the first visitor waits for it. In our edge logs,
 
 The second fix moved the wait to where it belongs. The gateway gained a readiness endpoint that performs a TLS handshake for the name without sending any request to the user's application, and the client polls it before printing the link:
 
-| | First visit |
+| Setup | First visit |
 |---|---|
 | Prewarm only | TLS handshake 5.71 s |
 | Link printed after readiness (Windows client) | link shown at 9.9 s; TLS 0.06 s, total 0.13 s |
