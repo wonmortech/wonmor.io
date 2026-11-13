@@ -40,7 +40,7 @@ const jsonLd = [
     name: title, headline: type === 'article' ? title : undefined, description, url: canonical, inLanguage: htmlLang[locale],
     image: ogImage,
     datePublished: published?.toISOString().slice(0, 10),
-    author: type === 'article' ? { '@type': 'Person', name: 'Nosirbek Xakimov', url: new URL(href(locale, '/company/founder'), site).toString() } : undefined,
+    author: type === 'article' ? { '@type': 'Person', name: 'Nosirbek Xakimov', url: new URL(href(locale, '/company/founder'), site).toString(), image: new URL('/company/founder-512.webp', site).toString() } : undefined,
     publisher: { '@id': org['@id'] },
   },
   { '@context': 'https://schema.org', ...org },
