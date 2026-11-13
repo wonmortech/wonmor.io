@@ -2,7 +2,7 @@
 /* Shared template for section pages in P1: eyebrow, title, lede, optional external link,
    child cards for overview pages, and an honest "being written" note. */
 import Icon from './Icon.astro';
-import Collage from './Collage.astro';
+import Plate, { type Motif } from './Plate.astro';
 import { href, type Locale } from '../i18n/config';
 import { groups, pages, type PageDef } from '../i18n/pages';
 import { ui } from '../i18n/ui';
@@ -19,8 +19,16 @@ const children = page.key === 'research'
         ? pages.filter((p) => p.group === 'legal' && p.key !== 'legal')
         : [];
 const parent = page.path.split('/').length > 2 ? pages.find((p) => p.path === '/' + page.path.split('/')[1]) : undefined;
-const arts = ['research', 'charter', 'careers', 'sponsorship'] as const;
-const art = arts[[...page.key].reduce((a, c) => a + c.charCodeAt(0), 0) % arts.length];
+// each page gets the emblem of its own subject; groups fall back to theirs
+const motifByKey: Record<string, Motif> = {
+  research: 'research', 'research-agents': 'agents', 'research-language': 'language', 'research-infrastructure': 'infrastructure',
+  'research-supply-chain': 'supply-chain', 'research-interfaces': 'interfaces', 'research-faith-society': 'faith', 'research-digital-assets': 'assets',
+  engineering: 'engineering', products: 'products', charter: 'charter', rrp: 'release', 'open-source': 'open-source', transparency: 'transparency',
+  security: 'security', company: 'company', founder: 'founder', sponsorship: 'sponsorship', timeline: 'timeline', careers: 'careers',
+  events: 'events', brand: 'brand', contact: 'contact', legal: 'legal', privacy: 'legal', terms: 'legal',
+};
+const motifByGroup: Record<string, Motif> = { research: 'research', products: 'products', commitments: 'charter', company: 'company', legal: 'legal' };
+const art: Motif = motifByKey[page.key] ?? motifByGroup[page.group] ?? 'company';
 const host = page.url?.replace(/^https?:\/\//, '');
 ---
 <article class="sp">
@@ -61,7 +69,7 @@ const host = page.url?.replace(/^https?:\/\//, '');
     </section>
   ) : (
     <section class="container section-lg sp__body">
-      <div class="sp__art"><Collage art={art} ratio="16/9" drift /></div>
+      <div class="sp__art"><Plate motif={art} ratio="16/9" idle /></div>
     </section>
   )}
 

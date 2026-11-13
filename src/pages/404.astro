@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Collage from '../components/Collage.astro';
+import Plate from '../components/Plate.astro';
 import { href } from '../i18n/config';
 import { ui } from '../i18n/ui';
 const locale = 'en' as const;
@@ -15,7 +15,7 @@ const locale = 'en' as const;
       <p class="t-body-4 fg-3" lang="ru">{ui.notFoundTitle.ru}. <a class="link-underline" href={href('ru', '/')}>{ui.backHome.ru}</a></p>
       <div><a class="btn btn--primary btn--medium btn--rounded" href={href(locale, '/')}>{ui.backHome[locale]}</a></div>
     </div>
-    <div class="nf__art"><Collage art="default" /></div>
+    <div class="nf__art"><Plate motif="missing" idle /></div>
   </section>
 </Base>
 

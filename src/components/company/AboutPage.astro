@@ -1,14 +1,15 @@
 ---
 /* /company: purpose, how the work is organised, governance (honestly), and links to the rest of the section. */
 import Icon from '../Icon.astro';
-import Collage from '../Collage.astro';
+import Plate from '../Plate.astro';
 import { href, type Locale } from '../../i18n/config';
 import { pages, type PageDef } from '../../i18n/pages';
 import { about } from '../../data/company';
 interface Props { locale: Locale; page: PageDef }
 const { locale, page } = Astro.props;
 const children = pages.filter((p) => p.group === 'company' && p.key !== 'company');
-const arts = ['charter', 'research', 'sponsorship', 'careers'] as const;
+// useful first, engineered like infrastructure, built in the open, independent
+const arts = ['useful', 'infrastructure', 'open-source', 'sponsorship'] as const;
 ---
 <article class="ab">
   <header class="container page-top ab__head">
@@ -21,7 +22,7 @@ const arts = ['charter', 'research', 'sponsorship', 'careers'] as const;
     <ol class="ab__purpose" role="list">
       {about.purpose.map((b, i) => (
         <li class="ab__block reveal-up" style={`transition-delay:${i * 80}ms`}>
-          <Collage art={arts[i]} ratio="16/9" drift />
+          <Plate motif={arts[i]} ratio="16/9" />
           <h3 class="t-headline-5">{b.title[locale]}</h3>
           <p class="t-body-4 fg-2">{b.body[locale]}</p>
         </li>
@@ -65,7 +66,7 @@ const arts = ['charter', 'research', 'sponsorship', 'careers'] as const;
   .ab__purpose { list-style: none; display: grid; gap: 48px var(--grid-gutter); margin-top: 32px; }
   @media (min-width: 768px) { .ab__purpose { grid-template-columns: repeat(2, 1fr); } }
   .ab__block { display: grid; gap: 10px; align-content: start; }
-  .ab__block :global(.collage) { margin-bottom: 10px; border-radius: var(--radius-media); overflow: hidden; }
+  .ab__block :global(.plate) { margin-bottom: 10px; border-radius: var(--radius-media); overflow: hidden; }
   .ab__split { display: grid; gap: 20px; padding-block: 48px; border-top: 1px solid var(--theme-border-secondary); }
   @media (min-width: 1024px) { .ab__split { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
     .ab__split h2 { grid-column: 1 / span 3; } .ab__prose { grid-column: 4 / span 7; } }

@@ -32,6 +32,7 @@ export const ui = {
   readPost: { en: 'Read post', uz: 'Maqolani oʻqish', ru: 'Читать статью' },
   learnMore: { en: 'Learn more', uz: 'Batafsil maʼlumot', ru: 'Узнать больше' },
   latestNews: { en: 'Latest news', uz: 'Soʻnggi yangiliklar', ru: 'Последние новости' },
+  filterNews: { en: 'Filter news by topic', uz: 'Yangiliklarni mavzu boʻyicha saralash', ru: 'Фильтр новостей по теме' },
   allNews: { en: 'All news', uz: 'Barcha yangiliklar', ru: 'Все новости' },
   visit: { en: 'Visit', uz: 'Ochish', ru: 'Открыть' },
   published: { en: 'Published', uz: 'Eʼlon qilingan', ru: 'Опубликовано' },

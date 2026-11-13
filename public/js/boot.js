@@ -2,10 +2,11 @@
 // an old copy in the browser cache.
 // 1. Marks the document as scripted, so motion-only styles never hide content without JS.
 // 2. Applies the visitor's saved theme; without one the CSS follows the system.
-// 3. Language: the unprefixed (English) URLs follow the visitor: on entry from outside the site they open in the saved
-//    language, or on a first visit in the browser's language (uz or ru). /uz/ and /ru/ URLs are an explicit choice and
-//    are never redirected, and nothing is redirected while browsing inside the site (sessionStorage marks the visit).
-//    The language switcher saves the pick (src/scripts/header.ts), and every page load remembers its own language.
+// 3. Language: on entry from outside the site to an English page, the visitor's saved language (or on a first visit
+//    their browser's, uz or ru) is used: the bare home page opens in it, deeper pages offer it in a banner.
+//    /uz/ and /ru/ URLs are an explicit choice and never change, nothing happens while browsing inside the site
+//    (sessionStorage marks the visit), the switcher and the banner save the pick (src/scripts/header.ts), and every
+//    other page load remembers its own language.
 (function (d, w) {
   d.classList.add('js');
   var ls; try { ls = w.localStorage; } catch (e) { ls = null; }
@@ -30,7 +31,10 @@
     }
     var path = w.location.pathname;
     if (!inside && page === 'en' && (want === 'uz' || want === 'ru') && !/^\/(404|search)(\/|\.html|$)/.test(path)) {
-      w.location.replace('/' + want + path + w.location.search + w.location.hash);
+      // Only the bare home page switches by itself; deeper English pages keep their URL (Google's guidance) and get a
+      // dismissible suggestion instead (rendered by src/scripts/header.ts from this attribute).
+      if (path === '/') { w.location.replace('/' + want + '/' + w.location.search + w.location.hash); return; }
+      d.setAttribute('data-lang-suggest', want);
       return;
     }
     if (ls) ls.setItem('wm-lang', page);

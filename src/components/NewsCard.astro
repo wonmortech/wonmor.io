@@ -12,7 +12,7 @@ const url = href(locale, `/news/${slug}`);
 ---
 <article class="ncard">
   <header class="ncard__meta t-caption">
-    <a class="link-quiet" href={href(locale, '/news')}>{categories[category][locale]}</a>
+    <a class="link-quiet" href={`${href(locale, '/news')}?group=${category}`}>{categories[category][locale]}</a>
     <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date, locale)}</time>
   </header>
   <div class="ncard__title-block">

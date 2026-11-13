@@ -1,0 +1,110 @@
+---
+/* Every post of a section (anthropic.com engineering pattern): mono count, sort, grid/list toggle and search, a grid of
+   square picture cards (or rows), then "See more". Without JavaScript everything shows as the grid. */
+import Icon from '../Icon.astro';
+import PostCard from './PostCard.astro';
+import PostRow, { type PostLite } from './PostRow.astro';
+import { type Locale } from '../../i18n/config';
+import { postCount, researchUi as R } from '../../data/research';
+interface Props { locale: Locale; posts: PostLite[]; label: string; page?: number }
+const { locale, posts, label, page = 12 } = Astro.props;
+const more = { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать ещё' }[locale];
+---
+<div class="pb" data-plist data-page={page} data-label={label}>
+  <div class="pb__bar">
+    <p class="pb__count t-caption"><span data-plist-count>{posts.length}</span> <span class="pb__unit">{postCount(posts.length, locale).replace(/^\d+\s*/, '')}</span></p>
+    <div class="pb__tools">
+      <label class="pb__sort"><span class="sr-only">{R.newest[locale]}</span>
+        <select data-plist-sort>
+          <option value="new">{R.newest[locale]}</option>
+          <option value="old">{R.oldest[locale]}</option>
+        </select>
+        <Icon name="chevron-down" size={14} />
+      </label>
+      <div class="pb__views" role="group" aria-label={`${R.gridView[locale]} / ${R.listView[locale]}`}>
+        <button type="button" data-plist-view="grid" aria-pressed="true" aria-label={R.gridView[locale]}><Icon name="grid" size={16} /></button>
+        <button type="button" data-plist-view="list" aria-pressed="false" aria-label={R.listView[locale]}><Icon name="list" size={16} /></button>
+      </div>
+      <label class="pb__search"><span class="sr-only">{R.searchIn[locale]}</span>
+        <input type="search" data-plist-q placeholder={R.searchIn[locale]} autocomplete="off" />
+        <Icon name="search" size={14} />
+      </label>
+    </div>
+  </div>
+  <ul class="pb__grid" role="list" data-plist-grid>
+    {posts.map((p) => <li data-pitem data-date={p.date.toISOString()} data-text={`${p.title} ${p.description}`.toLowerCase()}><PostCard locale={locale} post={p} /></li>)}
+  </ul>
+  <ol class="pb__list" role="list" data-plist-list hidden>
+    {posts.map((p) => <PostRow locale={locale} post={p} />)}
+  </ol>
+  <p class="pb__none t-body-4 fg-3" data-plist-none hidden>{R.noMatch[locale]}</p>
+  <div class="pb__more"><button type="button" class="btn btn--secondary btn--small btn--rounded btn--trailing" data-plist-more hidden>{more}<Icon name="arrow-down" size={14} /></button></div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-plist]').forEach((root) => {
+    const per = Number(root.dataset.page) || 12;
+    const grid = root.querySelector<HTMLElement>('[data-plist-grid]')!;
+    const list = root.querySelector<HTMLElement>('[data-plist-list]')!;
+    const cards = [...grid.children] as HTMLElement[];
+    const rows = [...list.children] as HTMLElement[];
+    const pairs = cards.map((c, k) => ({ c, r: rows[k], date: c.dataset.date ?? '', text: c.dataset.text ?? '' }));
+    const q = root.querySelector<HTMLInputElement>('[data-plist-q]')!;
+    const sort = root.querySelector<HTMLSelectElement>('[data-plist-sort]')!;
+    const views = [...root.querySelectorAll<HTMLButtonElement>('[data-plist-view]')];
+    const more = root.querySelector<HTMLButtonElement>('[data-plist-more]')!;
+    const none = root.querySelector<HTMLElement>('[data-plist-none]')!;
+    const count = root.querySelector<HTMLElement>('[data-plist-count]')!;
+    let shown = per;
+    let view = 'grid';
+    try { view = localStorage.getItem('wm-plist-view') === 'list' ? 'list' : 'grid'; } catch { /* storage blocked */ }
+    const render = () => {
+      const term = q.value.trim().toLowerCase();
+      const order = [...pairs].sort((a, b) => (sort.value === 'old' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)));
+      const hits = order.filter((p) => !term || p.text.includes(term));
+      order.forEach((p) => { grid.append(p.c); list.append(p.r); p.c.hidden = true; p.r.hidden = true; });
+      hits.forEach((p, k) => { const on = k < shown; p.c.hidden = !on; p.r.hidden = !on; });
+      count.textContent = String(hits.length);
+      none.hidden = hits.length > 0;
+      more.hidden = hits.length <= shown;
+      grid.hidden = view !== 'grid'; list.hidden = view !== 'list';
+      views.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.plistView === view)));
+    };
+    q.addEventListener('input', () => { shown = per; render(); });
+    sort.addEventListener('change', render);
+    views.forEach((b) => b.addEventListener('click', () => {
+      view = b.dataset.plistView ?? 'grid';
+      try { localStorage.setItem('wm-plist-view', view); } catch { /* storage blocked */ }
+      render();
+    }));
+    more.addEventListener('click', () => { shown += per; render(); });
+    render();
+  });
+</script>
+
+<style>
+  .pb__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-bottom: 16px; border-bottom: 1px solid var(--theme-border-secondary); }
+  .pb__count { font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--theme-foreground-tertiary); }
+  .pb__tools { display: none; }
+  :global(.js) .pb__tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .pb__sort, .pb__search { position: relative; display: inline-flex; align-items: center; }
+  .pb__sort select, .pb__search input { height: 36px; border-radius: 999px; border: 1px solid var(--theme-border-secondary); background: var(--theme-background-secondary);
+    color: var(--theme-foreground-primary); font: 500 var(--fs-caption-1)/1 var(--sans); }
+  .pb__sort select { appearance: none; padding: 0 34px 0 14px; cursor: pointer; }
+  .pb__sort :global(.icon), .pb__search :global(.icon) { position: absolute; right: 12px; pointer-events: none; color: var(--theme-foreground-tertiary); }
+  .pb__search input { width: min(240px, 60vw); padding: 0 34px 0 14px; }
+  .pb__search input::-webkit-search-cancel-button { display: none; }
+  .pb__views { display: inline-flex; padding: 2px; border-radius: 999px; border: 1px solid var(--theme-border-secondary); background: var(--theme-background-secondary); }
+  .pb__views button { display: grid; place-items: center; width: 32px; height: 30px; border: 0; border-radius: 999px; background: transparent; color: var(--theme-foreground-tertiary); cursor: pointer; transition: background-color .2s, color .2s; }
+  .pb__views button[aria-pressed="true"] { background: var(--theme-background-primary); color: var(--theme-foreground-primary); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+  @media (pointer: coarse) { .pb__sort select, .pb__search input { height: 44px; } .pb__views button { width: 40px; height: 38px; } }
+  .pb__grid { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px var(--grid-gutter); margin-top: 32px; }
+  @media (min-width: 768px) { .pb__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .pb__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (max-width: 479px) { .pb__grid { grid-template-columns: 1fr; } }
+  .pb__grid > [hidden], .pb__list > [hidden], .pb__grid[hidden], .pb__list[hidden] { display: none; }
+  .pb__list { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
+  .pb__none { margin-top: 32px; }
+  .pb__more [hidden] { display: none; }
+  .pb__more { display: flex; justify-content: center; margin-top: 40px; }
+</style>

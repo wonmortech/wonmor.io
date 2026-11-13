@@ -13,6 +13,11 @@ export const areaList: { key: Area; color: string; products: string[] }[] = [
   { key: 'digital-assets', color: '#cbcadb', products: [] },
 ];
 export const areaPageKey = (a: Area) => `research-${a}`;
+/** Plate motif (src/components/Plate.astro) that pictures each area. */
+export const areaMotif: Record<Area, 'agents' | 'language' | 'infrastructure' | 'supply-chain' | 'interfaces' | 'faith' | 'assets'> = {
+  agents: 'agents', language: 'language', infrastructure: 'infrastructure', 'supply-chain': 'supply-chain',
+  interfaces: 'interfaces', 'faith-society': 'faith', 'digital-assets': 'assets',
+};
 
 export const researchUi = {
   areas: { en: 'Research areas', uz: 'Tadqiqot yoʻnalishlari', ru: 'Направления исследований' },
@@ -37,6 +42,16 @@ export const researchUi = {
   related: { en: 'Related products', uz: 'Bogʻliq mahsulotlar', ru: 'Связанные продукты' },
   more: { en: 'More from this area', uz: 'Shu yoʻnalishdan yana', ru: 'Ещё по этому направлению' },
   readPost: { en: 'Read the post', uz: 'Postni oʻqish', ru: 'Читать' },
+  explore: { en: 'Explore work from other areas', uz: 'Boshqa yoʻnalishlardagi ishlar', ru: 'Работы других направлений' },
+  latest: { en: 'Latest', uz: 'Soʻnggi', ru: 'Последнее' },
+  newest: { en: 'Newest first', uz: 'Avval yangilari', ru: 'Сначала новые' },
+  oldest: { en: 'Oldest first', uz: 'Avval eskilari', ru: 'Сначала старые' },
+  gridView: { en: 'Grid view', uz: 'Toʻr koʻrinishi', ru: 'Сеткой' },
+  listView: { en: 'List view', uz: 'Roʻyxat koʻrinishi', ru: 'Списком' },
+  searchIn: { en: 'Search these posts', uz: 'Shu postlardan qidirish', ru: 'Поиск по публикациям' },
+  noMatch: { en: 'No posts match.', uz: 'Mos post topilmadi.', ru: 'Ничего не найдено.' },
+  prev: { en: 'Previous', uz: 'Oldingi', ru: 'Назад' },
+  next: { en: 'Next', uz: 'Keyingi', ru: 'Вперёд' },
   allAreas: { en: 'All areas', uz: 'Barcha yoʻnalishlar', ru: 'Все направления' },
 } satisfies Record<string, T>;
 
