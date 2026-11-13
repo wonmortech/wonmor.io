@@ -46,12 +46,13 @@ const isUrl = (s: string) => /^https?:\/\//.test(s);
       <div class="ra__rep">
         <h2 class="t-headline-5" id="ra-rep"><Icon name="arrow-right" size={16} />{R.reproduce[locale]}</h2>
         {reproduce.note && <p class="t-body-4 ra__rep-note">{reproduce.note}</p>}
-        <pre class="ra__cmd"><code>{reproduce.commands.map((c) => `$ ${c}`).join('\n')}</code></pre>
+        <pre class="ra__cmd" tabindex="0"><code>{reproduce.commands.map((c) => `$ ${c}`).join('\n')}</code></pre>
         <dl class="t-caption ra__rep-meta">
           {reproduce.repo
             ? <div><dt>{R.repo[locale]}</dt><dd><a class="link-underline" href={reproduce.repo} target="_blank" rel="noopener">{reproduce.repo.replace('https://github.com/', '')}</a></dd></div>
             : <div><dt>{R.repo[locale]}</dt><dd>{R.private[locale]}</dd></div>}
           {reproduce.repo && reproduce.commit && <div><dt>{R.commit[locale]}</dt><dd><a class="link-underline" href={`${reproduce.repo}/commit/${reproduce.commit}`} target="_blank" rel="noopener"><code>{reproduce.commit.slice(0, 7)}</code></a></dd></div>}
+          <div><dt>{R.material[locale]}</dt><dd><a class="link-underline" href={`https://github.com/wonmortech/research/tree/main/posts/${post.slug}`} target="_blank" rel="noopener">wonmortech/research</a></dd></div>
         </dl>
       </div>
     </section>

@@ -28,6 +28,7 @@ export const researchUi = {
   repo: { en: 'Repository', uz: 'Repozitoriy', ru: 'Репозиторий' },
   commit: { en: 'Commit', uz: 'Commit', ru: 'Коммит' },
   private: { en: 'The repository is private; the commands use public tools only.', uz: 'Repozitoriy yopiq; buyruqlar faqat ommaviy vositalardan foydalanadi.', ru: 'Репозиторий закрыт; команды используют только публичные инструменты.' },
+  material: { en: 'Material', uz: 'Materiallar', ru: 'Материалы' },
   sources: { en: 'Sources', uz: 'Manbalar', ru: 'Источники' },
   area: { en: 'Area', uz: 'Yoʻnalish', ru: 'Направление' },
   type: { en: 'Type', uz: 'Turi', ru: 'Тип' },

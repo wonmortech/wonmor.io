@@ -67,6 +67,7 @@ const jsonLd = [
     <link rel="apple-touch-icon" href={asset('/apple-touch-icon.png')} />
     <link rel="manifest" href={asset('/site.webmanifest')} />
     <link rel="preload" href={asset('/fonts/sans-latin.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={asset(locale === 'ru' ? '/fonts/serif-cyrillic.woff2' : '/fonts/serif-latin.woff2')} as="font" type="font/woff2" crossorigin />
     <link rel="alternate" type="application/rss+xml" title="Wonmor news" href={asset(locale === 'en' ? '/rss.xml' : `/${locale}/rss.xml`)} />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Wonmor" />

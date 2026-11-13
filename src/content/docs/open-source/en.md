@@ -32,6 +32,20 @@ gh repo list dtwinuz --visibility public --json name,licenseInfo,description
 
 GitHub shows bitg as Apache-2.0 because it detects one licence file. bitg actually ships both LICENSE-MIT and LICENSE-APACHE, and every source file is checked with a REUSE licence linter in CI.
 
+## Shared Wonmor material: wonmortech
+
+Material that belongs to Wonmor as a whole, rather than to one product, lives in a second organization, [github.com/wonmortech](https://github.com/wonmortech). Its seven repositories went public on November 13, 2026:
+
+| Repository | What it is | Licence |
+|---|---|---|
+| [research](https://github.com/wonmortech/research) | Commands, queries and scripts behind every post on this site | MIT for code, CC BY 4.0 for text |
+| [uz-open-data](https://github.com/wonmortech/uz-open-data) | Mosques of Uzbekistan from OpenStreetMap as GeoJSON, and the Uzbek Cyrillic to Latin table from bitg | ODbL 1.0 for the map data, MIT for the table |
+| [deploy-kit](https://github.com/wonmortech/deploy-kit) | Zero-downtime static deploys: releases, symlink swap, Caddy reload, rollback | MIT |
+| [design-system](https://github.com/wonmortech/design-system) | The design tokens of this site (`@wonmor/tokens`); components are planned | MIT |
+| [brand](https://github.com/wonmortech/brand) | The mark, lockups, colours and brand film | Not open-licensed, see [Brand](/brand/) |
+| [open-source-fund](https://github.com/wonmortech/open-source-fund) | The planned fund: criteria and application template; not open yet | CC BY 4.0 |
+| [.github](https://github.com/wonmortech/.github) | Organization profile, contributing guide, code of conduct and security policy | — |
+
 ## What we open by default
 
 We prefer to make a repository public when it is a product or tool that people install or run, a library others can reuse, or a site whose source teaches something. Opening early has practical benefits: anyone can review the code, security scanners work on it for free, and the work stays useful even if we stop.

@@ -148,3 +148,74 @@
   background: var(--theme-background-primary);
   color: var(--theme-foreground-primary);
 }
+
+/* Dark theme: follows the system unless the visitor picked one (html[data-theme], set by public/js/boot.js
+   before first paint and by the header toggle). The same values are listed twice because a media query
+   cannot share a selector list with an attribute selector. */
+:root { color-scheme: light; --panel-edge: transparent; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --theme-background-primary: var(--gray-900);
+  --theme-background-secondary: var(--gray-850);
+  --theme-background-tertiary: var(--gray-800);
+  --theme-background-quaternary: var(--gray-750);
+  --theme-foreground-primary: var(--gray-050);
+  --theme-foreground-secondary: var(--gray-300);
+  --theme-foreground-tertiary: var(--gray-450);
+  --theme-foreground-quaternary: var(--gray-550);
+  --theme-border-primary: var(--gray-650);
+  --theme-border-secondary: var(--gray-750);
+  --theme-border-tertiary: var(--gray-800);
+  --theme-button-primary-background: var(--gray-050);
+  --theme-button-primary-foreground: var(--gray-950);
+  --theme-button-primary-border: var(--gray-050);
+  --theme-button-secondary-background: var(--gray-800);
+  --theme-button-secondary-foreground: var(--gray-100);
+  --theme-button-secondary-border: var(--gray-700);
+  --theme-button-tertiary-background: var(--gray-850);
+  --theme-button-tertiary-foreground: var(--gray-300);
+  --theme-button-tertiary-border: var(--gray-750);
+  --theme-popup-background: var(--gray-850);
+  --theme-focus-ring: #8fb4ec;
+  --wm-text: #ffffff;
+  --panel-edge: rgba(250, 249, 245, .1);
+}
+:root[data-theme="dark"] .theme-ivory-medium {
+  --theme-background-primary: var(--gray-850);
+  --theme-foreground-secondary: var(--gray-300);
+  --theme-border-primary: var(--gray-700);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --theme-background-primary: var(--gray-900);
+    --theme-background-secondary: var(--gray-850);
+    --theme-background-tertiary: var(--gray-800);
+    --theme-background-quaternary: var(--gray-750);
+    --theme-foreground-primary: var(--gray-050);
+    --theme-foreground-secondary: var(--gray-300);
+    --theme-foreground-tertiary: var(--gray-450);
+    --theme-foreground-quaternary: var(--gray-550);
+    --theme-border-primary: var(--gray-650);
+    --theme-border-secondary: var(--gray-750);
+    --theme-border-tertiary: var(--gray-800);
+    --theme-button-primary-background: var(--gray-050);
+    --theme-button-primary-foreground: var(--gray-950);
+    --theme-button-primary-border: var(--gray-050);
+    --theme-button-secondary-background: var(--gray-800);
+    --theme-button-secondary-foreground: var(--gray-100);
+    --theme-button-secondary-border: var(--gray-700);
+    --theme-button-tertiary-background: var(--gray-850);
+    --theme-button-tertiary-foreground: var(--gray-300);
+    --theme-button-tertiary-border: var(--gray-750);
+    --theme-popup-background: var(--gray-850);
+    --theme-focus-ring: #8fb4ec;
+    --wm-text: #ffffff;
+    --panel-edge: rgba(250, 249, 245, .1);
+  }
+  :root:not([data-theme="light"]) .theme-ivory-medium {
+    --theme-background-primary: var(--gray-850);
+    --theme-foreground-secondary: var(--gray-300);
+    --theme-border-primary: var(--gray-700);
+  }
+}

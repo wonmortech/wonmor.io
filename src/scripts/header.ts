@@ -26,6 +26,29 @@ if (logo && !reduce && scrollY < FOLD_AT) {
   }
 }
 
+/* ---------------- theme ---------------- */
+// No saved choice: follow the system (CSS media query). A click saves the opposite of what is shown now.
+const themeBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+const sysDark = matchMedia('(prefers-color-scheme: dark)');
+const isDark = () => (doc.dataset.theme ? doc.dataset.theme === 'dark' : sysDark.matches);
+const themeMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+function syncTheme() {
+  const dark = isDark();
+  themeBtn?.setAttribute('aria-pressed', String(dark));
+  if (themeMeta) themeMeta.content = dark ? '#1a1918' : '#faf9f5';
+}
+if (themeBtn) {
+  themeBtn.hidden = false;
+  themeBtn.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    doc.dataset.theme = next;
+    try { localStorage.setItem('wm-theme', next); } catch { /* storage blocked: applies to this page only */ }
+    syncTheme();
+  });
+  sysDark.addEventListener('change', syncTheme);
+  syncTheme();
+}
+
 /* ---------------- dropdowns ---------------- */
 const dds = [...document.querySelectorAll<HTMLElement>('[data-dd]')];
 function anyOpen() { return dds.some((d) => d.querySelector('[aria-expanded="true"]')); }
