@@ -1,22 +1,35 @@
 ---
-/* Research/engineering post as a square picture card (grid view): date, plate for its area, title. */
+/* Research/engineering post as a picture card. Grid view: date, square art, title (the page already is the category).
+   Gallery view (PostBrowser data-view="gallery"): area · date, art at 1:1 or 16:9 by its slot, title and a dek.
+   The art box sets the shape and the plate fills it. Hover dims the title only; the picture never moves. */
 import Plate from '../Plate.astro';
 import { formatDate, href, type Locale } from '../../i18n/config';
-import { areaMotif } from '../../data/research';
+import { pageByKey } from '../../i18n/pages';
+import { areaMotif, areaPageKey } from '../../data/research';
 import type { PostLite } from './PostRow.astro';
-interface Props { locale: Locale; post: PostLite }
-const { locale, post } = Astro.props;
+/** ratio: the plate's own drawing ratio (16/9 where gallery is the default view, so wide slots are not cropped). */
+interface Props { locale: Locale; post: PostLite; ratio?: '1/1' | '16/9' }
+const { locale, post, ratio = '1/1' } = Astro.props;
 ---
 <a class="pcard" href={href(locale, `/${post.kind}/${post.slug}`)}>
-  <time class="pcard__date t-caption" datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date, locale)}</time>
-  <Plate motif={areaMotif[post.area]} seed={post.slug} ratio="1/1" />
+  <span class="pcard__meta t-caption"><span class="pcard__area">{pageByKey[areaPageKey(post.area)].title[locale]}</span><time datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date, locale)}</time></span>
+  <span class="pcard__art"><Plate motif={areaMotif[post.area]} seed={post.slug} ratio={ratio} /></span>
   <span class="pcard__title t-headline-5">{post.title}</span>
+  <span class="pcard__dek">{post.description}</span>
 </a>
 
 <style>
   .pcard { display: grid; gap: 10px; text-decoration: none; color: var(--theme-foreground-primary); }
-  .pcard__date { color: var(--theme-foreground-tertiary); }
-  .pcard__title { margin-top: 4px; max-width: 22em; transition: color .2s; text-wrap: balance; }
+  .pcard__meta { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--theme-foreground-tertiary); }
+  .pcard__area, .pcard__dek { display: none; }
+  .pcard__art { display: block; aspect-ratio: 1 / 1; border-radius: var(--radius-media); overflow: hidden; }
+  .pcard__art :global(.plate) { width: 100%; height: 100%; }
+  .pcard__title { margin-top: 4px; max-width: 22em; text-wrap: balance; transition: color .2s ease-out; }
   @media (hover: hover) { .pcard:hover .pcard__title { color: var(--theme-foreground-quaternary); } }
   .pcard:focus-visible .pcard__title { color: var(--theme-foreground-quaternary); }
+
+  :global([data-view="gallery"]) .pcard__area { display: inline; color: var(--theme-foreground-secondary); }
+  :global([data-view="gallery"]) .pcard__dek { display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+    font: 400 13px/1.54 var(--sans); color: var(--theme-foreground-tertiary); max-width: 38em; }
+  :global([data-view="gallery"] [data-wide]) .pcard__art { aspect-ratio: 16 / 9; }
 </style>

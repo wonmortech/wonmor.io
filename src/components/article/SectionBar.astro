@@ -1,0 +1,109 @@
+---
+/* Sticky section bar for long posts (3+ H2): "01  Current section" under the header, a chevron opens the numbered
+   list of every section. The current section follows the reader (IntersectionObserver, script below). */
+import Icon from '../Icon.astro';
+import { ui } from '../../i18n/ui';
+import type { Locale } from '../../i18n/config';
+interface Props { locale: Locale; headings: { slug: string; text: string }[] }
+const { locale, headings } = Astro.props;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+<nav class="secbar" aria-label={ui.articleSections[locale]} data-secbar>
+  <div class="container secbar__grid">
+    <div class="secbar__in">
+      <button type="button" class="secbar__btn" aria-expanded="false" aria-controls="secbar-list" data-secbar-btn>
+        <span class="secbar__num" data-secbar-num>{num(0)}</span>
+        <span class="secbar__title" data-secbar-title>{headings[0].text}</span>
+        <span class="sr-only">, {ui.articleAllSections[locale]}</span>
+        <Icon name="chevron-down" size={16} class="secbar__chev" />
+      </button>
+      <ol class="secbar__list" id="secbar-list" role="list" hidden data-secbar-list>
+        {headings.map((h, i) => (
+          <li><a class="secbar__link" href={`#${h.slug}`} data-secbar-link={h.slug}><span class="secbar__num">{num(i)}</span><span>{h.text}</span></a></li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-secbar]');
+  if (bar) {
+    const btn = bar.querySelector<HTMLButtonElement>('[data-secbar-btn]')!;
+    const list = bar.querySelector<HTMLElement>('[data-secbar-list]')!;
+    const numEl = bar.querySelector<HTMLElement>('[data-secbar-num]')!;
+    const titleEl = bar.querySelector<HTMLElement>('[data-secbar-title]')!;
+    const links = [...bar.querySelectorAll<HTMLAnchorElement>('[data-secbar-link]')];
+    const heads = links.map((a) => document.getElementById(a.dataset.secbarLink!)).filter((h): h is HTMLElement => !!h);
+
+    const setOpen = (open: boolean, refocus = false) => {
+      btn.setAttribute('aria-expanded', String(open));
+      list.hidden = !open;
+      if (!open && refocus) btn.focus();
+    };
+    btn.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+    bar.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !list.hidden) { e.preventDefault(); setOpen(false, true); } });
+    bar.addEventListener('focusout', (e) => { if (!bar.contains(e.relatedTarget as Node | null)) setOpen(false); });
+    document.addEventListener('click', (e) => { if (!list.hidden && !bar.contains(e.target as Node)) setOpen(false); });
+    links.forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+    let current = -1;
+    const show = (i: number) => {
+      if (i === current || i < 0) return;
+      current = i;
+      numEl.textContent = String(i + 1).padStart(2, '0');
+      titleEl.textContent = heads[i].textContent;
+      links.forEach((a, k) => (k === i ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
+    };
+    // Reading line: just under the header and the bar. It is fixed (not the bar's live position) so it stays where a
+    // contents link lands a heading even after the header slides away (scroll-margin in the style below).
+    const css = getComputedStyle(document.documentElement);
+    const line = (parseFloat(css.getPropertyValue('--header-nav-height')) || 84) + bar.offsetHeight + 32;
+    // current = the last section whose heading has crossed the line; before the first heading, the first section
+    const fromPositions = () => {
+      let i = 0;
+      heads.forEach((h, k) => { if (h.getBoundingClientRect().top <= line + 1) i = k; });
+      show(i);
+    };
+    fromPositions();
+    if ('IntersectionObserver' in window && heads.length) {
+      // the root starts at the line, so a callback fires exactly when a heading crosses it in either direction
+      const io = new IntersectionObserver(fromPositions, { rootMargin: `-${Math.round(line)}px 0px 0px 0px` });
+      heads.forEach((h) => io.observe(h));
+      addEventListener('hashchange', fromPositions);
+    }
+  }
+</script>
+
+<style>
+  .secbar { position: sticky; top: var(--header-nav-height); z-index: 20; background: var(--theme-background-primary);
+    border-block: 1px solid var(--theme-border-secondary); margin-bottom: 48px; transition: top .3s var(--ease-out-quart); }
+  /* the header slides away on scroll down (scripts/header.ts) — the bar takes its place */
+  :global(html:has(.site-header[data-hidden])) .secbar { top: 0; }
+  .secbar__in { position: relative; }
+  /* a contents link lands its heading just under the bar (html scroll-padding already clears the header) */
+  :global(.has-secbar .prose h2) { scroll-margin-top: 56px; }
+  @media (min-width: 1024px) {
+    .secbar__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
+    .secbar__in { grid-column: 4 / span 6; max-width: var(--reading-width); width: 100%; margin-inline: auto; }
+  }
+  .secbar__btn { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 14px; width: calc(100% + 20px); min-height: 48px; margin-inline: -10px; padding-inline: 10px; cursor: pointer;
+    font: 400 var(--fs-caption-1)/1.3 var(--sans); color: var(--theme-foreground-primary); }
+  .secbar__btn:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: -2px; border-radius: 4px; }
+  .secbar__num { font: 400 12px/1 var(--mono); letter-spacing: .04em; color: var(--theme-foreground-tertiary); font-variant-numeric: tabular-nums; flex: none; }
+  .secbar__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .secbar__btn :global(.secbar__chev) { flex: none; color: var(--theme-foreground-secondary); transition: transform .2s var(--ease-out-quart); }
+  .secbar__btn[aria-expanded='true'] :global(.secbar__chev) { transform: rotate(180deg); }
+  .secbar__list { position: absolute; left: 0; right: 0; top: calc(100% + 1px); list-style: none; margin: 0; padding: 8px;
+    max-height: min(60vh, 480px); overflow-y: auto; overscroll-behavior: contain;
+    background: var(--theme-popup-background); border: 1px solid var(--theme-border-secondary); border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .06); }
+  .secbar__list[hidden] { display: none; }
+  .secbar__link { display: flex; align-items: baseline; gap: 14px; padding: 10px 12px; border-radius: 8px; text-decoration: none;
+    font: 400 var(--fs-caption-1)/1.4 var(--sans); color: var(--theme-foreground-secondary); transition: background-color .2s, color .2s; }
+  .secbar__link:hover, .secbar__link:focus-visible { background: var(--theme-background-secondary); color: var(--theme-foreground-primary); }
+  .secbar__link[aria-current] { color: var(--theme-foreground-primary); font-weight: 600; }
+  @media (max-width: 1023px) { .secbar { margin-bottom: 32px; } .secbar__list { left: calc(-1 * var(--grid-margin) + 8px); right: calc(-1 * var(--grid-margin) + 8px); } }
+  @media (prefers-reduced-motion: reduce) { .secbar, .secbar__btn :global(.secbar__chev) { transition: none; } }
+  @media print { .secbar { display: none; } }
+</style>

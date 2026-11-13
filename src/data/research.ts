@@ -55,6 +55,14 @@ export const researchUi = {
   prev: { en: 'Previous', uz: 'Oldingi', ru: 'Назад' },
   next: { en: 'Next', uz: 'Keyingi', ru: 'Вперёд' },
   allAreas: { en: 'All areas', uz: 'Barcha yoʻnalishlar', ru: 'Все направления' },
+  sort: { en: 'Sort', uz: 'Saralash', ru: 'Сортировка' },
+  sortNew: { en: 'Most recent', uz: 'Eng soʻnggi', ru: 'Сначала новые' },
+  sortOld: { en: 'Oldest', uz: 'Eng eskilari', ru: 'Сначала старые' },
+  sortAz: { en: 'A–Z', uz: 'A–Z', ru: 'А–Я' },
+  view: { en: 'View', uz: 'Koʻrinish', ru: 'Вид' },
+  viewGallery: { en: 'Gallery', uz: 'Galereya', ru: 'Галерея' },
+  viewGrid: { en: 'Grid', uz: 'Toʻr', ru: 'Сетка' },
+  viewList: { en: 'List', uz: 'Roʻyxat', ru: 'Список' },
 } satisfies Record<string, T>;
 
 /** "1 post" / "3 posts" / "5 публикаций" — plural forms per language. */

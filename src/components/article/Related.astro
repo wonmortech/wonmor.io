@@ -1,0 +1,69 @@
+---
+/* Related posts for an article. variant "rail": the sticky right column on wide screens (>=1280).
+   variant "section": the same posts after the article on narrower screens. Each page renders both; CSS shows one. */
+import Icon from '../Icon.astro';
+import PostCard from '../research/PostCard.astro';
+import NewsCard from '../NewsCard.astro';
+import type { PostLite } from '../research/PostRow.astro';
+import { formatDate, href, type Locale } from '../../i18n/config';
+import { categories } from '../../i18n/home';
+import { ui } from '../../i18n/ui';
+
+export interface NewsLite { slug: string; title: string; description: string; date: Date; category: string; links: any[] }
+type Props = { locale: Locale; variant: 'rail' | 'section'; moreHref: string } &
+  ({ kind: 'research'; posts: PostLite[] } | { kind: 'news'; posts: NewsLite[] });
+const props = Astro.props;
+const { locale, variant, moreHref } = props;
+const id = `rel-${variant}`;
+---
+{props.posts.length > 0 && (
+  variant === 'rail' ? (
+    <aside class="rel-rail" aria-labelledby={id}>
+      <h2 class="t-caption-bold rel-rail__h" id={id}>{ui.articleRelated[locale]}</h2>
+      <ul class="rel-rail__list" role="list">
+        {props.kind === 'research'
+          ? props.posts.map((p) => <li><PostCard locale={locale} post={p} /></li>)
+          : props.posts.map((p) => (
+            <li>
+              <a class="rel-ncard" href={href(locale, `/news/${p.slug}`)}>
+                <span class="t-caption fg-3">{categories[p.category][locale]} · <time datetime={p.date.toISOString().slice(0, 10)}>{formatDate(p.date, locale)}</time></span>
+                <span class="rel-ncard__title">{p.title}</span>
+              </a>
+            </li>
+          ))}
+      </ul>
+      <a class="t-caption link-quiet rel-more" href={moreHref}>{ui.articleViewMore[locale]}<Icon name="arrow-right" size={14} /></a>
+    </aside>
+  ) : (
+    <section class="container section-lg rel-section" aria-labelledby={id}>
+      <div class="rule-row"><h2 class="t-caption-bold" id={id}>{ui.articleRelated[locale]}</h2><a class="t-caption link-quiet fg-3 rel-more" href={moreHref}>{ui.articleViewMore[locale]}<Icon name="arrow-right" size={14} /></a></div>
+      <ul class="rel-section__list" role="list">
+        {props.kind === 'research'
+          ? props.posts.map((p) => <li><PostCard locale={locale} post={p} /></li>)
+          : props.posts.map((p) => <li><NewsCard locale={locale} slug={p.slug} title={p.title} description={p.description} date={p.date} category={p.category} links={p.links} cta={ui.readPost[locale]} /></li>)}
+      </ul>
+    </section>
+  )
+)}
+
+<style>
+  .rel-rail { display: none; }
+  @media (min-width: 1280px) {
+    .rel-rail { display: grid; gap: 20px; position: sticky; top: 120px; margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--theme-border-secondary); }
+    /* under the sticky section bar the rail starts below it */
+    :global(.has-secbar) .rel-rail { top: calc(var(--header-nav-height) + 49px + 24px); }
+    :global(html:has(.site-header[data-hidden]) .has-secbar) .rel-rail { top: calc(49px + 24px); }
+    .rel-section { display: none; }
+  }
+  .rel-rail__list { list-style: none; display: grid; gap: 28px; }
+  .rel-rail :global(.pcard__title) { font-size: var(--fs-body-4); line-height: 1.35; }
+  .rel-ncard { display: grid; gap: 6px; padding-bottom: 20px; border-bottom: 1px solid var(--theme-border-secondary); text-decoration: none; color: var(--theme-foreground-primary); }
+  .rel-ncard__title { font: 600 var(--fs-body-4)/1.35 var(--sans); text-wrap: balance; transition: color .2s; }
+  @media (hover: hover) { .rel-ncard:hover .rel-ncard__title { color: var(--theme-foreground-quaternary); } }
+  .rel-ncard:focus-visible .rel-ncard__title { color: var(--theme-foreground-quaternary); }
+  .rel-more { display: inline-flex; align-items: center; gap: 6px; justify-self: start; color: var(--theme-foreground-primary); }
+  .rule-row .rel-more { color: var(--theme-foreground-tertiary); }
+  .rel-section__list { list-style: none; display: grid; gap: var(--grid-gutter); margin-top: 24px; }
+  @media (min-width: 640px) { .rel-section__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media print { .rel-rail, .rel-section { display: none; } }
+</style>

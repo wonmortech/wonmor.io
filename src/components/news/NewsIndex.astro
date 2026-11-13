@@ -3,12 +3,14 @@
    1. "Latest" mosaic: a picture story and a text story left, the lead story with a large picture in the middle, three
       text stories right; phones stack it.
    2. "Highlights": featured posts in a carousel.
-   3. Every post as a table (title, summary, topic, date) with topic tabs (?group=), search, sort and "See more".
+   3. Every post as a table (title, summary, topic, date, expander) with a segmented All / Product / Company control
+      (?group=), a multi-select Filter for the other topics (?category=a,b), sort (?sort=), search and "See more".
    4. A dark band to the press kit, contact and security pages.
    Pictures are real product screenshots when the post is about a product with one, otherwise a Wonmor plate. */
 import Icon from '../Icon.astro';
 import Plate, { type Motif } from '../Plate.astro';
 import FeatureCarousel from '../ui/FeatureCarousel.astro';
+import Select from '../ui/Select.astro';
 import { formatDate, href, type Locale } from '../../i18n/config';
 import { categories } from '../../i18n/home';
 import { groups, pageByKey } from '../../i18n/pages';
@@ -44,6 +46,16 @@ const highlights = (pool.length > 1 ? pool : news.filter((n) => !inMosaic.has(n.
   return { eyebrow: categories[n.category][locale], date: n.date, title: n.title, desc: n.description, href: url(n), motif: motif(n), seed: n.slug, img };
 });
 const cats = Object.keys(categories).filter((k) => news.some((n) => n.category === k));
+// the two big topics are a segmented control, the long tail goes into a multi-select Filter
+const segKeys = ['product', 'company'].filter((k) => cats.includes(k));
+const filterKeys = cats.filter((k) => !segKeys.includes(k));
+// related posts for the row expander: same product, then same topic, then newest; never the post itself
+const related = (n: NewsLite) => news
+  .filter((m) => m.slug !== n.slug)
+  .map((m) => ({ m, s: (n.product && m.product === n.product ? 2 : 0) + (m.category === n.category ? 1 : 0) }))
+  .sort((x, y) => y.s - x.s || +y.m.date - +x.m.date)
+  .slice(0, 3)
+  .map((x) => x.m);
 const L = {
   latest: ui.latestNews,
   highlights: { en: 'Highlights', uz: 'Muhim', ru: 'Главное' },
@@ -52,9 +64,17 @@ const L = {
   summary: { en: 'Summary', uz: 'Qisqacha', ru: 'Кратко' },
   topic: { en: 'Topic', uz: 'Mavzu', ru: 'Тема' },
   date: { en: 'Date', uz: 'Sana', ru: 'Дата' },
+  all: { en: 'All', uz: 'Barchasi', ru: 'Все' },
+  filter: { en: 'Filter', uz: 'Filtr', ru: 'Фильтр' },
+  removeFilter: { en: 'Remove filter', uz: 'Filtrni olib tashlash', ru: 'Убрать фильтр' },
+  sort: { en: 'Sort', uz: 'Saralash', ru: 'Сортировка' },
+  recent: { en: 'Most recent', uz: 'Eng yangilari', ru: 'Сначала новые' },
+  oldest: { en: 'Oldest', uz: 'Eng eskilari', ru: 'Сначала старые' },
+  az: { en: 'A–Z', uz: 'A–Z', ru: 'А–Я' },
   search: { en: 'Search news', uz: 'Yangiliklardan qidirish', ru: 'Поиск по новостям' },
-  newest: { en: 'Newest first', uz: 'Avval yangilari', ru: 'Сначала новые' },
-  oldest: { en: 'Oldest first', uz: 'Avval eskilari', ru: 'Сначала старые' },
+  clearSearch: { en: 'Clear search', uz: 'Qidiruvni tozalash', ru: 'Очистить поиск' },
+  details: { en: 'Details', uz: 'Batafsil', ru: 'Подробнее' },
+  related: { en: 'Related', uz: 'Oʻxshash postlar', ru: 'Похожие публикации' },
   none: { en: 'Nothing matches these filters', uz: 'Bu filtrlarga mos yangilik yoʻq', ru: 'По этим фильтрам ничего нет' },
   noneHint: { en: 'Try another word or topic, or clear the filters to see every post.', uz: 'Boshqa soʻz yoki mavzuni tanlang yoki barcha postlarni koʻrish uchun filtrlarni tozalang.', ru: 'Попробуйте другое слово или тему либо сбросьте фильтры, чтобы увидеть все публикации.' },
   clear: { en: 'Clear filters', uz: 'Filtrlarni tozalash', ru: 'Сбросить фильтры' },
@@ -63,6 +83,7 @@ const L = {
   next: { en: 'Next', uz: 'Keyingi', ru: 'Вперёд' },
   band: { en: 'Contact us or download our press kit', uz: 'Biz bilan bogʻlaning yoki press-kitni yuklab oling', ru: 'Свяжитесь с нами или скачайте пресс-кит' },
 };
+const sortOptions = [{ value: 'new', label: L.recent[locale] }, { value: 'old', label: L.oldest[locale] }, { value: 'az', label: L.az[locale] }];
 const band = [
   { icon: 'arrow-up-right' as const, title: pageByKey['contact'].title, sub: { en: 'Press and partnerships', uz: 'Matbuot va hamkorlik', ru: 'Пресса и партнёрство' }, href: '/contact' },
   { icon: 'download' as const, title: pageByKey['brand'].title, sub: { en: 'Logos, colours, film', uz: 'Logotip, ranglar, film', ru: 'Логотипы, цвета, фильм' }, href: '/brand' },
@@ -110,44 +131,76 @@ const band = [
     </section>
   )}
 
-  <section class="container section-lg" data-filter-scope data-ntable aria-labelledby="nx-all">
+  <section class="container section-lg" data-ntable aria-labelledby="nx-all">
     <div class="nx__head">
       <h2 class="t-headline-2" id="nx-all">{groups.news[locale]}</h2>
-      <div class="fbar nx__tabs" role="group" aria-label={ui.filterNews[locale]} data-filter data-filter-param="group">
-        <button type="button" class="fchip" data-filter-set="" aria-pressed="true">{ui.allNews[locale]}</button>
-        {cats.map((k) => <button type="button" class="fchip" data-filter-set={k} aria-pressed="false">{categories[k][locale]}</button>)}
-      </div>
+      {segKeys.length > 0 && (
+        <div class="nx__seg" role="group" aria-label={ui.filterNews[locale]}>
+          <button type="button" class="nx__seg-b" data-nt-seg="" aria-pressed="true">{L.all[locale]}</button>
+          {segKeys.map((k) => <button type="button" class="nx__seg-b" data-nt-seg={k} aria-pressed="false">{categories[k][locale]}</button>)}
+        </div>
+      )}
     </div>
     <div class="nx__bar">
-      <p class="nx__count t-caption"><span data-filter-count>{news.length}</span> {L.articles[locale]}</p>
+      <p class="nx__count t-caption"><span data-nt-count>{news.length}</span> {L.articles[locale]}</p>
       <div class="nx__tools">
-        <label class="nx__ctl"><span class="sr-only">{L.newest[locale]}</span>
-          <select data-nt-sort><option value="new">{L.newest[locale]}</option><option value="old">{L.oldest[locale]}</option></select>
-          <Icon name="chevron-down" size={14} />
-        </label>
-        <label class="nx__ctl"><span class="sr-only">{L.search[locale]}</span>
-          <input type="search" data-nt-q placeholder={L.search[locale]} autocomplete="off" />
-          <Icon name="search" size={14} />
-        </label>
-      </div>
-    </div>
-    <div class="nx__table" role="table" aria-labelledby="nx-all">
-      <div class="nx__tr nx__th" role="row">
-        <span role="columnheader">{L.title[locale]}</span><span role="columnheader">{L.summary[locale]}</span>
-        <span role="columnheader">{L.topic[locale]}</span><span role="columnheader">{L.date[locale]}</span>
-      </div>
-      <div role="rowgroup" data-nt-body>
-        {news.map((n) => (
-          <div class="nx__tr nx__tr--link" role="row" data-filter-key={n.category} data-date={iso(n.date)} data-text={`${n.title} ${n.description}`.toLowerCase()}>
-            <span role="cell" class="nx__t"><a class="nx__rowlink" href={url(n)}>{n.title}</a></span>
-            <span role="cell" class="nx__d">{n.description}</span>
-            <span role="cell" class="nx__c">{categories[n.category][locale]}</span>
-            <span role="cell" class="nx__dt"><time datetime={iso(n.date)}>{formatDate(n.date, locale)}</time><Icon name="arrow-right" size={14} /></span>
+        {filterKeys.length > 0 && (
+          <div class="nx__tool nx__tool--filter" data-nt-filter>
+            <Select label={L.filter[locale]} placeholder={L.filter[locale]} multiple options={filterKeys.map((k) => ({ value: k, label: categories[k][locale] }))} />
           </div>
-        ))}
+        )}
+        {filterKeys.length > 0 && (
+          <div class="nx__chips">
+            {filterKeys.map((k) => (
+              <button type="button" class="nx__chip" data-nt-chip={k} aria-label={`${L.removeFilter[locale]}: ${categories[k][locale]}`} hidden>
+                {categories[k][locale]}<Icon name="close" size={12} />
+              </button>
+            ))}
+          </div>
+        )}
+        <div class="nx__tool nx__tool--sort" data-nt-sort><Select label={L.sort[locale]} options={sortOptions} value="new" align="end" /></div>
+        <div class="nx__q">
+          <Icon name="search" size={14} />
+          <input type="search" data-nt-q placeholder={L.search[locale]} aria-label={L.search[locale]} autocomplete="off" />
+          <button type="button" class="nx__qx" data-nt-qx aria-label={L.clearSearch[locale]} hidden><Icon name="close" size={12} /></button>
+        </div>
       </div>
     </div>
-    <div class="empty" data-nt-none hidden><p class="t-headline-5">{L.none[locale]}</p><p class="t-body-4 fg-2">{L.noneHint[locale]}</p><button type="button" class="btn btn--secondary btn--sm" data-nt-clear>{L.clear[locale]}</button></div>
+    <div class="nx__th" aria-hidden="true">
+      <span>{L.title[locale]}</span><span>{L.summary[locale]}</span><span>{L.topic[locale]}</span><span>{L.date[locale]}</span><span></span>
+    </div>
+    <ul class="nx__list" role="list" aria-labelledby="nx-all" data-nt-body>
+      {news.map((n) => (
+        <li class="nx__item" data-key={n.category} data-date={iso(n.date)} data-title={n.title} data-text={`${n.title} ${n.description}`.toLowerCase()}>
+          <div class="nx__row">
+            <a class="nx__rowlink" href={url(n)} aria-labelledby={`nt-${n.slug}`}></a>
+            <span class="nx__t" data-pan-cell><span class="nx__pan" id={`nt-${n.slug}`}>{n.title}</span></span>
+            <span class="nx__d" data-pan-cell><span class="nx__pan">{n.description}</span></span>
+            <span class="nx__c">{categories[n.category][locale]}</span>
+            <span class="nx__dt"><time datetime={iso(n.date)}>{formatDate(n.date, locale)}</time></span>
+            <button type="button" class="nx__xb" aria-expanded="false" aria-controls={`nx-${n.slug}`} aria-label={`${L.details[locale]}: ${n.title}`}>
+              <span class="nx__pill" aria-hidden="true"><span class="nx__dots"><i></i><i></i><i></i></span><Icon name="close" size={10} /></span>
+            </button>
+          </div>
+          <div class="nx__x" id={`nx-${n.slug}`} inert>
+            <div class="nx__x-in">
+              <p class="nx__x-meta t-caption"><span>{categories[n.category][locale]}</span><time datetime={iso(n.date)}>{formatDate(n.date, locale)}</time></p>
+              <p class="t-body-3 nx__x-desc">{n.description}</p>
+              <h3 class="t-caption-bold nx__x-h">{L.related[locale]}</h3>
+              <ul class="nx__rel" role="list">
+                {related(n).map((m) => (
+                  <li><a class="nx__rc" href={url(m)}>
+                    <span class="nx__rc-meta t-caption">{categories[m.category][locale]} · <time datetime={iso(m.date)}>{formatDate(m.date, locale)}</time></span>
+                    <span class="nx__rc-t">{m.title}</span>
+                  </a></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <div class="empty" data-nt-none role="status" hidden><p class="t-headline-5">{L.none[locale]}</p><p class="t-body-4 fg-2">{L.noneHint[locale]}</p><button type="button" class="btn btn--secondary btn--sm" data-nt-clear>{L.clear[locale]}</button></div>
     <div class="nx__more"><button type="button" class="btn btn--secondary btn--small btn--rounded btn--trailing" data-nt-more hidden>{L.more[locale]}<Icon name="arrow-down" size={14} /></button></div>
   </section>
 
@@ -168,43 +221,161 @@ const band = [
 </div>
 
 <script>
-  import { initFilters } from '../../scripts/filter';
-  initFilters();
-  // search, sort and "See more" on top of the topic filter (filter.ts hides rows of other topics)
+  // The news table: segmented group (?group=product|company), multi-select Filter for the other topics
+  // (?category=a,b), sort (?sort=new|old|az), search, "See more", row expanders and panning text for clipped cells.
+  // Old links use ?group=<any topic>; a topic that is not a segment opens as a Filter choice instead.
+  const PER = 24;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const canPan = matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)');
+  const EASE = 'cubic-bezier(.215, .61, .355, 1)';
+
   document.querySelectorAll<HTMLElement>('[data-ntable]').forEach((root) => {
     const body = root.querySelector<HTMLElement>('[data-nt-body]')!;
     const rows = [...body.children] as HTMLElement[];
+    const segs = [...root.querySelectorAll<HTMLButtonElement>('[data-nt-seg]')];
+    const segKeys = segs.map((b) => b.dataset.ntSeg ?? '');
+    const filterSel = root.querySelector<HTMLElement>('[data-nt-filter] [data-select]');
+    const filterKeys = filterSel ? [...filterSel.querySelectorAll<HTMLElement>('[role="option"]')].map((o) => o.dataset.value!) : [];
+    const sortSel = root.querySelector<HTMLElement>('[data-nt-sort] [data-select]');
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-nt-chip]')];
     const q = root.querySelector<HTMLInputElement>('[data-nt-q]')!;
-    const sort = root.querySelector<HTMLSelectElement>('[data-nt-sort]')!;
+    const qx = root.querySelector<HTMLButtonElement>('[data-nt-qx]')!;
     const more = root.querySelector<HTMLButtonElement>('[data-nt-more]')!;
     const none = root.querySelector<HTMLElement>('[data-nt-none]')!;
-    const count = root.querySelector<HTMLElement>('[data-filter-count]');
-    const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-filter-set]')];
-    const per = 10;
-    let shown = per;
+    const count = root.querySelector<HTMLElement>('[data-nt-count]');
+    const lang = document.documentElement.lang || 'en';
+
+    const state = { group: '', cats: [] as string[], sort: 'new' };
+    let shown = PER;
+    const params = new URL(location.href).searchParams;
+    const g = params.get('group') ?? '';
+    if (g && segKeys.includes(g)) state.group = g;
+    else if (filterKeys.includes(g)) state.cats = [g];
+    const fromUrl = (params.get('category') ?? '').split(',').filter((k) => filterKeys.includes(k));
+    if (fromUrl.length) { state.cats = [...new Set([...state.cats, ...fromUrl])]; state.group = ''; }
+    const s = params.get('sort');
+    if (s === 'old' || s === 'az') state.sort = s;
+
+    const setSelect = (el: HTMLElement | null, value: string | string[]) => el?.dispatchEvent(new CustomEvent('select:set', { detail: { value } }));
+    const saveUrl = () => {
+      const u = new URL(location.href);
+      if (state.group) u.searchParams.set('group', state.group); else u.searchParams.delete('group');
+      if (state.cats.length) u.searchParams.set('category', state.cats.join(',')); else u.searchParams.delete('category');
+      if (state.sort !== 'new') u.searchParams.set('sort', state.sort); else u.searchParams.delete('sort');
+      history.replaceState(history.state, '', u);
+    };
+
+    // panning text: mark the cells whose text is clipped, then pan them at 80px/s while the pointer is on the row
+    const measure = () => rows.forEach((r) => {
+      if (r.hidden) return;
+      r.querySelectorAll<HTMLElement>('[data-pan-cell]').forEach((c) => c.toggleAttribute('data-clip', c.scrollWidth - c.clientWidth > 1));
+    });
+    const pans = new Map<HTMLElement, number>();
+    const stopPan = (r: HTMLElement) => {
+      cancelAnimationFrame(pans.get(r) ?? 0);
+      pans.delete(r);
+      r.querySelectorAll<HTMLElement>('[data-pan-cell]').forEach((c) => { c.removeAttribute('data-pan'); (c.firstElementChild as HTMLElement).style.transform = ''; });
+    };
+    const startPan = (r: HTMLElement) => {
+      const cells = [...r.querySelectorAll<HTMLElement>('[data-pan-cell][data-clip]')]
+        .map((c) => ({ c, span: c.firstElementChild as HTMLElement, d: c.scrollWidth - c.clientWidth }))
+        .filter((x) => x.d > 1);
+      if (!cells.length) return;
+      const t0 = performance.now();
+      cells.forEach(({ c }) => { c.dataset.pan = 'run'; });
+      const step = (now: number) => {
+        let busy = false;
+        cells.forEach(({ c, span, d }) => {
+          const x = Math.min(d, ((now - t0) / 1000) * 80);
+          span.style.transform = `translateX(${-x}px)`;
+          if (x < d) busy = true; else c.dataset.pan = 'end';
+        });
+        if (busy) pans.set(r, requestAnimationFrame(step)); else pans.delete(r);
+      };
+      pans.set(r, requestAnimationFrame(step));
+    };
+
     const render = () => {
-      const topic = chips.find((c) => c.getAttribute('aria-pressed') === 'true')?.dataset.filterSet ?? '';
       const term = q.value.trim().toLowerCase();
-      const order = [...rows].sort((x, y) => { const c = (x.dataset.date ?? '').localeCompare(y.dataset.date ?? ''); return sort.value === 'old' ? c : -c; });
+      const order = [...rows].sort((x, y) => {
+        if (state.sort === 'az') return (x.dataset.title ?? '').localeCompare(y.dataset.title ?? '', lang);
+        const c = (x.dataset.date ?? '').localeCompare(y.dataset.date ?? '');
+        return state.sort === 'old' ? c : -c;
+      });
       order.forEach((r) => body.append(r));
-      const hits = order.filter((r) => (!topic || r.dataset.filterKey === topic) && (!term || (r.dataset.text ?? '').includes(term)));
+      const want = state.cats.length ? state.cats : state.group ? [state.group] : null;
+      const hits = order.filter((r) => (!want || want.includes(r.dataset.key ?? '')) && (!term || (r.dataset.text ?? '').includes(term)));
       order.forEach((r) => { r.hidden = true; });
       hits.forEach((r, k) => { r.hidden = k >= shown; });
       if (count) count.textContent = String(hits.length);
       none.hidden = hits.length > 0;
       more.hidden = hits.length <= shown;
+      qx.hidden = !q.value;
+      requestAnimationFrame(measure);
     };
-    chips.forEach((c) => c.addEventListener('click', () => { shown = per; queueMicrotask(render); }));
-    q.addEventListener('input', () => { shown = per; render(); });
+    const sync = (save = true) => {
+      segs.forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.ntSeg ?? '') === state.group)));
+      chips.forEach((c) => { c.hidden = !state.cats.includes(c.dataset.ntChip ?? ''); });
+      if (save) saveUrl();
+      render();
+    };
+
+    segs.forEach((b) => b.addEventListener('click', () => {
+      state.group = b.dataset.ntSeg ?? '';
+      // a segment and a Filter topic are one dimension and would always intersect to nothing, so they replace each other
+      if (state.group && state.cats.length) { state.cats = []; setSelect(filterSel, []); }
+      shown = PER; sync();
+    }));
+    filterSel?.addEventListener('select:change', (e) => {
+      state.cats = [...((e as CustomEvent).detail.value as string[])];
+      if (state.cats.length) state.group = '';
+      shown = PER; sync();
+    });
+    chips.forEach((c) => c.addEventListener('click', () => {
+      state.cats = state.cats.filter((k) => k !== c.dataset.ntChip);
+      setSelect(filterSel, state.cats);
+      shown = PER; sync();
+      (chips.find((x) => !x.hidden) ?? filterSel?.querySelector<HTMLElement>('.sel__trigger'))?.focus();
+    }));
+    sortSel?.addEventListener('select:change', (e) => { state.sort = String((e as CustomEvent).detail.value || 'new'); sync(); });
+    q.addEventListener('input', () => { shown = PER; render(); });
+    qx.addEventListener('click', () => { q.value = ''; shown = PER; render(); q.focus(); });
     root.querySelector('[data-nt-clear]')?.addEventListener('click', () => {
-      q.value = ''; shown = per;
-      const all = chips.find((c) => c.dataset.filterSet === '');
-      if (all && all.getAttribute('aria-pressed') !== 'true') all.click(); else render();
+      state.group = ''; state.cats = []; state.sort = 'new'; q.value = ''; shown = PER;
+      setSelect(filterSel, []); setSelect(sortSel, 'new');
+      sync();
       q.focus();
     });
-    sort.addEventListener('change', render);
-    more.addEventListener('click', () => { shown += per; render(); });
-    render();
+    more.addEventListener('click', () => { shown += PER; render(); });
+
+    rows.forEach((r) => {
+      r.addEventListener('pointerenter', (e) => { if (canPan.matches && e.pointerType === 'mouse') startPan(r); });
+      r.addEventListener('pointerleave', () => stopPan(r));
+      // expander: height 0 -> scrollHeight in .35s, back in .3s; collapsed details are inert, so only the row link and
+      // the button take focus
+      const btn = r.querySelector<HTMLButtonElement>('.nx__xb')!;
+      const panel = r.querySelector<HTMLElement>('.nx__x')!;
+      panel.addEventListener('transitionend', (e) => { if (e.propertyName === 'height' && r.classList.contains('is-open')) panel.style.height = 'auto'; });
+      btn.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') !== 'true';
+        btn.setAttribute('aria-expanded', String(open));
+        r.classList.toggle('is-open', open);
+        panel.inert = !open;
+        panel.style.transition = 'none';
+        if (reduce.matches) { panel.style.height = open ? 'auto' : '0px'; return; }
+        panel.style.height = open ? '0px' : `${panel.scrollHeight}px`;
+        void panel.offsetHeight;
+        panel.style.transition = `height ${open ? '.35s' : '.3s'} ${EASE}`;
+        panel.style.height = open ? `${panel.scrollHeight}px` : '0px';
+      });
+    });
+
+    let rt = 0;
+    addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(measure, 150); });
+    // the listboxes may wire up after this script runs, so their initial value is set on the next frame
+    requestAnimationFrame(() => { setSelect(filterSel, state.cats); setSelect(sortSel, state.sort); });
+    // an old ?group=<topic> link is rewritten to ?category=<topic>; otherwise the URL is left as it came
+    sync(filterKeys.includes(g));
   });
 </script>
 
@@ -224,12 +395,11 @@ const band = [
   .nx__thumb :global(.plate), .nx__media :global(.plate) { height: 100%; }
   .nx__lead { display: grid; gap: 14px; align-content: start; }
   .nx__lead-title { max-width: 20em; }
-  :is(.nx__thumb, .nx__media) :is(img, :global(svg)) { transition: transform 1s var(--ease-out-quart); }
+  /* hover: the picture stays still, the title dims */
   @media (hover: hover) {
-    .nx__story:hover :is(h2, .nx__desc), .nx__lead:hover :is(h2, .nx__desc) { color: var(--theme-foreground-quaternary); }
-    .nx__story:hover .nx__thumb :is(img, :global(svg)), .nx__lead:hover .nx__media :is(img, :global(svg)) { transform: scale(1.025); }
+    .nx__story:hover h2, .nx__lead:hover h2 { color: var(--theme-foreground-quaternary); }
   }
-  .nx__story h2, .nx__lead h2, .nx__desc { transition: color .2s; }
+  .nx__story h2, .nx__lead h2 { transition: color .2s ease-out; }
   @media (min-width: 1024px) {
     .nx__mosaic { grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr); column-gap: var(--grid-gutter); }
     .nx__col--l { order: -1; }
@@ -238,40 +408,135 @@ const band = [
 
   .nx__hl { margin-top: 28px; }
 
+  /* header row: "News" + segmented All / Product / Company (36px, outer radius 10, no gaps, active inverted) */
   .nx__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; }
-  :global(.js) .nx__tabs { position: static; margin: 0; padding: 0; background: none; }
+  .nx__seg { display: none; height: 36px; border: 1px solid var(--theme-border-secondary); border-radius: 10px; overflow: hidden; background: var(--theme-background-primary); }
+  :global(.js) .nx__seg { display: inline-flex; }
+  .nx__seg-b { flex: none; padding: 0 16px; border: 0; background: transparent; color: var(--theme-foreground-secondary); cursor: pointer;
+    font: 500 var(--fs-caption-1)/1 var(--sans); white-space: nowrap; transition: background-color .15s, color .15s; }
+  .nx__seg-b + .nx__seg-b { border-left: 1px solid var(--theme-border-secondary); }
+  .nx__seg-b:hover { background: var(--theme-background-secondary); color: var(--theme-foreground-primary); }
+  .nx__seg-b[aria-pressed='true'] { background: var(--theme-foreground-primary); color: var(--theme-background-primary); }
+  .nx__seg-b:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: -3px; }
+
+  /* tool bar: count, Filter + active chips, Sort, search */
   .nx__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 32px; padding-bottom: 14px; border-bottom: 1px solid var(--theme-border-secondary); }
   .nx__count { font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--theme-foreground-tertiary); }
   .nx__tools { display: none; }
-  :global(.js) .nx__tools { display: flex; gap: 8px; flex-wrap: wrap; }
-  .nx__ctl { position: relative; display: inline-flex; align-items: center; }
-  .nx__ctl :is(select, input) { height: 36px; padding: 0 34px 0 14px; border-radius: 999px; border: 1px solid var(--theme-border-secondary); background: var(--theme-background-secondary);
-    color: var(--theme-foreground-primary); font: 500 var(--fs-caption-1)/1 var(--sans); }
-  .nx__ctl select { appearance: none; cursor: pointer; }
-  .nx__ctl input { width: min(240px, 60vw); }
-  .nx__ctl input::-webkit-search-cancel-button { display: none; }
-  .nx__ctl :global(.icon) { position: absolute; right: 12px; pointer-events: none; color: var(--theme-foreground-tertiary); }
-  @media (pointer: coarse) { .nx__ctl :is(select, input) { height: 44px; } }
+  :global(.js) .nx__tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .nx__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .nx__chips:not(:has(.nx__chip:not([hidden]))) { display: none; }
+  .nx__chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 8px 0 10px; border: 0; border-radius: 8px; cursor: pointer;
+    background: var(--theme-foreground-primary); color: var(--theme-background-primary); font: 500 13px/1 var(--sans); transition: opacity .15s; }
+  .nx__chip[hidden] { display: none; }
+  .nx__chip:hover { opacity: .82; }
+  .nx__chip:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: 2px; }
+  .nx__q { position: relative; display: flex; align-items: center; }
+  .nx__q > :global(.icon) { position: absolute; left: 10px; pointer-events: none; color: var(--theme-foreground-tertiary); }
+  .nx__q input { width: min(220px, 60vw); height: 28px; padding: 0 30px 0 30px; border: 0; border-radius: 8px; background: var(--theme-background-secondary);
+    color: var(--theme-foreground-primary); font: 400 13px/1 var(--sans); transition: background-color .15s; }
+  .nx__q input::placeholder { color: var(--theme-foreground-tertiary); opacity: 1; }
+  .nx__q input:hover { background: var(--theme-background-tertiary); }
+  .nx__q input:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: 1px; }
+  .nx__q input::-webkit-search-cancel-button { display: none; }
+  .nx__qx { position: absolute; right: 2px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer;
+    background: transparent; color: var(--theme-foreground-secondary); }
+  .nx__qx:hover { background: var(--theme-background-tertiary); color: var(--theme-foreground-primary); }
+  .nx__qx:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: 0; }
+  .nx__qx[hidden] { display: none; }
+  @media (pointer: coarse) {
+    .nx__q input { height: 40px; font-size: 16px; padding-right: 40px; }
+    .nx__qx { right: 6px; width: 30px; height: 30px; }
+    .nx__chip { height: 40px; padding: 0 12px 0 14px; }
+  }
 
-  .nx__tr { display: grid; gap: 4px 24px; padding: 16px 0; border-bottom: 1px solid var(--theme-border-tertiary); color: var(--theme-foreground-primary); text-decoration: none; }
-  .nx__tr[hidden] { display: none; }
+  /* rows: a list (no table roles), the header line is decoration */
   .nx__th { display: none; }
-  .nx__tr--link { position: relative; }
-  .nx__rowlink { color: inherit; text-decoration: none; }
-  .nx__rowlink::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .nx__list { list-style: none; margin: 0; padding: 0; }
+  [data-ntable]:has([data-nt-none]:not([hidden])) .nx__th { display: none; }
+  /* each row bleeds 16px both sides so the hover card does not shift the text; content-visibility skips off-screen rows */
+  .nx__item { position: relative; margin-inline: -16px; padding-inline: 16px; border: 1px solid transparent; border-radius: 8px;
+    content-visibility: auto; contain-intrinsic-block-size: auto 56px; transition: background-color .2s, border-color .2s; }
+  .nx__item[hidden] { display: none; }
+  .nx__item::after { content: ''; position: absolute; left: 16px; right: 16px; bottom: 0; height: 1px; background: var(--theme-border-tertiary); transition: opacity .2s; }
+  .nx__item.is-open { background: var(--theme-background-secondary); border-color: var(--theme-border-tertiary); }
+  .nx__item.is-open::after, .nx__item:has(+ .nx__item.is-open)::after { opacity: 0; }
+  @media (hover: hover) {
+    .nx__item:hover { background: var(--theme-background-secondary); border-color: var(--theme-border-tertiary); }
+    .nx__item:hover::after, .nx__item:has(+ .nx__item:hover)::after { opacity: 0; }
+  }
+  .nx__item:has(.nx__rowlink:focus-visible) { outline: 2px solid var(--theme-focus-ring); outline-offset: -1px; }
+  .nx__row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 't b' 'dt b'; gap: 4px 16px; align-items: center; padding-block: 14px; }
+  .nx__rowlink { position: absolute; inset: 0 -16px; z-index: 1; border-radius: 8px; }
   .nx__rowlink:focus-visible { outline: none; }
-  .nx__tr--link:has(.nx__rowlink:focus-visible) { outline: 2px solid var(--theme-focus-ring); outline-offset: 2px; }
-  .nx__t { font: 600 var(--fs-body-4)/1.35 var(--sans); }
-  .nx__d { color: var(--theme-foreground-secondary); font: 400 var(--fs-body-4)/1.45 var(--sans); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .nx__t { grid-area: t; font: 600 var(--fs-body-4)/1.35 var(--sans); color: var(--theme-foreground-primary);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .nx__d { grid-area: d; display: none; color: var(--theme-foreground-secondary); font: 400 var(--fs-body-4)/1.45 var(--sans); }
+  .nx__c { grid-area: c; display: none; }
+  .nx__dt { grid-area: dt; }
   .nx__c, .nx__dt { font: 400 var(--fs-caption-1)/1.4 var(--sans); color: var(--theme-foreground-tertiary); }
-  .nx__dt { display: inline-flex; align-items: center; gap: 8px; }
-  .nx__dt :global(.icon) { margin-left: auto; opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .4s var(--ease-out-quart); }
+  @media (min-width: 640px) {
+    .nx__row { grid-template-columns: minmax(0, 1fr) auto 40px; grid-template-areas: 't c b' 'd dt b'; column-gap: 24px; }
+    .nx__d { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .nx__c { display: block; }
+    .nx__c, .nx__dt { justify-self: end; }
+  }
   @media (min-width: 900px) {
-    .nx__tr { grid-template-columns: minmax(0, 3.2fr) minmax(0, 4fr) minmax(0, 1.4fr) minmax(0, 1.6fr); align-items: baseline; padding: 14px 8px; margin-inline: -8px; border-radius: 8px; transition: background-color .2s; }
+    .nx__th, .nx__row { grid-template-columns: minmax(0, 3.2fr) minmax(0, 4fr) minmax(0, 1.4fr) minmax(0, 1.4fr) 40px; column-gap: 24px; }
     .nx__th { display: grid; padding-block: 10px; font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--theme-foreground-tertiary); }
-    .nx__d { -webkit-line-clamp: 1; }
-    .nx__tr--link:hover { background: var(--theme-background-secondary); }
-    .nx__tr--link:hover .nx__dt :global(.icon) { opacity: 1; transform: none; }
+    .nx__row { grid-template-areas: 't d c dt b'; padding-block: 16px; }
+    /* one line per cell; clipped cells fade at the edge and pan on hover */
+    .nx__t, .nx__d { display: block; overflow: hidden; white-space: nowrap; }
+    .nx__pan { display: inline-block; }
+    .nx__c, .nx__dt { justify-self: start; }
+    [data-clip] { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+    [data-clip][data-pan='run'] { -webkit-mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+      mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent); }
+    [data-clip][data-pan='end'] { -webkit-mask-image: linear-gradient(to right, transparent, #000 48px); mask-image: linear-gradient(to right, transparent, #000 48px); }
+  }
+
+  /* expander: a 36x18 "···" pill that turns into an inverted ✕ */
+  .nx__xb { grid-area: b; display: none; }
+  :global(.js) .nx__xb { position: relative; z-index: 2; display: grid; place-items: center; width: 40px; height: 28px; padding: 0; border: 0; border-radius: 999px;
+    background: none; color: var(--theme-foreground-secondary); cursor: pointer; }
+  .nx__pill { position: relative; display: grid; place-items: center; width: 36px; height: 18px; border-radius: 999px; border: 1px solid var(--theme-border-tertiary);
+    background: var(--theme-background-tertiary); transition: background-color .2s, color .2s, border-color .2s; }
+  .nx__dots { display: flex; gap: 3px; transition: opacity .15s; }
+  .nx__dots i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; }
+  .nx__pill :global(.icon) { position: absolute; opacity: 0; transition: opacity .15s; }
+  .nx__xb:hover .nx__pill { color: var(--theme-foreground-primary); border-color: var(--theme-border-primary); }
+  .nx__xb[aria-expanded='true'] .nx__pill { background: var(--theme-foreground-primary); border-color: var(--theme-foreground-primary); color: var(--theme-background-primary); }
+  .nx__xb[aria-expanded='true'] .nx__dots { opacity: 0; }
+  .nx__xb[aria-expanded='true'] .nx__pill :global(.icon) { opacity: 1; }
+  .nx__xb:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: 0; }
+  @media (pointer: coarse) { :global(.js) .nx__xb { width: 44px; height: 40px; } }
+
+  .nx__x { height: 0; overflow: hidden; }
+  .nx__x-in { display: grid; gap: 12px; margin-bottom: 16px; padding: 20px; border-radius: 10px; background: var(--theme-background-tertiary); }
+  .nx__x-meta { display: flex; gap: 14px; color: var(--theme-foreground-tertiary); }
+  .nx__x-meta span { color: var(--theme-foreground-secondary); }
+  .nx__x-desc { max-width: 70ch; color: var(--theme-foreground-primary); }
+  .nx__x-h { margin-top: 8px; color: var(--theme-foreground-secondary); }
+  .nx__rel { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .nx__rc { display: grid; gap: 6px; align-content: start; height: 100%; padding: 14px 16px; border-radius: 12px; text-decoration: none; color: var(--theme-foreground-primary);
+    background: var(--theme-background-secondary); }
+  .nx__rc-meta { color: var(--theme-foreground-tertiary); }
+  .nx__rc-t { font: 600 var(--fs-body-4)/1.35 var(--sans); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; transition: color .2s ease-out; }
+  .nx__rc:hover .nx__rc-t { color: var(--theme-foreground-quaternary); }
+  .nx__rc:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: 2px; }
+  @media (min-width: 640px) { .nx__rel { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  /* phones: segmented full width; search full width, Filter and Sort side by side under it */
+  @media (max-width: 639px) {
+    :global(.js) .nx__seg { width: 100%; }
+    .nx__seg-b { flex: 1 1 0; min-width: 0; padding: 0 8px; }
+    .nx__bar { flex-direction: column; align-items: stretch; }
+    :global(.js) .nx__tools { display: grid; grid-template-columns: 1fr 1fr; }
+    .nx__q { grid-column: 1 / -1; order: -1; }
+    .nx__q input { width: 100%; }
+    .nx__chips { grid-column: 1 / -1; order: 5; }
+    .nx__tool :global(.sel), .nx__tool :global(.sel__trigger) { width: 100%; }
+    .nx__tool :global(.sel__trigger) { justify-content: space-between; }
   }
   .nx__more { display: flex; justify-content: center; margin-top: 32px; }
   .nx__more [hidden] { display: none; }

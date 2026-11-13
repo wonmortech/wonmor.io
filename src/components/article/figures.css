@@ -1,0 +1,31 @@
+/* Numbered figures in post bodies (tools/rehype-figures.mjs): a mat that breaks out of the reading column on wide
+   screens, an inner panel, and a "FIGURE n" caption on a 2/6 split. Imported by the research and news article pages. */
+.prose .fig { margin: 2.25em 0; padding: 16px; border-radius: var(--radius-media); background: var(--theme-background-tertiary); display: grid; gap: 14px; }
+.prose .fig__panel { min-width: 0; border-radius: 2px; background: var(--theme-background-primary); }
+.prose .fig--table .fig__panel { padding: 4px 16px 8px; overflow-x: auto; }
+.prose .fig--table .fig__panel:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: 2px; }
+.prose .fig table { margin: 0; overflow: visible; }
+.prose .fig tbody tr:last-child :is(td, th) { border-bottom: 0; }
+.prose .fig .flow { margin: 0; border-radius: 2px; background: var(--theme-background-primary); }
+.prose .fig--image .fig__panel { background: none; }
+.prose .fig--image img { display: block; width: 100%; height: auto; border-radius: 2px; }
+.prose .fig__cap { display: grid; gap: 4px 16px; align-items: baseline; }
+.prose .fig__label { font: 400 12px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--theme-foreground-primary); }
+.prose .fig__text { font: 400 var(--fs-caption-1)/1.5 var(--sans); color: var(--theme-foreground-tertiary); text-wrap: pretty; }
+
+/* phones: the mat bleeds a little into the page margin so a table keeps its width */
+@media (max-width: 767px) {
+  .prose .fig { margin-inline: -12px; padding: 12px; }
+  .prose .fig--table .fig__panel { padding: 0 12px 4px; }
+}
+@media (min-width: 768px) {
+  .prose .fig { padding: 24px; gap: 16px; }
+  .prose .fig__cap { grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); }
+}
+/* >=1280: the figure spans grid columns 3–10 around the 4–9 reading column (838px at most), centred on it */
+@media (min-width: 1280px) {
+  .prose .fig { --fig-w: min(838px, calc(100% * 4 / 3 + var(--grid-gutter) / 3)); width: var(--fig-w); margin-inline: calc((100% - var(--fig-w)) / 2); }
+}
+@media print {
+  .prose .fig { width: auto; margin-inline: 0; padding: 0; background: none; break-inside: avoid; }
+}

@@ -76,6 +76,7 @@ const items = lead.map((p) => ({
   @media (min-width: 768px) { .ap__prods { grid-template-columns: repeat(3, 1fr); } }
   .ap__prod { display: grid; gap: 8px; text-decoration: none; color: inherit; }
   .ap__pimg { display: block; aspect-ratio: 16 / 10; border-radius: var(--radius-media); overflow: hidden; background: #141413; margin-bottom: 6px; }
-  .ap__pimg img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .8s var(--ease-out-quart); }
-  @media (hover: hover) { .ap__prod:hover img { transform: scale(1.03); } }
+  .ap__pimg img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .ap__prod .t-headline-5 { transition: color .2s ease-out; }
+  @media (hover: hover) { .ap__prod:hover .t-headline-5 { color: var(--theme-foreground-quaternary); } }
 </style>

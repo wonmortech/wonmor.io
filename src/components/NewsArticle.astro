@@ -1,15 +1,32 @@
 ---
-/* Article page (DESIGN.md §5.11): centred sans title, serif reading column, meta panel on the right. */
+/* Article page (DESIGN.md §5.11): centred sans title, serif reading column, meta panel on the right.
+   3+ sections: a sticky section bar; wide screens: a sticky related rail under the meta, otherwise related posts after the text. */
+import { getCollection, render } from 'astro:content';
 import Icon from './Icon.astro';
-import NewsCard from './NewsCard.astro';
+import SectionBar from './article/SectionBar.astro';
+import Related, { type NewsLite } from './article/Related.astro';
+import './article/figures.css';
 import { formatDate, href, type Locale } from '../i18n/config';
 import { categories } from '../i18n/home';
 import { ui } from '../i18n/ui';
 
 interface Props { locale: Locale; title: string; description: string; date: Date; category: string; product?: string;
   links: { label: string; text: string; href: string; kind: 'external' | 'download' | 'internal' }[];
-  related: { slug: string; title: string; description: string; date: Date; category: string; links: any[] }[] }
-const { locale, title, description, date, category, links, related } = Astro.props;
+  /** ignored: related posts are chosen here by product and category */
+  related?: unknown[] }
+const { locale, title, description, date, category, links } = Astro.props;
+
+/* This post's entry (the page passes its fields, not its id): its sections, product, and the related posts —
+   same product first, then same category, then the newest; newest first; never this post. */
+const all = (await getCollection('news', (e) => e.id.endsWith(`/${locale}`))).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const self = all.find((e) => e.data.title === title && e.data.date.getTime() === date.getTime());
+const product = Astro.props.product ?? self?.data.product;
+const toc = self ? (await render(self)).headings.filter((h) => h.depth === 2) : [];
+const hasBar = toc.length >= 3;
+const rank = (e: (typeof all)[number]) => (product && e.data.product === product ? 2 : 0) + (e.data.category === category ? 1 : 0);
+const related: NewsLite[] = all.filter((e) => e !== self).sort((a, b) => rank(b) - rank(a)).slice(0, 2)
+  .map((e) => ({ slug: e.id.split('/')[0], title: e.data.title, description: e.data.description, date: e.data.date, category: e.data.category, links: e.data.links }));
+const moreHref = `${href(locale, '/news')}?group=${category}`;
 ---
 <article class="art">
   <header class="container art__head page-top">
@@ -17,8 +34,11 @@ const { locale, title, description, date, category, links, related } = Astro.pro
     <h1 class="art__title">{title}</h1>
     <p class="art__dek t-body-1 fg-2">{description}</p>
   </header>
+  <div class:list={['art__main', { 'has-secbar': hasBar }]}>
+  {hasBar && <SectionBar locale={locale} headings={toc} />}
   <div class="container art__grid">
     <div class="art__body prose"><slot /></div>
+    <div class="art__side">
     <aside class="art__meta t-caption" aria-label={ui.published[locale]}>
       <dl>
         <div><dt>{ui.published[locale]}</dt><dd>{formatDate(date, locale)}</dd></div>
@@ -28,15 +48,11 @@ const { locale, title, description, date, category, links, related } = Astro.pro
         ))}
       </dl>
     </aside>
+    <Related locale={locale} variant="rail" kind="news" posts={related} moreHref={moreHref} />
+    </div>
   </div>
-  {related.length > 0 && (
-    <section class="container section-lg" aria-labelledby="rel-h">
-      <div class="rule-row"><h2 class="t-caption-bold" id="rel-h">{ui.related[locale]}</h2></div>
-      <div class="art__related">
-        {related.map((r) => <NewsCard locale={locale} slug={r.slug} title={r.title} description={r.description} date={r.date} category={r.category} links={r.links} cta={ui.readPost[locale]} />)}
-      </div>
-    </section>
-  )}
+  </div>
+  <Related locale={locale} variant="section" kind="news" posts={related} moreHref={moreHref} />
 </article>
 
 <style>
@@ -50,14 +66,12 @@ const { locale, title, description, date, category, links, related } = Astro.pro
   @media (min-width: 1024px) {
     .art__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }
     .art__body { grid-column: 4 / span 6; }
-    .art__meta { grid-column: 11 / span 2; }
+    .art__side { grid-column: 11 / span 2; align-self: stretch; }
   }
   .art__body { max-width: var(--reading-width); width: 100%; margin-inline: auto; }
   .art__meta dl > div { display: grid; gap: 2px; padding: 12px 0; border-top: 1px solid var(--theme-border-secondary); }
   .art__meta dt { color: var(--theme-foreground-primary); }
   .art__meta dd { color: var(--theme-foreground-tertiary); display: flex; align-items: center; gap: 4px; }
-  .art__related { display: grid; gap: var(--grid-gutter); margin-top: 24px; }
-  @media (min-width: 1024px) { .art__related { grid-template-columns: repeat(2, 1fr); } }
 
   .prose :global(p), .prose :global(li) { font: 400 clamp(17px, calc(17px + 2 * ((100vw - 390px) / 1530)), 19px)/1.6 var(--serif); font-variation-settings: 'opsz' 16; color: var(--theme-foreground-primary); text-wrap: pretty; }
   .prose :global(p + p) { margin-top: 1.1em; }

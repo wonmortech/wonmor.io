@@ -116,7 +116,10 @@ a { color: inherit; }
                w-rise .8s var(--ease-rise) var(--d, 0ms) backwards,
                w-unblur .5s ease var(--d, 0ms) backwards;
   }
-  .js .reveal-up { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-opacity), transform .9s var(--ease-rise); }
+  /* teardown #14: items rise 10px in .5s, staggered 40ms by --i; headings marked .reveal-fade only fade */
+  .js .reveal-up { opacity: 0; transform: translateY(10px); transition: opacity .5s var(--ease-opacity) calc(var(--i, 0) * 40ms), transform .5s cubic-bezier(.16, 1, .3, 1) calc(var(--i, 0) * 40ms); }
+  .js .reveal-fade { opacity: 0; transition: opacity 1.1s var(--ease-opacity); }
+  .js .reveal-fade.is-in { opacity: 1; }
   .js .reveal-up.is-in { opacity: 1; transform: none; }
 }
 @keyframes w-fade { from { opacity: 0; } }

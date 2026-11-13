@@ -1,7 +1,7 @@
 ---
 /* Featured block (anthropic.com "Features" / engineering lead pattern, our own art): text left with a 01 / 04 pager and
-   arrows, a large picture right. One slide at a time, cross-faded; swipe on touch, arrow keys inside. Pictures are real
-   product screenshots when the item has one, otherwise a Wonmor plate for its subject. */
+   arrows, a large picture right. One slide at a time: the text swaps at once and only the picture fades; swipe on
+   touch, arrow keys inside. Pictures are real product screenshots when the item has one, otherwise a Wonmor plate for its subject. */
 import Icon from '../Icon.astro';
 import Plate, { type Motif } from '../Plate.astro';
 import { formatDate, type Locale } from '../../i18n/config';
@@ -46,9 +46,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
 <style>
   .fc { position: relative; display: grid; }
   .fc__stage { display: grid; }
-  .fc__slide { grid-area: 1 / 1; display: grid; gap: 24px; align-content: start; visibility: hidden; opacity: 0; }
-  .fc__slide[data-active] { visibility: visible; opacity: 1; }
-  :global(html:not(.js)) .fc__slide:first-child { visibility: visible; opacity: 1; }
+  .fc__slide { grid-area: 1 / 1; display: grid; gap: 24px; align-content: start; visibility: hidden; }
+  .fc__slide[data-active] { visibility: visible; }
+  :global(html:not(.js)) .fc__slide:first-child { visibility: visible; }
   .fc__art { order: -1; display: block; border-radius: var(--radius-media); overflow: hidden; aspect-ratio: 16 / 9; background: var(--theme-background-secondary); }
   .fc__art img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
   .fc__art :global(.plate) { height: 100%; }
@@ -62,21 +62,15 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .fc__pager { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
   .fc__count { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--theme-foreground-tertiary); min-width: 5.5em; text-align: center; }
   .fc__count [data-index] { color: var(--theme-foreground-primary); }
-  .fc__btn { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
-    border: 1px solid var(--theme-border-secondary); background: transparent; color: var(--theme-foreground-primary); transition: background-color .2s, border-color .2s, transform .3s var(--ease-out-quart); }
-  .fc__btn:hover { background: var(--theme-background-secondary); border-color: var(--theme-border-primary); }
-  .fc__btn[data-prev]:hover { transform: translateX(-2px); }
-  .fc__btn[data-next]:hover { transform: translateX(2px); }
-  @media (pointer: coarse) { .fc__btn { width: 44px; height: 44px; } }
+  .fc__btn { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--theme-border-secondary); background: var(--theme-background-secondary); color: var(--theme-foreground-primary); transition: background-color .2s, box-shadow .2s; }
+  .fc__btn:hover { background: var(--theme-background-tertiary); box-shadow: 0 0 0 1px var(--theme-border-secondary); }
+  @media (pointer: coarse) { .fc__btn { width: 40px; height: 40px; } }
+  /* the text swaps at once (no crossfade, no rise); only the picture fades, and it never zooms */
   @media (prefers-reduced-motion: no-preference) {
-    .fc__slide { transition: opacity .6s var(--ease-out-quart), visibility 0s .6s; }
-    .fc__slide[data-active] { transition: opacity .6s var(--ease-out-quart), visibility 0s; }
-    .fc__slide .fc__text > * { transform: translateY(10px); transition: transform .7s var(--ease-out-quart); }
-    .fc__slide[data-active] .fc__text > * { transform: none; }
-    .fc__slide[data-active] .fc__text > :nth-child(2) { transition-delay: 60ms; }
-    .fc__slide[data-active] .fc__text > :nth-child(3) { transition-delay: 120ms; }
-    .fc__art :global(svg), .fc__art img { transform: scale(1.04); transition: transform 1.4s var(--ease-out-quart); }
-    .fc__slide[data-active] .fc__art :global(svg), .fc__slide[data-active] .fc__art img { transform: none; }
+    .fc__art { transition: opacity .4s var(--ease-out-quart), visibility 0s .4s; }
+    .fc__slide:not([data-active]) .fc__art { opacity: 0; visibility: hidden; }
+    .fc__slide[data-active] .fc__art { opacity: 1; visibility: visible; transition: opacity .4s var(--ease-out-quart), visibility 0s; }
   }
   @media (min-width: 1024px) {
     .fc { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: var(--grid-gutter); }

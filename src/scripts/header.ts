@@ -103,15 +103,21 @@ function onScroll() {
 addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
 onScroll();
 
-/* ---------------- footer swap ---------------- */
-const footer = document.querySelector('[data-footer]');
-if (header && footer && 'IntersectionObserver' in window) {
+/* ---------------- header follows dark bands ----------------
+   The header turns slate while a full-width dark band (the footer, a section.theme-slate or anything
+   marked data-header-theme="slate") passes under it: a thin observation strip at header height. */
+const bands = [...document.querySelectorAll<HTMLElement>('[data-footer], section.theme-slate, [data-header-theme="slate"]')];
+if (header && bands.length && 'IntersectionObserver' in window) {
   let io: IntersectionObserver | undefined;
+  const under = new Set<Element>();
   const watch = () => {
     io?.disconnect();
-    io = new IntersectionObserver(([e]) => header.classList.toggle('theme-slate', e.isIntersecting),
-      { rootMargin: `0px 0px -${Math.max(0, innerHeight - 84)}px 0px` });
-    io.observe(footer);
+    under.clear();
+    io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
+      header.classList.toggle('theme-slate', under.size > 0);
+    }, { rootMargin: `0px 0px -${Math.max(0, innerHeight - 84)}px 0px` });
+    bands.forEach((b) => io!.observe(b));
   };
   watch();
   addEventListener('resize', watch, { passive: true });
@@ -209,7 +215,7 @@ panel?.addEventListener('keydown', (e) => {
 });
 
 /* ---------------- reveal-on-scroll ---------------- */
-const ups = document.querySelectorAll('.reveal-up');
+const ups = document.querySelectorAll('.reveal-up, .reveal-fade');
 if (ups.length && 'IntersectionObserver' in window) {
   const ro = new IntersectionObserver((entries) => {
     for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); ro.unobserve(e.target); }
