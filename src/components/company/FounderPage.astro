@@ -1,5 +1,5 @@
 ---
-/* /company/founder: bio, career, what the work covers, open source, links. Monogram instead of a photo. */
+/* /company/founder: bio, career, what the work covers, open source, links. Portrait from public/company (440/512 webp, 4:5). */
 import Icon from '../Icon.astro';
 import { href, type Locale } from '../../i18n/config';
 import { pageByKey, type PageDef } from '../../i18n/pages';
@@ -11,7 +11,7 @@ const company = pageByKey['company'];
 ---
 <article class="fd">
   <header class="container page-top fd__head">
-    <div class="fd__mono" aria-hidden="true"><span>NX</span></div>
+    <img class="fd__photo" src="/company/founder-440.webp" srcset="/company/founder-440.webp 440w, /company/founder-512.webp 512w" sizes="(min-width: 1220px) 220px, (min-width: 768px) 18vw, 140px" width="440" height="550" alt={F.photoAlt[locale]} fetchpriority="high" decoding="async" />
     <div>
       <p class="t-caption fg-3"><a class="link-quiet" href={href(locale, company.path)}>{company.title[locale]}</a></p>
       <h1 class="t-headline-2 fd__name">{F.name}</h1>
@@ -28,6 +28,22 @@ const company = pageByKey['company'];
     <div class="rule-row"><h2 class="t-caption-bold" id="fd-c">{F.careerTitle[locale]}</h2></div>
     <ol class="fd__career" role="list">
       {F.career.map((c) => (
+        <li class="fd__job reveal-up">
+          <span class="t-caption fg-3 fd__period">{c.period}</span>
+          <div class="fd__job-main">
+            <h3 class="t-headline-5">{c.org}</h3>
+            <p class="t-caption-bold fg-2">{c.role[locale]}</p>
+            <p class="t-body-4 fg-2">{c.text[locale]}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container section-lg" aria-labelledby="fd-e">
+    <div class="rule-row"><h2 class="t-caption-bold" id="fd-e">{F.educationTitle[locale]}</h2></div>
+    <ol class="fd__career" role="list">
+      {F.education.map((c) => (
         <li class="fd__job reveal-up">
           <span class="t-caption fg-3 fd__period">{c.period}</span>
           <div class="fd__job-main">
@@ -66,10 +82,7 @@ const company = pageByKey['company'];
 <style>
   .fd__head { display: grid; gap: 32px; align-items: end; }
   @media (min-width: 768px) { .fd__head { grid-template-columns: auto 1fr; gap: 48px; } }
-  .fd__mono { position: relative; width: clamp(140px, 18vw, 220px); aspect-ratio: 4 / 5; border-radius: var(--radius-media); overflow: hidden;
-    display: grid; place-items: end start; padding: 16px; background: linear-gradient(160deg, var(--ill-oat), var(--ill-clay)); }
-  .fd__mono::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(20,20,19,.06) 0 1px, transparent 1px 9px); }
-  .fd__mono span { position: relative; z-index: 1; font: 500 clamp(44px, 6vw, 72px)/1 var(--serif); color: #141413; letter-spacing: -.02em; }
+  .fd__photo { display: block; width: clamp(140px, 18vw, 220px); height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-media); background: var(--theme-background-tertiary); }
   .fd__name { margin: 12px 0 8px; }
   .fd__split { padding-block: 56px 0; }
   .fd__bio { max-width: 34em; font: 400 clamp(22px, calc(22px + 8 * ((100vw - 390px) / 1530)), 30px)/1.4 var(--serif); font-variation-settings: 'opsz' 32; text-wrap: pretty; }

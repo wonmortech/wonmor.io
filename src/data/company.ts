@@ -44,6 +44,7 @@ export const about = {
 export const founder = {
   name: 'Nosirbek Xakimov',
   role: { en: 'Founder and engineer', uz: 'Asoschi va muhandis', ru: 'Основатель и инженер' },
+  photoAlt: { en: 'Nosirbek Xakimov in black, seated on a stool in an open steppe, a black horse standing behind him', uz: 'Nosirbek Xakimov qora kiyimda, ochiq dashtda kursida oʻtiribdi, ortida qora ot turibdi', ru: 'Носирбек Хакимов в чёрном сидит на табурете в открытой степи, за ним стоит чёрная лошадь' },
   bio: {
     en: 'Nosirbek Xakimov is a full-stack software engineer from Tashkent who builds and runs the dtwin ecosystem. The work spans .NET and React products, Rust input methods, three.js scenes, Telegram bots, MCP servers for AI agents and the self-hosted infrastructure underneath them. Before dtwin came five years of .NET work in education, payments, banking and e-invoicing.',
     uz: 'Nosirbek Xakimov — Toshkentlik full-stack dasturiy muhandis, dtwin ekotizimini yaratadi va yuritadi. Ish .NET va React mahsulotlari, Rust kiritish usullari, three.js sahnalari, Telegram botlar, AI agentlar uchun MCP serverlar va ularning ostidagi oʻz infratuzilmasini qamrab oladi. dtwinʼdan oldin taʼlim, toʻlovlar, bank va elektron hisob-faktura sohalarida besh yillik .NET tajribasi bor.',
@@ -57,12 +58,19 @@ export const founder = {
       text: { en: 'Full-stack and DevOps engineering on a national e-invoicing platform.', uz: 'Milliy elektron hisob-faktura platformasida full-stack va DevOps muhandislik.', ru: 'Full-stack и DevOps-разработка национальной платформы электронных счетов-фактур.' } },
     { period: '2022 — 2026', org: 'Fincube', role: { en: 'Full-stack .NET developer', uz: 'Full-stack .NET dasturchi', ru: 'Full-stack .NET-разработчик' },
       text: { en: 'Client software for an insurance company and a bank of the APEX group: workflow automation, integrations and internal systems.', uz: 'APEX guruhidagi sugʻurta kompaniyasi va bank uchun dasturlar: ish jarayonlarini avtomatlashtirish, integratsiyalar va ichki tizimlar.', ru: 'Программы для страховой компании и банка группы APEX: автоматизация процессов, интеграции и внутренние системы.' } },
-    { period: '2022', org: 'UZCARD', role: { en: '.NET developer', uz: '.NET dasturchi', ru: '.NET-разработчик' },
-      text: { en: 'Work at the national interbank payment card system.', uz: 'Milliy banklararo toʻlov kartalari tizimida ish.', ru: 'Работа в национальной межбанковской платёжной системе.' } },
+    { period: '2022', org: 'UZCARD · Taqsim', role: { en: '.NET developer', uz: '.NET dasturchi', ru: '.NET-разработчик' },
+      text: { en: 'Built Taqsim.uz for the national interbank payment card system: .NET 6 microservices with email, SMS and one-time-code services, PostgreSQL, unit and integration tests.', uz: 'Milliy banklararo toʻlov kartalari tizimi uchun Taqsim.uz qurildi: .NET 6 mikroservislari, email, SMS va bir martalik kod servislari, PostgreSQL, unit va integratsion testlar.', ru: 'Разработка Taqsim.uz для национальной межбанковской платёжной системы: микросервисы на .NET 6, сервисы email, SMS и одноразовых кодов, PostgreSQL, модульные и интеграционные тесты.' } },
     { period: '2021 — 2022', org: 'Ilmhub IT School', role: { en: 'Software developer and C#/.NET instructor', uz: 'Dasturchi va C#/.NET oʻqituvchisi', ru: 'Разработчик и преподаватель C#/.NET' },
       text: { en: 'Taught the C#/.NET bootcamp and contributed to the school’s open-source student projects.', uz: 'C#/.NET bootcampʼida dars berdi va maktabning ochiq kodli talaba loyihalariga hissa qoʻshdi.', ru: 'Преподавание на буткемпе C#/.NET и участие в открытых студенческих проектах школы.' } },
     { period: '2021', org: 'Najot Taʼlim', role: { en: 'Student', uz: 'Talaba', ru: 'Обучение' },
       text: { en: 'C and Python foundations, then competitive programming on RoboContest and LeetCode.', uz: 'C va Python asoslari, keyin RoboContest va LeetCodeʼda musobaqaviy dasturlash.', ru: 'Основы C и Python, затем олимпиадное программирование на RoboContest и LeetCode.' } },
+  ],
+  educationTitle: { en: 'Education', uz: 'Taʼlim', ru: 'Образование' },
+  education: [
+    { period: '2020 — 2024', org: 'Miras University', role: { en: 'Faculty of Business and Finance', uz: 'Biznes va moliya fakulteti', ru: 'Факультет бизнеса и финансов' },
+      text: { en: 'Shymkent, Kazakhstan.', uz: 'Shymkent, Qozogʻiston.', ru: 'Шымкент, Казахстан.' } },
+    { period: '2021 — 2022', org: 'Ilmhub IT School', role: { en: '.NET bootcamp', uz: '.NET bootcamp', ru: 'Буткемп .NET' },
+      text: { en: 'Tashkent. Then stayed on as a developer and instructor.', uz: 'Toshkent. Soʻng shu yerda dasturchi va oʻqituvchi boʻlib qoldi.', ru: 'Ташкент. Затем остался там разработчиком и преподавателем.' } },
   ],
   skillsTitle: { en: 'What the work covers', uz: 'Ish nimalarni qamraydi', ru: 'Что охватывает работа' },
   skills: [
@@ -113,9 +121,9 @@ export const timeline: { date: string; kind: TLKind; title: T; text?: T; href?: 
   { date: '2026-04-01', kind: 'career', title: { en: 'Faktura.uz: full-stack engineer and DevOps', uz: 'Faktura.uz: full-stack muhandis va DevOps', ru: 'Faktura.uz: full-stack инженер и DevOps' } },
   { date: '2022-10-01', kind: 'career', title: { en: 'Fincube: full-stack .NET developer', uz: 'Fincube: full-stack .NET dasturchi', ru: 'Fincube: full-stack .NET-разработчик' } },
   { date: '2022-08-01', kind: 'career', title: { en: '“The Standard”, translated into Uzbek', uz: '“The Standard” oʻzbek tiliga tarjima qilindi', ru: '«The Standard» переведён на узбекский' } },
-  { date: '2022-04-01', kind: 'career', title: { en: 'UZCARD: .NET developer', uz: 'UZCARD: .NET dasturchi', ru: 'UZCARD: .NET-разработчик' } },
+  { date: '2022-06-01', kind: 'career', title: { en: 'UZCARD: .NET developer, Taqsim.uz', uz: 'UZCARD: .NET dasturchi, Taqsim.uz', ru: 'UZCARD: .NET-разработчик, Taqsim.uz' } },
   { date: '2021-10-01', kind: 'career', title: { en: 'Ilmhub IT School: developer and C#/.NET instructor', uz: 'Ilmhub IT School: dasturchi va C#/.NET oʻqituvchisi', ru: 'Ilmhub IT School: разработчик и преподаватель C#/.NET' } },
-  { date: '2021-05-01', kind: 'career', title: { en: 'First code: C and Python at Najot Taʼlim', uz: 'Birinchi kod: Najot Taʼlimda C va Python', ru: 'Первый код: C и Python в Najot Taʼlim' } },
+  { date: '2021-06-01', kind: 'career', title: { en: 'First code: C and Python at Najot Taʼlim', uz: 'Birinchi kod: Najot Taʼlimda C va Python', ru: 'Первый код: C и Python в Najot Taʼlim' } },
 ];
 export const timelineKinds: Record<TLKind, T> = {
   career: { en: 'Career', uz: 'Karyera', ru: 'Карьера' },
