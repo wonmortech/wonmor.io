@@ -10,7 +10,7 @@
 .prose .fig--image .fig__panel { background: none; }
 .prose .fig--image img { display: block; width: 100%; height: auto; border-radius: 2px; }
 .prose .fig__cap { display: grid; gap: 4px 16px; align-items: baseline; }
-.prose .fig__label { font: 400 var(--fs-caption-2)/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--theme-foreground-primary); }
+.prose .fig__label { font: 400 12px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--theme-foreground-primary); }
 .prose .fig__text { font: 400 var(--fs-caption-1)/1.5 var(--sans); color: var(--theme-foreground-tertiary); text-wrap: pretty; }
 
 /* phones: the mat bleeds a little into the page margin so a table keeps its width */
