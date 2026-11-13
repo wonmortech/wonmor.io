@@ -1,19 +1,34 @@
 ---
 /* Long-form research/engineering post: serif column, sticky contents on the left, meta on the right,
-   then "Reproduce this", sources and more from the same area. */
+   then "Reproduce this", sources and related posts.
+   3+ sections: a sticky section bar replaces the left contents; wide screens get a sticky related rail under the meta. */
+import { getCollection } from 'astro:content';
 import Icon from '../Icon.astro';
-import PostRow, { type PostLite } from './PostRow.astro';
+import SectionBar from '../article/SectionBar.astro';
+import Related from '../article/Related.astro';
+import '../article/figures.css';
+import type { PostLite } from './PostRow.astro';
 import { formatDate, href, type Locale } from '../../i18n/config';
 import { pageByKey } from '../../i18n/pages';
-import { areaPageKey, researchUi as R, type Area } from '../../data/research';
+import { areaPageKey, readingMinutes, researchUi as R, type Area } from '../../data/research';
 import { founder } from '../../data/company';
 interface Props { locale: Locale; post: PostLite; headings: { depth: number; slug: string; text: string }[]; source: string[];
   reproduce?: { repo?: string; commit?: string; note?: string; commands: string[] }; more: PostLite[] }
-const { locale, post, headings, source, reproduce, more } = Astro.props;
+const { locale, post, headings, source, reproduce } = Astro.props; // `more` is superseded by the related posts below
 const areaPg = pageByKey[areaPageKey(post.area as Area)];
 const kindPg = post.kind === 'engineering' ? pageByKey['engineering'] : pageByKey['research'];
 const toc = headings.filter((h) => h.depth === 2);
 const isUrl = (s: string) => /^https?:\/\//.test(s);
+const hasBar = toc.length >= 3;
+
+/* Related: same area and kind first, then same area, then same kind; newest first; never this post. */
+const pool = (await getCollection('research', (e) => e.id.endsWith(`/${locale}`) && e.id.split('/')[0] !== post.slug))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const rank = (e: (typeof pool)[number]) => (e.data.area === post.area ? 2 : 0) + (e.data.kind === post.kind ? 1 : 0);
+const related: PostLite[] = pool.filter((e) => rank(e) > 0).sort((a, b) => rank(b) - rank(a)).slice(0, 2)
+  .map((e) => ({ slug: e.id.split('/')[0], title: e.data.title, description: e.data.description, date: e.data.date, kind: e.data.kind,
+    area: e.data.area as Area, featured: e.data.featured, minutes: readingMinutes(e.body) }));
+const moreHref = href(locale, post.kind === 'engineering' ? kindPg.path : areaPg.path);
 ---
 <article class="ra">
   <header class="container page-top ra__head">
@@ -23,14 +38,17 @@ const isUrl = (s: string) => /^https?:\/\//.test(s);
     <p class="t-caption fg-3"><time datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date, locale)}</time> · {post.minutes} {R.read[locale]}</p>
   </header>
 
+  <div class:list={['ra__main', { 'has-secbar': hasBar }]}>
+  {hasBar && <SectionBar locale={locale} headings={toc} />}
   <div class="container ra__grid">
-    {toc.length > 1 && (
+    {toc.length > 1 && !hasBar && (
       <nav class="ra__toc t-caption" aria-labelledby="ra-toc">
         <p class="t-caption-bold" id="ra-toc">{R.contents[locale]}</p>
         <ol role="list">{toc.map((h) => <li><a class="link-quiet" href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
       </nav>
     )}
     <div class="ra__body prose"><slot /></div>
+    <div class="ra__side">
     <aside class="ra__meta t-caption" aria-label={R.published[locale]}>
       <dl>
         <div><dt>{R.published[locale]}</dt><dd>{formatDate(post.date, locale)}</dd></div>
@@ -39,6 +57,9 @@ const isUrl = (s: string) => /^https?:\/\//.test(s);
         <div><dt>{R.type[locale]}</dt><dd>{R[post.kind][locale]}</dd></div>
       </dl>
     </aside>
+    <Related locale={locale} variant="rail" kind="research" posts={related} moreHref={moreHref} />
+    </div>
+  </div>
   </div>
 
   {reproduce && reproduce.commands.length > 0 && (
@@ -65,12 +86,7 @@ const isUrl = (s: string) => /^https?:\/\//.test(s);
     </ol>
   </section>
 
-  {more.length > 0 && (
-    <section class="container section-lg" aria-labelledby="ra-more">
-      <div class="rule-row"><h2 class="t-caption-bold" id="ra-more">{R.more[locale]}</h2><a class="t-caption link-quiet fg-3" href={href(locale, areaPg.path)}>{areaPg.title[locale]}</a></div>
-      <ol class="ra__more" role="list">{more.map((p) => <PostRow locale={locale} post={p} />)}</ol>
-    </section>
-  )}
+  <Related locale={locale} variant="section" kind="research" posts={related} moreHref={moreHref} />
 </article>
 
 <style>
@@ -83,7 +99,7 @@ const isUrl = (s: string) => /^https?:\/\//.test(s);
     .ra__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); align-items: start; }
     .ra__toc { grid-column: 1 / span 2; position: sticky; top: 96px; }
     .ra__body { grid-column: 4 / span 6; grid-row: 1; }
-    .ra__meta { grid-column: 11 / span 2; grid-row: 1; }
+    .ra__side { grid-column: 11 / span 2; grid-row: 1; align-self: stretch; }
   }
   .ra__toc ol { list-style: none; display: grid; gap: 10px; margin-top: 14px; padding-left: 12px; border-left: 1px solid var(--theme-border-secondary); }
   .ra__toc a { color: var(--theme-foreground-secondary); }
@@ -103,6 +119,5 @@ const isUrl = (s: string) => /^https?:\/\//.test(s);
   .ra__rep-meta a { color: inherit; }
   .ra__src-h { padding-top: 16px; border-top: 1px solid var(--theme-border-secondary); }
   .ra__src { list-style: decimal; padding-left: 1.4em; margin-top: 14px; display: grid; gap: 6px; color: var(--theme-foreground-tertiary); word-break: break-word; }
-  .ra__more { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
 
 </style>

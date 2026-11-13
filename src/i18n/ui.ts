@@ -66,6 +66,11 @@ export const ui = {
   rights: { en: 'Wonmor. Independent studio.', uz: 'Wonmor. Mustaqil studiya.', ru: 'Wonmor. Независимая студия.' },
   social: { en: 'Social', uz: 'Ijtimoiy tarmoqlar', ru: 'Соцсети' },
   searchEmpty: { en: 'Type to search pages and posts.', uz: 'Sahifa va maqolalarni qidirish uchun yozing.', ru: 'Начните вводить, чтобы найти страницы и статьи.' },
+  /* article page: sticky section bar and related rail (src/components/article/*) */
+  articleSections: { en: 'Sections of this article', uz: 'Maqola boʻlimlari', ru: 'Разделы статьи' },
+  articleAllSections: { en: 'All sections', uz: 'Barcha boʻlimlar', ru: 'Все разделы' },
+  articleRelated: { en: 'Related posts', uz: 'Bogʻliq maqolalar', ru: 'Похожие материалы' },
+  articleViewMore: { en: 'View more', uz: 'Yana koʻrish', ru: 'Смотреть ещё' },
 } satisfies Record<string, T>;
 
 export type UiKey = keyof typeof ui;
