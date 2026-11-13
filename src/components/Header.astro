@@ -14,6 +14,15 @@ const isActive = (m: NavMenu) => {
   if (m.href) return here.startsWith(m.href);
   return (m.items ?? []).some((it) => 'key' in it && here.startsWith(pageByKey[it.key].path + '/'));
 };
+/* Theme swatches: page colour, then accent. "auto" follows the system. */
+const themes = [
+  { key: 'auto', name: ui.themeAuto, a: '#faf9f5', b: '#1a1918' },
+  { key: 'light', name: ui.themeLight, a: '#faf9f5', b: '#141413' },
+  { key: 'dark', name: ui.themeDark, a: '#1a1918', b: '#faf9f5' },
+  { key: 'ink', name: ui.themeInk, a: '#0b0d24', b: '#2969ff' },
+  { key: 'blueprint', name: ui.themeBlueprint, a: '#f5f8ff', b: '#2969ff' },
+  { key: 'cobalt', name: ui.themeCobalt, a: '#1a4fd6', b: '#ffffff' },
+];
 const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeNames[l], short: localeShort[l] }));
 ---
 <header class="site-header" data-header>
@@ -41,7 +50,18 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
         </div>
       </div>
       <div class="hdr__icons">
-        <button class="btn btn--tertiary btn--small btn--rounded btn--icon hdr__theme" type="button" data-theme-toggle aria-pressed="false" aria-label={ui.darkTheme[locale]} hidden><Icon name="moon" class="hdr__moon" /><Icon name="sun" class="hdr__sun" /></button>
+        <div class="nav-dd hdr__theme" data-dd data-theme-dd hidden>
+          <button class="btn btn--tertiary btn--small btn--rounded btn--icon nav-dd__trigger" type="button" aria-expanded="false" aria-controls="dd-theme" aria-label={ui.theme[locale]}><span class="hdr__swatch" aria-hidden="true"></span></button>
+          <div class="nav-dd__popup nav-dd__popup--end" id="dd-theme" hidden>
+            <ul role="list">
+              {themes.map((t) => (
+                <li><button class="nav-item hdr__theme-opt" type="button" data-theme-set={t.key} aria-pressed="false">
+                  <span class="hdr__theme-name"><span class="hdr__dot" style={`--a:${t.a};--b:${t.b}`} aria-hidden="true"></span>{t.name[locale]}</span><Icon name="check" class="hdr__theme-check" />
+                </button></li>
+              ))}
+            </ul>
+          </div>
+        </div>
         <button class="btn btn--tertiary btn--small btn--rounded btn--icon" type="button" data-search-open aria-label={ui.search[locale]} aria-controls="hdr-search" aria-expanded="false"><Icon name="search" /></button>
         <button class="btn btn--tertiary btn--small btn--rounded btn--icon" type="button" data-menu-open aria-label={ui.openMenu[locale]} aria-controls="site-menu" aria-expanded="false"><Icon name="menu" /></button>
       </div>
@@ -119,6 +139,17 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
   .nav-item:focus-visible { outline: 2px solid var(--theme-focus-ring); outline-offset: -2px; }
   .nav-item[aria-current] { color: var(--theme-foreground-primary); font-weight: 700; }
   .nav-item .icon { flex: none; width: 12px; height: 12px; color: var(--theme-foreground-tertiary); }
+
+  /* theme picker */
+  .hdr__swatch { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--theme-border-primary);
+    background: linear-gradient(135deg, var(--theme-background-primary) 50%, var(--wm-mark) 50%); }
+  .hdr__theme-opt { width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left; }
+  .hdr__theme-name { display: flex; align-items: center; gap: 10px; }
+  .hdr__dot { flex: none; width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .45);
+    background: linear-gradient(135deg, var(--a) 50%, var(--b) 50%); }
+  .hdr__theme-opt .hdr__theme-check { visibility: hidden; }
+  .hdr__theme-opt[aria-pressed='true'] { color: var(--theme-foreground-primary); font-weight: 700; }
+  .hdr__theme-opt[aria-pressed='true'] .hdr__theme-check { visibility: visible; color: var(--theme-foreground-primary); }
 
   /* search (DESIGN.md §5.1) */
   .hdr__search {
