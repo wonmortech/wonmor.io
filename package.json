@@ -22,10 +22,10 @@
     "@fontsource-variable/onest": "^5.3.1",
     "@fontsource-variable/source-serif-4": "^5.3.1",
     "astro": "^7.4.11",
-    "three": "^0.181.0"
+    "three": "^0.187.0"
   },
   "devDependencies": {
-    "@sveltia/cms": "0.255.1",
+    "@sveltia/cms": "0.262.2",
     "pagefind": "^1.6.0"
   }
 }
