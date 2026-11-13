@@ -97,6 +97,8 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
   .hdr__end-nav { display: flex; align-items: center; gap: 4px; transition: opacity .2s; }
   .hdr__end-nav > .nav-dd:not([data-menu='try']) { display: none; }
   .hdr__icons { display: flex; gap: 6px; margin-left: 4px; transition: opacity .2s; }
+  .hdr__logo :global(.wm-logo) { min-height: 44px; display: inline-flex; align-items: center; }
+  @media (pointer: coarse) { .hdr__icons :global(.btn--icon) { --btn-h: 40px; } }
   @media (max-width: 639px) {
     .hdr__end-nav { display: none; }
     .site-header .wm-logo__word { width: 0; }

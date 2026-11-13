@@ -52,13 +52,14 @@ const year = 2026;
   .ftr { display: grid; row-gap: 56px; grid-template-columns: 1fr; }
   .ftr__brand { display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
   .ftr__legal { display: grid; gap: 16px; }
-  .ftr__social { list-style: none; display: flex; gap: 16px; }
-  .ftr__social a { display: block; color: var(--theme-foreground-secondary); transition: color .2s; }
+  /* 20px icons with 44px touch targets; the negative margin keeps the visual layout */
+  .ftr__social { list-style: none; display: flex; gap: 24px; }
+  .ftr__social a { display: grid; place-items: center; width: 44px; height: 44px; margin: -12px; border-radius: 10px; color: var(--theme-foreground-secondary); transition: color .2s; }
   .ftr__social a:hover { color: var(--theme-foreground-primary); }
   .ftr__groups { display: block; }
   .ftr__mission { display: grid; gap: 12px; align-content: start; max-width: 40ch; }
-  .ftr__langs { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font: 400 var(--fs-caption-1)/1.5 var(--sans); }
-  .ftr__langs a { color: var(--theme-foreground-tertiary); text-decoration: none; transition: color .2s; }
+  .ftr__langs { display: flex; flex-wrap: wrap; gap: 6px 2px; margin-inline: -8px; margin-top: 0; font: 400 var(--fs-caption-1)/1.5 var(--sans); }
+  .ftr__langs a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: 8px; color: var(--theme-foreground-tertiary); text-decoration: none; transition: color .2s; }
   .ftr__langs a:hover, .ftr__langs a[aria-current] { color: var(--theme-foreground-primary); }
   @media (min-width: 1024px) {
     .ftr { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); }

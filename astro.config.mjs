@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 import remarkSteps from './tools/remark-steps.mjs';
+import rehypeTableLabels from './tools/rehype-table-labels.mjs';
 
 // Static build straight into ./site — the folder deploy/deploy.sh ships (build output is committed).
 export default defineConfig({
@@ -12,8 +13,8 @@ export default defineConfig({
   build: { format: 'directory', inlineStylesheets: 'auto', assets: 'assets' },
   compressHTML: true,
   markdown: {
-    // remark pipeline: ```steps blocks become build-time flow diagrams (tools/remark-steps.mjs)
-    processor: unified({ remarkPlugins: [remarkSteps] }),
+    // ```steps blocks become flow diagrams (tools/remark-steps.mjs); wide tables get mobile card labels (tools/rehype-table-labels.mjs)
+    processor: unified({ remarkPlugins: [remarkSteps], rehypePlugins: [rehypeTableLabels] }),
     shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: 'light', wrap: false },
   },
   integrations: [
