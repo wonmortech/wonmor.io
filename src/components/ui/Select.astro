@@ -1,0 +1,157 @@
+---
+/* Custom listbox (anthropic listing pattern): 28px trigger, radius 8, inverted while open, popup scales .9 -> 1
+   from the trigger. Single or multiple choice. The root fires a bubbling `select:change` event with
+   detail { value: string | string[] }, keeps the choice in data-value (comma-joined when multiple), and
+   listens for `select:set` (detail: same shape) so callers can reset it. Keyboard: arrows, Home/End,
+   Enter/Space, Escape, type-ahead. Hidden without JS together with the rest of the listing tools. */
+import Icon from '../Icon.astro';
+export interface Option { value: string; label: string }
+interface Props {
+  label: string;           // accessible name, also shown before the value when `prefix` is true
+  options: Option[];
+  value?: string | string[];
+  multiple?: boolean;
+  placeholder?: string;    // trigger text for a multiple select with nothing chosen
+  prefix?: boolean;
+  align?: 'start' | 'end';
+  class?: string;
+}
+const { label, options, value, multiple = false, placeholder, prefix = false, align = 'start', class: cls } = Astro.props;
+const chosen = new Set(Array.isArray(value) ? value : value !== undefined ? [value] : multiple ? [] : [options[0]?.value]);
+const first = options.find((o) => chosen.has(o.value));
+const shown = multiple ? (chosen.size ? `${placeholder ?? label} · ${chosen.size}` : placeholder ?? label) : first?.label ?? '';
+const id = `sel-${Math.random().toString(36).slice(2, 8)}`;
+---
+<div class:list={['sel', `sel--${align}`, cls]} data-select data-multiple={multiple ? '' : undefined} data-value={[...chosen].join(',')} data-placeholder={placeholder ?? label}>
+  <button type="button" class="sel__trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls={id} aria-label={label}>
+    {prefix && <span class="sel__pre">{label}</span>}
+    <span class="sel__value">{shown}</span>
+    <Icon name="arrow-down" size={12} />
+  </button>
+  <ul class="sel__pop" role="listbox" id={id} aria-label={label} aria-multiselectable={multiple ? 'true' : undefined} tabindex="-1" hidden>
+    {options.map((o) => (
+      <li class="sel__opt" role="option" data-value={o.value} aria-selected={chosen.has(o.value) ? 'true' : 'false'}>
+        <span class="sel__check" aria-hidden="true"></span>{o.label}
+      </li>
+    ))}
+  </ul>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-select]').forEach((root) => {
+    if (root.dataset.ready) return;
+    root.dataset.ready = '1';
+    const trigger = root.querySelector<HTMLButtonElement>('.sel__trigger')!;
+    const pop = root.querySelector<HTMLUListElement>('.sel__pop')!;
+    const valueEl = root.querySelector<HTMLElement>('.sel__value')!;
+    const opts = [...pop.querySelectorAll<HTMLLIElement>('[role="option"]')];
+    const multiple = root.hasAttribute('data-multiple');
+    let active = 0;
+    let typed = '';
+    let typedAt = 0;
+
+    opts.forEach((o, i) => { o.id = `${pop.id}-${i}`; });
+    const selected = () => opts.filter((o) => o.getAttribute('aria-selected') === 'true').map((o) => o.dataset.value!);
+    const paint = () => {
+      const v = selected();
+      root.dataset.value = v.join(',');
+      const ph = root.dataset.placeholder ?? '';
+      valueEl.textContent = multiple ? (v.length ? `${ph} · ${v.length}` : ph) : opts.find((o) => o.dataset.value === v[0])?.textContent?.trim() ?? '';
+      root.classList.toggle('sel--set', multiple && v.length > 0);
+    };
+    const focusOpt = (i: number) => {
+      active = (i + opts.length) % opts.length;
+      opts.forEach((o, k) => o.classList.toggle('is-active', k === active));
+      pop.setAttribute('aria-activedescendant', opts[active].id);
+      opts[active].scrollIntoView({ block: 'nearest' });
+    };
+    const outside = (e: Event) => { if (!root.contains(e.target as Node)) close(false); };
+    const open = () => {
+      if (!pop.hidden) return;
+      pop.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      root.classList.add('is-open');
+      requestAnimationFrame(() => pop.classList.add('is-in'));
+      const cur = opts.findIndex((o) => o.getAttribute('aria-selected') === 'true');
+      focusOpt(cur >= 0 ? cur : 0);
+      pop.focus({ preventScroll: true });
+      document.addEventListener('pointerdown', outside, true);
+    };
+    function close(refocus = true) {
+      if (pop.hidden) return;
+      pop.classList.remove('is-in');
+      pop.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      root.classList.remove('is-open');
+      document.removeEventListener('pointerdown', outside, true);
+      if (refocus) trigger.focus({ preventScroll: true });
+    }
+    const emit = () => root.dispatchEvent(new CustomEvent('select:change', { bubbles: true, detail: { value: multiple ? selected() : selected()[0] ?? '' } }));
+    const choose = (i: number) => {
+      const o = opts[i];
+      if (multiple) o.setAttribute('aria-selected', String(o.getAttribute('aria-selected') !== 'true'));
+      else opts.forEach((x) => x.setAttribute('aria-selected', String(x === o)));
+      paint();
+      emit();
+      if (!multiple) close();
+    };
+
+    trigger.addEventListener('click', () => (pop.hidden ? open() : close()));
+    trigger.addEventListener('keydown', (e) => { if (['ArrowDown', 'ArrowUp'].includes(e.key)) { e.preventDefault(); open(); } });
+    opts.forEach((o, i) => {
+      o.addEventListener('click', () => choose(i));
+      o.addEventListener('pointermove', () => { if (active !== i) focusOpt(i); });
+    });
+    pop.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); focusOpt(active + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); focusOpt(active - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); focusOpt(0); }
+      else if (e.key === 'End') { e.preventDefault(); focusOpt(opts.length - 1); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(active); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(); }
+      else if (e.key === 'Tab') close(false);
+      else if (e.key.length === 1) {
+        const now = Date.now();
+        typed = now - typedAt > 700 ? e.key.toLowerCase() : typed + e.key.toLowerCase();
+        typedAt = now;
+        const hit = opts.findIndex((o) => (o.textContent ?? '').trim().toLowerCase().startsWith(typed));
+        if (hit >= 0) focusOpt(hit);
+      }
+    });
+    root.addEventListener('select:set', (e) => {
+      const v = (e as CustomEvent).detail?.value;
+      const want = new Set(Array.isArray(v) ? v : [v]);
+      opts.forEach((o) => o.setAttribute('aria-selected', String(want.has(o.dataset.value))));
+      paint();
+    });
+  });
+</script>
+
+<style>
+  .sel { position: relative; display: inline-flex; }
+  .sel__trigger { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 8px; border: 0; cursor: pointer;
+    font: inherit; font-size: 13px; line-height: 1; white-space: nowrap; color: var(--theme-foreground-primary); background: var(--theme-background-secondary);
+    transition: background-color .15s, color .15s; }
+  .sel__trigger:hover { background: var(--theme-background-tertiary); }
+  .sel__trigger :global(svg) { transition: transform .15s; }
+  .sel.is-open .sel__trigger, .sel--set .sel__trigger { background: var(--theme-foreground-primary); color: var(--theme-background-primary); }
+  .sel.is-open .sel__trigger :global(svg) { transform: rotate(180deg); }
+  .sel__pre { color: var(--theme-foreground-tertiary); }
+  .sel.is-open .sel__pre, .sel--set .sel__pre { color: inherit; opacity: .7; }
+  @media (pointer: coarse) { .sel__trigger { height: 40px; padding: 0 14px; font-size: 14px; } }
+
+  .sel__pop { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; min-width: max(100%, 200px); max-height: 320px; overflow: auto; margin: 0; padding: 6px;
+    list-style: none; border-radius: 16px; background: var(--theme-background-primary); border: 1px solid var(--theme-border-tertiary);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .08); outline: none; opacity: 0; transform: scale(.9); transform-origin: top left; }
+  .sel--end .sel__pop { left: auto; right: 0; transform-origin: top right; }
+  .sel__pop.is-in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: no-preference) { .sel__pop { transition: opacity .15s ease, transform .15s cubic-bezier(.16, 1, .3, 1); } }
+  .sel__opt { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 14px; color: var(--theme-foreground-primary); }
+  .sel__opt.is-active { background: var(--theme-background-secondary); }
+  .sel__check { width: 14px; height: 14px; flex: none; border-radius: 4px; position: relative; }
+  .sel[data-multiple] .sel__check { border: 1px solid var(--theme-border-primary); }
+  .sel__opt[aria-selected='true'] .sel__check::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px;
+    border: solid var(--theme-foreground-primary); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+  .sel[data-multiple] .sel__opt[aria-selected='true'] .sel__check { background: var(--theme-foreground-primary); border-color: var(--theme-foreground-primary); }
+  .sel[data-multiple] .sel__opt[aria-selected='true'] .sel__check::after { border-color: var(--theme-background-primary); }
+</style>
