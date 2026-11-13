@@ -45,4 +45,14 @@ const research = defineCollection({
   }),
 });
 
-export const collections = { news, research };
+/* Policy and company documents: src/content/docs/<page key>/<en|uz|ru>.md.
+   Title and URL come from the page definition (src/i18n/pages.ts); the file holds the text. */
+const docs = defineCollection({
+  loader: glob({ pattern: '*/*.md', base: './src/content/docs' }),
+  schema: z.object({
+    updated: z.coerce.date(),
+    summary: z.string().optional(),
+  }),
+});
+
+export const collections = { news, research, docs };

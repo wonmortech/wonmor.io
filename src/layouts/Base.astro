@@ -1,10 +1,12 @@
 ---
 import '../styles/tokens.css';
 import '../styles/base.css';
+import '../styles/prose.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MenuOverlay from '../components/MenuOverlay.astro';
 import { getCollection } from 'astro:content';
+import { existsSync } from 'node:fs';
 import { href, asset, locales, htmlLang, ogLocale, stripLocale, formatDate, type Locale } from '../i18n/config';
 import { categories } from '../i18n/home';
 import { ui } from '../i18n/ui';
@@ -14,7 +16,10 @@ const { locale, title, description, type = 'website', published, noindex = false
 const here = stripLocale(Astro.url.pathname);
 const site = Astro.site ?? new URL('https://wonmor.io');
 const canonical = new URL(href(locale, here), site).toString();
-const ogImage = new URL(asset('/og/wonmor.png'), site).toString();
+/* Per-page card from tools/gen-og.mjs when it exists, else the brand card. */
+const ogPath = new URL(canonical).pathname;
+const ogRel = `/og/p/${ogPath === '/' ? 'index' : ogPath.replace(/^\/|\/$/g, '')}.png`;
+const ogImage = new URL(asset(existsSync(`public${ogRel}`) ? ogRel : '/og/wonmor.png'), site).toString();
 
 const news = (await getCollection('news', (e) => e.id.endsWith(`/${locale}`)))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -23,13 +28,28 @@ const featured = news.slice(0, 3).map((n) => ({
   href: href(locale, `/news/${n.id.split('/')[0]}`),
   meta: `${categories[n.data.category][locale]} · ${formatDate(n.data.date, locale)}`,
 }));
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': type === 'article' ? 'Article' : 'WebPage',
-  name: title, headline: type === 'article' ? title : undefined, description, url: canonical, inLanguage: htmlLang[locale],
-  datePublished: published?.toISOString().slice(0, 10),
-  publisher: { '@type': 'Organization', name: 'Wonmor', url: 'https://wonmor.io', logo: new URL(asset('/brand/icon-512.png'), site).toString() },
-};
+const org = { '@type': 'Organization', '@id': 'https://wonmor.io/#org', name: 'Wonmor', url: 'https://wonmor.io',
+  logo: new URL(asset('/brand/icon-512.png'), site).toString(), sameAs: ['https://github.com/dtwinuz'] };
+const homeUrl = new URL(href(locale, '/'), site).toString();
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': type === 'article' ? 'Article' : 'WebPage',
+    name: title, headline: type === 'article' ? title : undefined, description, url: canonical, inLanguage: htmlLang[locale],
+    image: ogImage,
+    datePublished: published?.toISOString().slice(0, 10),
+    author: type === 'article' ? { '@type': 'Person', name: 'Nosirbek Xakimov', url: new URL(href(locale, '/company/founder'), site).toString() } : undefined,
+    publisher: { '@id': org['@id'] },
+  },
+  { '@context': 'https://schema.org', ...org },
+  ...(here === '/' ? [] : [{
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Wonmor', item: homeUrl },
+      { '@type': 'ListItem', position: 2, name: title.replace(/\s*·\s*Wonmor$/, ''), item: canonical },
+    ],
+  }]),
+];
 ---
 <!doctype html>
 <html lang={htmlLang[locale]}>

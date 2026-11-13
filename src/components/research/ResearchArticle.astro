@@ -104,31 +104,4 @@ const isUrl = (s: string) => /^https?:\/\//.test(s);
   .ra__src { list-style: decimal; padding-left: 1.4em; margin-top: 14px; display: grid; gap: 6px; color: var(--theme-foreground-tertiary); word-break: break-word; }
   .ra__more { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
 
-  .prose :global(p), .prose :global(li) { font: 400 clamp(17px, calc(17px + 2 * ((100vw - 390px) / 1530)), 19px)/1.62 var(--serif); font-variation-settings: 'opsz' 16; text-wrap: pretty; }
-  .prose :global(p + p) { margin-top: 1.1em; }
-  .prose :global(h2) { font: 700 clamp(21px, calc(21px + 5 * ((100vw - 390px) / 1530)), 26px)/1.25 var(--sans); letter-spacing: -.012em; margin: 2.2em 0 .7em; scroll-margin-top: 96px; }
-  .prose :global(h2:first-child) { margin-top: 0; }
-  .prose :global(h3) { font: 600 19px/1.3 var(--sans); margin: 1.8em 0 .5em; scroll-margin-top: 96px; }
-  .prose :global(:is(ul, ol)) { padding-left: 1.3em; margin: 1em 0; display: grid; gap: .5em; }
-  .prose :global(strong) { font-weight: 600; }
-  .prose :global(a) { text-decoration: underline; text-decoration-thickness: 1.3px; text-underline-offset: .2em; }
-  .prose :global(blockquote) { margin: 1.5em 0; padding-left: 1em; border-left: 3px solid var(--theme-border-primary); color: var(--theme-foreground-secondary); }
-  .prose :global(:not(pre) > code) { font: 400 .86em/1 var(--mono); background: var(--theme-background-secondary); border: 1px solid var(--theme-border-secondary); padding: .12em .35em; border-radius: 4px; }
-  .prose :global(pre) { margin: 1.5em 0; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--theme-border-secondary); overflow-x: auto; font: 400 13.5px/1.65 var(--mono); }
-  .prose :global(pre code) { font: inherit; }
-  .prose :global(table) { width: 100%; border-collapse: collapse; margin: 1.5em 0; font: 400 15px/1.45 var(--sans); display: block; overflow-x: auto; }
-  .prose :global(:is(th, td)) { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--theme-border-secondary); vertical-align: top; }
-  .prose :global(th) { font-weight: 600; }
-
-  /* ```steps diagrams (tools/remark-steps.mjs) */
-  .prose :global(.flow) { margin: 2em 0; padding: 28px 24px; border-radius: var(--radius-card); background: var(--theme-background-secondary); }
-  .prose :global(.flow__list) { list-style: none; padding: 0; margin: 0; display: grid; gap: 22px; position: relative; }
-  .prose :global(.flow__list::before) { content: ''; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; background: var(--theme-border-primary);
-    transform-origin: top; transition: transform 1.4s var(--ease-in-out-quart) .15s; }
-  :global(html.js) .prose :global(.flow:not(.is-in) .flow__list::before) { transform: scaleY(0); }
-  .prose :global(.flow__step) { position: relative; display: grid; gap: 4px; padding-left: 50px; }
-  .prose :global(.flow__node) { position: absolute; left: 0; top: -3px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
-    background: #141413; color: #faf9f5; font: 600 13px/1 var(--sans); }
-  .prose :global(.flow__title) { font: 600 16px/1.35 var(--sans); }
-  .prose :global(.flow__note) { font: 400 16px/1.5 var(--serif); color: var(--theme-foreground-secondary); }
 </style>

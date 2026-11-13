@@ -1,0 +1,65 @@
+---
+/* Policy / company document: title, summary, "updated" date, sticky contents, serif reading column.
+   Pages with data (release levels, brand files, numbers) pass it through the "above" or "below" slots. */
+import { formatDate, href, type Locale } from '../../i18n/config';
+import { groups, pages, type PageDef } from '../../i18n/pages';
+import { docUi as D } from '../../data/docs';
+interface Props { locale: Locale; page: PageDef; updated: Date; summary?: string; headings: { depth: number; slug: string; text: string }[] }
+const { locale, page, updated, summary, headings } = Astro.props;
+const toc = headings.filter((h) => h.depth === 2);
+const siblings = pages.filter((p) => p.group === page.group && p.key !== page.key && !p.key.startsWith('p-')).slice(0, 8);
+---
+<article class="dp">
+  <header class="container page-top dp__head">
+    <p class="t-caption fg-3">{groups[page.group][locale]}</p>
+    <h1 class="t-headline-1 dp__title">{page.title[locale]}</h1>
+    <p class="t-sub-3 fg-2 dp__lede">{summary ?? page.lede[locale]}</p>
+    <p class="t-caption fg-3">{D.updated[locale]} <time datetime={updated.toISOString().slice(0, 10)}>{formatDate(updated, locale)}</time></p>
+  </header>
+
+  {Astro.slots.has('above') && <div class="container dp__above"><slot name="above" /></div>}
+
+  <div class="container dp__grid">
+    {toc.length > 2 && (
+      <nav class="dp__toc t-caption" aria-labelledby="dp-toc">
+        <p class="t-caption-bold" id="dp-toc">{D.contents[locale]}</p>
+        <ol role="list">{toc.map((h) => <li><a class="link-quiet" href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+      </nav>
+    )}
+    <div class="dp__body prose"><slot /></div>
+  </div>
+
+  {Astro.slots.has('below') && <div class="container dp__below"><slot name="below" /></div>}
+
+  {siblings.length > 0 && (
+    <nav class="container section-lg" aria-labelledby="dp-more">
+      <div class="rule-row"><h2 class="t-caption-bold" id="dp-more">{groups[page.group][locale]}</h2></div>
+      <ul class="dp__sib" role="list">
+        {siblings.map((s) => <li><a class="dp__sib-link" href={href(locale, s.path)}><span class="t-headline-5">{s.title[locale]}</span><span class="t-body-4 fg-2">{s.lede[locale]}</span></a></li>)}
+      </ul>
+    </nav>
+  )}
+</article>
+
+<style>
+  .dp__head { display: grid; gap: 20px; padding-bottom: 48px; border-bottom: 1px solid var(--theme-border-secondary); }
+  .dp__title { max-width: 16ch; text-wrap: balance; }
+  .dp__lede { max-width: 36em; }
+  .dp__above { margin-top: 56px; }
+  .dp__grid { display: grid; gap: 40px; margin-top: 56px; }
+  .dp__grid > * { min-width: 0; }
+  @media (min-width: 1024px) {
+    .dp__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gutter); align-items: start; }
+    .dp__toc { grid-column: 1 / span 3; position: sticky; top: 96px; }
+    .dp__body { grid-column: 4 / span 7; }
+  }
+  .dp__toc ol { list-style: none; display: grid; gap: 10px; margin-top: 14px; padding-left: 12px; border-left: 1px solid var(--theme-border-secondary); }
+  .dp__toc a { color: var(--theme-foreground-secondary); overflow-wrap: anywhere; }
+  @media (max-width: 1023px) { .dp__toc { padding: 20px; border-radius: 12px; background: var(--theme-background-secondary); } }
+  .dp__body { max-width: var(--reading-width); width: 100%; }
+  .dp__below { margin-top: 64px; }
+  .dp__sib { list-style: none; display: grid; gap: 0 var(--grid-gutter); margin-top: 8px; }
+  @media (min-width: 768px) { .dp__sib { grid-template-columns: repeat(2, 1fr); } }
+  .dp__sib-link { display: grid; gap: 4px; padding: 20px 0; border-bottom: 1px solid var(--theme-border-secondary); text-decoration: none; color: inherit; }
+  @media (hover: hover) { .dp__sib-link:hover .t-headline-5 { color: var(--theme-foreground-quaternary); } }
+</style>
