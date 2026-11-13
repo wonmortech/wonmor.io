@@ -31,7 +31,7 @@ const featured = news.slice(0, 3).map((n) => ({
   meta: `${categories[n.data.category][locale]} · ${formatDate(n.data.date, locale)}`,
 }));
 const org = { '@type': 'Organization', '@id': 'https://wonmor.io/#org', name: 'Wonmor', url: 'https://wonmor.io',
-  logo: new URL(asset('/brand/icon-512.png'), site).toString(), sameAs: ['https://github.com/dtwinuz'] };
+  logo: new URL(asset('/brand/icon-512.png'), site).toString(), sameAs: ['https://github.com/wonmortech', 'https://github.com/dtwinuz'] };
 const homeUrl = new URL(href(locale, '/'), site).toString();
 const jsonLd = [
   {

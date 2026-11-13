@@ -1,14 +1,16 @@
 {
-	admin off
+	# Admin API only inside the container: deploy/receive.sh reloads config through it.
+	admin localhost:2019
 	auto_https off
 }
 
 :80 {
-	root * /srv
+	# releases/current is a symlink swapped atomically by deploy/receive.sh.
+	root * /srv/releases/current
 	encode zstd gzip
 
 	# Pages, feeds and the search entry point change on every deploy.
-	@fresh path / *.html */ *.xml /version.txt /pagefind/pagefind.js /pagefind/pagefind-entry.json
+	@fresh path / *.html */ *.xml /version.txt /pagefind/pagefind.js /pagefind/pagefind-entry.json /admin/config.yml
 	header @fresh Cache-Control "no-cache"
 
 	# Astro emits content-hashed file names under /assets/.
@@ -19,13 +21,25 @@
 	header @static Cache-Control "public, max-age=86400"
 
 	header {
-		# 'wasm-unsafe-eval' is required by the Pagefind search index (WebAssembly).
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
 		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
 		Referrer-Policy strict-origin-when-cross-origin
 		X-Content-Type-Options nosniff
 		Cross-Origin-Opener-Policy same-origin
 		-Server
+	}
+
+	# The public site: no third-party origins at all.
+	# 'wasm-unsafe-eval' is required by the Pagefind search index (WebAssembly).
+	@site not path /admin /admin/*
+	header @site Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+	# Sveltia CMS at /admin: talks to the GitHub API with the editor's own token, previews images
+	# from the repository, and is never indexed, cached or framed.
+	@admin path /admin /admin/*
+	header @admin {
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://avatars.githubusercontent.com https://raw.githubusercontent.com; media-src 'self' blob:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' data: blob: https://api.github.com https://raw.githubusercontent.com https://www.githubstatus.com https://unpkg.com; worker-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+		X-Robots-Tag "noindex, nofollow"
+		Cache-Control "no-store"
 	}
 
 	file_server

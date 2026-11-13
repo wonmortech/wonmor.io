@@ -10,7 +10,8 @@ const files = [];
   for (const f of readdirSync(d)) {
     const p = join(d, f);
     if (statSync(p).isDirectory()) { if (f !== 'pagefind') walk(p); }
-    else if (/\.(html|xml|txt|js|css|json|webmanifest)$/.test(f)) files.push(p);
+    // admin/sveltia-cms.js is the pinned npm bundle of Sveltia CMS (third-party, copied by copy-cms.mjs).
+    else if (/\.(html|xml|txt|js|css|json|webmanifest)$/.test(f) && relative(ROOT, p).split(sep).join('/') !== 'admin/sveltia-cms.js') files.push(p);
   }
 })(ROOT);
 

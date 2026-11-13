@@ -35,9 +35,14 @@ const right = rest.slice(0, 3);
 // highlights skip the six stories already in the mosaic, so no picture repeats on one screen
 const inMosaic = new Set([lead, a, b, ...right].filter(Boolean).map((n) => n.slug));
 const pool = news.filter((n) => n.featured && !inMosaic.has(n.slug));
-const highlights = (pool.length > 1 ? pool : news.filter((n) => !inMosaic.has(n.slug))).slice(0, 5).map((n) => ({
-  eyebrow: categories[n.category][locale], date: n.date, title: n.title, desc: n.description, href: url(n), motif: motif(n), seed: n.slug, img: shot(n),
-}));
+// ...and no picture either: a screenshot already shown in the mosaic (posts about the same product share one)
+// falls back to the post's own plate.
+const shownImgs = new Set([shot(lead), a && shot(a)].filter(Boolean));
+const highlights = (pool.length > 1 ? pool : news.filter((n) => !inMosaic.has(n.slug))).slice(0, 5).map((n) => {
+  const img = shot(n) && !shownImgs.has(shot(n)) ? shot(n) : undefined;
+  if (img) shownImgs.add(img);
+  return { eyebrow: categories[n.category][locale], date: n.date, title: n.title, desc: n.description, href: url(n), motif: motif(n), seed: n.slug, img };
+});
 const cats = Object.keys(categories).filter((k) => news.some((n) => n.category === k));
 const L = {
   latest: ui.latestNews,
@@ -50,7 +55,9 @@ const L = {
   search: { en: 'Search news', uz: 'Yangiliklardan qidirish', ru: 'Поиск по новостям' },
   newest: { en: 'Newest first', uz: 'Avval yangilari', ru: 'Сначала новые' },
   oldest: { en: 'Oldest first', uz: 'Avval eskilari', ru: 'Сначала старые' },
-  none: { en: 'No posts match.', uz: 'Mos post topilmadi.', ru: 'Ничего не найдено.' },
+  none: { en: 'Nothing matches these filters', uz: 'Bu filtrlarga mos yangilik yoʻq', ru: 'По этим фильтрам ничего нет' },
+  noneHint: { en: 'Try another word or topic, or clear the filters to see every post.', uz: 'Boshqa soʻz yoki mavzuni tanlang yoki barcha postlarni koʻrish uchun filtrlarni tozalang.', ru: 'Попробуйте другое слово или тему либо сбросьте фильтры, чтобы увидеть все публикации.' },
+  clear: { en: 'Clear filters', uz: 'Filtrlarni tozalash', ru: 'Сбросить фильтры' },
   more: { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать ещё' },
   prev: { en: 'Previous', uz: 'Oldingi', ru: 'Назад' },
   next: { en: 'Next', uz: 'Keyingi', ru: 'Вперёд' },
@@ -140,7 +147,7 @@ const band = [
         ))}
       </div>
     </div>
-    <p class="t-body-4 fg-3 nx__none" data-nt-none hidden>{L.none[locale]}</p>
+    <div class="empty" data-nt-none hidden><p class="t-headline-5">{L.none[locale]}</p><p class="t-body-4 fg-2">{L.noneHint[locale]}</p><button type="button" class="btn btn--secondary btn--sm" data-nt-clear>{L.clear[locale]}</button></div>
     <div class="nx__more"><button type="button" class="btn btn--secondary btn--small btn--rounded btn--trailing" data-nt-more hidden>{L.more[locale]}<Icon name="arrow-down" size={14} /></button></div>
   </section>
 
@@ -189,6 +196,12 @@ const band = [
     };
     chips.forEach((c) => c.addEventListener('click', () => { shown = per; queueMicrotask(render); }));
     q.addEventListener('input', () => { shown = per; render(); });
+    root.querySelector('[data-nt-clear]')?.addEventListener('click', () => {
+      q.value = ''; shown = per;
+      const all = chips.find((c) => c.dataset.filterSet === '');
+      if (all && all.getAttribute('aria-pressed') !== 'true') all.click(); else render();
+      q.focus();
+    });
     sort.addEventListener('change', render);
     more.addEventListener('click', () => { shown += per; render(); });
     render();
@@ -260,7 +273,6 @@ const band = [
     .nx__tr--link:hover { background: var(--theme-background-secondary); }
     .nx__tr--link:hover .nx__dt :global(.icon) { opacity: 1; transform: none; }
   }
-  .nx__none { margin-top: 24px; }
   .nx__more { display: flex; justify-content: center; margin-top: 32px; }
   .nx__more [hidden] { display: none; }
 

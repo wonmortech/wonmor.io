@@ -1,37 +1,62 @@
 #!/usr/bin/env bash
-# Faqat toza origin/main deploy qilinadi: site/ -> /opt/wonmor-site -> health.
+# Admin-side deploy tools. Day-to-day deploys run in GitHub Actions (.github/workflows/deploy.yml);
+# this script is for the server owner, over an ordinary admin SSH login.
+#
+#   bash deploy/deploy.sh bootstrap [host]   install or update the server-managed files:
+#                                            bin/receive, docker-compose.yml, the container
+#   bash deploy/deploy.sh ship [host]        build clean origin/main locally and publish it
+#                                            (the same path CI uses, for when Actions is down)
+#   bash deploy/deploy.sh rollback [host]    switch back to the previous release
+#   bash deploy/deploy.sh status [host]      print the live commit
 set -euo pipefail
 
-HOST="${1:-dtwin}"
+MODE="${1:-}"
+HOST="${2:-dtwin}"
 REMOTE_DIR="${REMOTE_DIR:-/opt/wonmor-site}"
 URL="${URL:-https://wonmor.io}"
 
-fail() { echo "deploy to'xtatildi: $*" >&2; exit 1; }
+fail() { echo "deploy: $*" >&2; exit 1; }
 cd "$(dirname "$0")/.."
 
-git fetch --quiet origin main
-[ -z "$(git status --porcelain)" ] || fail "commit qilinmagan o'zgarish bor"
-SHA="$(git rev-parse HEAD)"
-[ "$SHA" = "$(git rev-parse origin/main)" ] || fail "faqat origin/main (HEAD $(git rev-parse --short HEAD))"
-
-STAGE="$(mktemp -d)"; trap 'rm -rf "$STAGE"' EXIT
-mkdir -p "$STAGE/site" "$STAGE/deploy"
-git archive HEAD site deploy/docker-compose.yml deploy/Caddyfile | tar -xf - -C "$STAGE"
-printf '%s\n' "$SHA" > "$STAGE/site/version.txt"
-
-tar -czf - -C "$STAGE" site deploy \
-  | ssh "$HOST" "set -e; mkdir -p '$REMOTE_DIR'; cd '$REMOTE_DIR'
-rm -rf site.new; mkdir site.new
-tar --no-same-owner -xzf - -C site.new
-mv site.new/deploy/docker-compose.yml site.new/deploy/Caddyfile .
-rm -rf site.prev; [ -d site ] && mv site site.prev
-mv site.new/site site; rm -rf site.new
-# ./site bind-mount: papka almashgani uchun konteyner qayta yaratiladi
-docker compose up -d --force-recreate --remove-orphans
-echo '$SHA' > REVISION"
-
-for _ in $(seq 1 20); do
-  if curl -fsS "$URL/version.txt" 2>/dev/null | grep -q "$SHA"; then echo "deploy tayyor: $SHA -> $URL"; exit 0; fi
-  sleep 3
-done
-fail "$URL/version.txt $SHA ni qaytarmadi (rollback: ssh $HOST 'cd $REMOTE_DIR && rm -rf site && mv site.prev site')"
+case "$MODE" in
+  bootstrap)
+    # docker-compose.yml and receive stay server-managed: CI can publish files, not change containers.
+    tar -czf - deploy/receive.sh deploy/docker-compose.yml deploy/Caddyfile | ssh "$HOST" "set -euo pipefail
+      mkdir -p '$REMOTE_DIR'; cd '$REMOTE_DIR'
+      T=\$(mktemp -d); tar --no-same-owner -xzf - -C \"\$T\"
+      install -d -m 755 bin conf releases
+      install -m 755 -o root -g root \"\$T/deploy/receive.sh\" bin/receive
+      [ -f conf/Caddyfile ] || install -m 644 \"\$T/deploy/Caddyfile\" conf/Caddyfile
+      # One-time move from the old layout (site/ served directly) into releases/<sha>.
+      if [ -d site ] && [ ! -e releases/current ]; then
+        R=\$(cat site/version.txt 2>/dev/null || echo legacy); mv site \"releases/\$R\"; ln -sfn \"\$R\" releases/current
+      fi
+      rm -rf site.prev Caddyfile
+      if ! cmp -s \"\$T/deploy/docker-compose.yml\" docker-compose.yml; then
+        install -m 644 \"\$T/deploy/docker-compose.yml\" docker-compose.yml
+        docker compose up -d --force-recreate --remove-orphans
+      fi
+      rm -rf \"\$T\"; echo \"bootstrap ok, live: \$(readlink releases/current)\""
+    ;;
+  ship)
+    git fetch --quiet origin main
+    [ -z "$(git status --porcelain)" ] || fail "uncommitted changes"
+    SHA="$(git rev-parse HEAD)"
+    [ "$SHA" = "$(git rev-parse origin/main)" ] || fail "only origin/main can be shipped (HEAD $(git rev-parse --short HEAD))"
+    npm ci --no-audit --no-fund
+    npm run build
+    printf '%s\n' "$SHA" > site/version.txt
+    tar -czf - site -C deploy Caddyfile | ssh "$HOST" "$REMOTE_DIR/bin/receive deploy $SHA"
+    for _ in $(seq 1 20); do
+      if curl -fsS "$URL/version.txt" 2>/dev/null | grep -qx "$SHA"; then echo "live: $SHA -> $URL"; exit 0; fi
+      sleep 3
+    done
+    fail "$URL/version.txt did not return $SHA (roll back: bash deploy/deploy.sh rollback $HOST)"
+    ;;
+  rollback|status)
+    ssh "$HOST" "$REMOTE_DIR/bin/receive $MODE"
+    ;;
+  *)
+    sed -n '2,11p' "$0"; exit 2
+    ;;
+esac

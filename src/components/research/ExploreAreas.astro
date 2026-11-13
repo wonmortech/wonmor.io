@@ -1,9 +1,9 @@
 ---
 /* "Explore work from other areas" (anthropic.com engineering pattern): centred heading, a row of areas, each with an
-   animated line icon, a rolling title, its post count and lede; arrows and a 01 / 07 counter scroll the row. */
+   line icon, its title, post count and lede; arrows and a 01 / 07 counter scroll the row.
+   Hover follows anthropic: the hovered title gains an arrow, every other item dims; nothing moves. */
 import Icon from '../Icon.astro';
 import AreaIcon from '../ui/AreaIcon.astro';
-import SwapText from '../ui/SwapText.astro';
 import { href, type Locale } from '../../i18n/config';
 import { pageByKey } from '../../i18n/pages';
 import { areaList, areaPageKey, postCount, researchUi as R, type Area } from '../../data/research';
@@ -20,8 +20,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <ul class="ex__track" role="list" data-track>
     {items.map((x) => (
       <li class="ex__item" data-slide>
-        <a class="ex__link has-icon-anim has-swap" href={href(locale, x.page.path)}>
-          <span class="ex__top"><AreaIcon name={x.key === 'engineering' ? 'engineering' : x.key} /><span class="t-headline-5"><SwapText text={x.page.title[locale]} /></span></span>
+        <a class="ex__link" href={href(locale, x.page.path)}>
+          <span class="ex__top"><AreaIcon name={x.key === 'engineering' ? 'engineering' : x.key} /><span class="ex__title t-headline-5">{x.page.title[locale]}<span class="ex__arrow" aria-hidden="true"> →</span></span></span>
           <span class="ex__count t-caption">{postCount(counts[x.key] ?? 0, locale)}</span>
           <span class="ex__lede t-body-4">{x.page.lede[locale]}</span>
         </a>
@@ -54,11 +54,16 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .ex__top :global(.aicon) { margin-top: .1em; }
   .ex__count { color: var(--theme-foreground-tertiary); font-family: var(--mono); font-variant-numeric: tabular-nums; }
   .ex__lede { color: var(--theme-foreground-secondary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  /* a line draws across the top of the hovered area */
-  .ex__item { position: relative; }
-  .ex__item::before { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: var(--theme-foreground-primary); transform: scaleX(0); transform-origin: left; }
-  .ex__item:has(.ex__link:is(:hover, :focus-visible))::before { transform: scaleX(1); }
-  @media (prefers-reduced-motion: no-preference) { .ex__item::before { transition: transform .7s var(--ease-out-quart); } }
+  /* hover: arrow on the hovered title, siblings dim (title grey, icon 30%) */
+  .ex__arrow { opacity: 0; }
+  .ex__link :global(.aicon), .ex__title, .ex__lede, .ex__count { transition: opacity .2s ease, color .2s ease; }
+  .ex__link:is(:hover, :focus-visible) .ex__arrow { opacity: 1; }
+  @media (hover: hover) {
+    .ex__track:has(.ex__link:hover) .ex__link:not(:hover) .ex__title { color: var(--theme-foreground-tertiary); }
+    .ex__track:has(.ex__link:hover) .ex__link:not(:hover) .ex__lede { color: var(--theme-foreground-tertiary); }
+    .ex__track:has(.ex__link:hover) .ex__link:not(:hover) :global(.aicon) { opacity: .3; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ex__arrow, .ex__link :global(.aicon), .ex__title, .ex__lede { transition: none; } }
   .ex__pager { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 28px; }
   .ex__num { font-family: var(--mono); color: var(--theme-foreground-tertiary); min-width: 5.5em; text-align: center; }
   .ex__num [data-index] { color: var(--theme-foreground-primary); }
