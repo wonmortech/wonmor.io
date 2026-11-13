@@ -8,6 +8,10 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 $$('[data-lockup]').forEach((n) => { n.innerHTML = lockupSVG({ text: n.dataset.text || 'currentColor' }); });
 $$('[data-mark]').forEach((n) => { n.innerHTML = markSVG({ fill: n.dataset.fill || 'currentColor' }); });
 $$('[data-step]').forEach((n) => { n.innerHTML = stepSVG(+n.dataset.step); });
+// the Compare loop restarts from the split when the card is hovered
+$$('[data-step="3"]').forEach((n) => n.closest('li').addEventListener('pointerenter', () => {
+  n.classList.add('is-replay'); void n.offsetWidth; n.classList.remove('is-replay');
+}));
 
 const ICONS = { salesforce: siSalesforce, hubspot: siHubspot, slack: siSlack, zoom: siZoom, googlemeet: siGooglemeet, gmail: siGmail, zendesk: siZendesk, notion: siNotion, jira: siJira };
 $$('[data-si]').forEach((n) => {
