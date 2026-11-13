@@ -27,26 +27,26 @@ if (logo && !reduce && scrollY < FOLD_AT) {
 }
 
 /* ---------------- theme ---------------- */
-// No saved choice: follow the system (CSS media query). A click saves the opposite of what is shown now.
-const themeBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
-const sysDark = matchMedia('(prefers-color-scheme: dark)');
-const isDark = () => (doc.dataset.theme ? doc.dataset.theme === 'dark' : sysDark.matches);
+// "auto" removes the attribute and the saved value, so the CSS media query follows the system again.
+// The picker is a [data-dd] dropdown, so open/close and arrow keys come from the dropdown code below.
+const themeColour: Record<string, string> = { light: '#faf9f5', dark: '#1a1918', ink: '#0b0d24', blueprint: '#f5f8ff', cobalt: '#1a4fd6' };
+const themeDd = document.querySelector<HTMLElement>('[data-theme-dd]');
+const themeOpts = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-set]')];
 const themeMetas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];
 function syncTheme() {
-  const dark = isDark();
-  themeBtn?.setAttribute('aria-pressed', String(dark));
-  // A saved choice overrides the system: both media-specific metas get the chosen colour.
-  if (doc.dataset.theme) themeMetas.forEach((m) => { m.content = dark ? '#1a1918' : '#faf9f5'; });
+  const cur = doc.dataset.theme ?? 'auto';
+  themeOpts.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeSet === cur)));
+  themeMetas.forEach((m) => { m.content = themeColour[cur] ?? (m.media.includes('dark') ? themeColour.dark : themeColour.light); });
 }
-if (themeBtn) {
-  themeBtn.hidden = false;
-  themeBtn.addEventListener('click', () => {
-    const next = isDark() ? 'light' : 'dark';
-    doc.dataset.theme = next;
-    try { localStorage.setItem('wm-theme', next); } catch { /* storage blocked: applies to this page only */ }
+if (themeDd) {
+  themeDd.hidden = false;
+  for (const b of themeOpts) b.addEventListener('click', () => {
+    const t = b.dataset.themeSet ?? 'auto';
+    if (t === 'auto') delete doc.dataset.theme; else doc.dataset.theme = t;
+    try { if (t === 'auto') localStorage.removeItem('wm-theme'); else localStorage.setItem('wm-theme', t); } catch { /* storage blocked: this page only */ }
     syncTheme();
+    close(themeDd, true);
   });
-  sysDark.addEventListener('change', syncTheme);
   syncTheme();
 }
 

@@ -149,9 +149,10 @@
   color: var(--theme-foreground-primary);
 }
 
-/* Dark theme: follows the system unless the visitor picked one (html[data-theme], set by public/js/boot.js
-   before first paint and by the header toggle). The same values are listed twice because a media query
-   cannot share a selector list with an attribute selector. */
+/* Themes. Without html[data-theme] the site follows the system (light or dark). A visitor can pick one of
+   light, dark, ink, blueprint or cobalt in the header; public/js/boot.js applies the saved pick before first
+   paint. The dark values are listed twice because a media query cannot share a selector list with an
+   attribute selector. ink, blueprint and cobalt are built from the logo colours (Wonmor Blue, Ink, White). */
 :root { color-scheme: light; --panel-edge: transparent; }
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -186,7 +187,7 @@
   --theme-border-primary: var(--gray-700);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme]) {
     color-scheme: dark;
     --theme-background-primary: var(--gray-900);
     --theme-background-secondary: var(--gray-850);
@@ -213,9 +214,101 @@
     --wm-text: #ffffff;
     --panel-edge: rgba(250, 249, 245, .1);
   }
-  :root:not([data-theme="light"]) .theme-ivory-medium {
+  :root:not([data-theme]) .theme-ivory-medium {
     --theme-background-primary: var(--gray-850);
     --theme-foreground-secondary: var(--gray-300);
     --theme-border-primary: var(--gray-700);
   }
 }
+
+/* Ink: the logo's ink as the page, Wonmor Blue for primary actions. */
+:root[data-theme="ink"] {
+  color-scheme: dark;
+  --theme-background-primary: #0b0d24;
+  --theme-background-secondary: #12152f;
+  --theme-background-tertiary: #1a1e3d;
+  --theme-background-quaternary: #232849;
+  --theme-foreground-primary: #f4f6ff;
+  --theme-foreground-secondary: #c3c9e6;
+  --theme-foreground-tertiary: #9aa2c8;
+  --theme-foreground-quaternary: #7d85ad;
+  --theme-border-primary: #3b426b;
+  --theme-border-secondary: #2e3459;
+  --theme-border-tertiary: #1a1e3d;
+  --theme-button-primary-background: var(--wm-blue);
+  --theme-button-primary-foreground: #ffffff;
+  --theme-button-primary-border: var(--wm-blue);
+  --theme-button-secondary-background: #1a1e3d;
+  --theme-button-secondary-foreground: #f4f6ff;
+  --theme-button-secondary-border: #2e3459;
+  --theme-button-tertiary-background: #12152f;
+  --theme-button-tertiary-foreground: #c3c9e6;
+  --theme-button-tertiary-border: #232849;
+  --theme-popup-background: #12152f;
+  --theme-focus-ring: #8fb4ec;
+  --wm-text: #ffffff;
+  --panel-edge: rgba(244, 246, 255, .12);
+}
+:root[data-theme="ink"] .theme-ivory-medium { --theme-background-primary: #12152f; --theme-foreground-secondary: #c3c9e6; --theme-border-primary: #2e3459; }
+
+/* Blueprint: cool white paper, ink text, Wonmor Blue for primary actions. */
+:root[data-theme="blueprint"] {
+  color-scheme: light;
+  --theme-background-primary: #f5f8ff;
+  --theme-background-secondary: #ebf0fd;
+  --theme-background-tertiary: #dde5fa;
+  --theme-background-quaternary: #c9d5f3;
+  --theme-foreground-primary: #090a1e;
+  --theme-foreground-secondary: #252a4a;
+  --theme-foreground-tertiary: #464d75;
+  --theme-foreground-quaternary: #626a94;
+  --theme-border-primary: #b9c6ea;
+  --theme-border-secondary: #d3dcf5;
+  --theme-border-tertiary: #e6ecfb;
+  --theme-button-primary-background: var(--wm-blue);
+  --theme-button-primary-foreground: #ffffff;
+  --theme-button-primary-border: var(--wm-blue);
+  --theme-button-secondary-background: #dde5fa;
+  --theme-button-secondary-foreground: #252a4a;
+  --theme-button-secondary-border: #c9d5f3;
+  --theme-button-tertiary-background: #ebf0fd;
+  --theme-button-tertiary-foreground: #2e3459;
+  --theme-button-tertiary-border: #dde5fa;
+  --theme-popup-background: #ffffff;
+  --theme-focus-ring: #1a4fd6;
+}
+:root[data-theme="blueprint"] .theme-ivory-medium { --theme-background-primary: #ebf0fd; --theme-foreground-secondary: #252a4a; --theme-border-primary: #c9d5f3; }
+
+/* Cobalt: the page in deep Wonmor Blue, white text and a white logo. */
+:root[data-theme="cobalt"] {
+  color-scheme: dark;
+  --theme-background-primary: #1a4fd6;
+  --theme-background-secondary: #1745c0;
+  --theme-background-tertiary: #143cab;
+  --theme-background-quaternary: #113496;
+  --theme-foreground-primary: #ffffff;
+  --theme-foreground-secondary: #e0e8ff;
+  --theme-foreground-tertiary: #d4e0ff;
+  --theme-foreground-quaternary: #c4d3ff;
+  --theme-border-primary: #5a82e6;
+  --theme-border-secondary: #3f6ddd;
+  --theme-border-tertiary: #2a5bd8;
+  --theme-button-primary-background: #ffffff;
+  --theme-button-primary-foreground: #1a4fd6;
+  --theme-button-primary-border: #ffffff;
+  --theme-button-secondary-background: #143cab;
+  --theme-button-secondary-foreground: #ffffff;
+  --theme-button-secondary-border: #3f6ddd;
+  --theme-button-tertiary-background: #1745c0;
+  --theme-button-tertiary-foreground: #e0e8ff;
+  --theme-button-tertiary-border: #3f6ddd;
+  --theme-popup-background: #1745c0;
+  --theme-focus-ring: #ffffff;
+  --wm-mark: #ffffff;
+  --wm-text: #ffffff;
+  --panel-edge: rgba(255, 255, 255, .18);
+}
+:root[data-theme="cobalt"] .theme-ivory-medium { --theme-background-primary: #1745c0; --theme-foreground-secondary: #e0e8ff; --theme-border-primary: #3f6ddd; }
+
+/* Dark panels (footer, featured blocks) take the logo ink in the brand themes. */
+:root:is([data-theme="ink"], [data-theme="blueprint"], [data-theme="cobalt"]) .theme-slate { --theme-background-primary: #090a1e; --theme-background-secondary: #12152f; --theme-popup-background: #12152f; }

@@ -134,12 +134,11 @@ a { color: inherit; }
 :is(.ri__feat, .ra__rep, .ab__cta, .cst, .pcard__media--scene, .ap__pimg, .pp__mmedia, .show__phone) { box-shadow: inset 0 0 0 1px var(--panel-edge); }
 /* Light focus ring inside fixed-dark panels in both themes. */
 :is(.ri__feat, .ra__rep, .ab__cta, .cst) { --theme-focus-ring: #8fb4ec; }
-/* Header theme button shows the icon of the theme it switches to. */
-.hdr__theme .hdr__sun { display: none; }
-.hdr__theme[aria-pressed="true"] .hdr__sun { display: block; }
-.hdr__theme[aria-pressed="true"] .hdr__moon { display: none; }
 /* Shiki code blocks: dual themes from astro.config (light default, dark via CSS variables). */
-:root[data-theme="dark"] :is(.astro-code, .astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
+:root:is([data-theme="dark"], [data-theme="ink"], [data-theme="cobalt"]) :is(.astro-code, .astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) :is(.astro-code, .astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
+  :root:not([data-theme]) :is(.astro-code, .astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
 }
+/* github-dark comments (#6A737D on #24292e) are 3:1; lift them to 4.5:1 in every dark theme. */
+:root:is([data-theme="dark"], [data-theme="ink"], [data-theme="cobalt"]) .astro-code span[style*="--shiki-dark:#6A737D"] { color: #959da5 !important; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) .astro-code span[style*="--shiki-dark:#6A737D"] { color: #959da5 !important; } }

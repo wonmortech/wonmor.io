@@ -2,7 +2,13 @@ import type { T } from './config';
 
 /** Interface strings. Content pages live in pages.ts; news in src/content/news. */
 export const ui = {
-  darkTheme: { en: 'Dark theme', uz: 'Qorongʻi mavzu', ru: 'Тёмная тема' },
+  theme: { en: 'Theme', uz: 'Mavzu', ru: 'Тема' },
+  themeAuto: { en: 'Match system', uz: 'Tizimga moslash', ru: 'Как в системе' },
+  themeLight: { en: 'Light', uz: 'Yorugʻ', ru: 'Светлая' },
+  themeDark: { en: 'Dark', uz: 'Qorongʻi', ru: 'Тёмная' },
+  themeInk: { en: 'Ink', uz: 'Siyoh', ru: 'Чернила' },
+  themeBlueprint: { en: 'Blueprint', uz: 'Chizma', ru: 'Чертёж' },
+  themeCobalt: { en: 'Cobalt', uz: 'Kobalt', ru: 'Кобальт' },
   skip: { en: 'Skip to content', uz: 'Asosiy qismga oʻtish', ru: 'Перейти к содержанию' },
   home: { en: 'Home', uz: 'Bosh sahifa', ru: 'Главная' },
   primaryNav: { en: 'Primary', uz: 'Asosiy menyu', ru: 'Основное меню' },
