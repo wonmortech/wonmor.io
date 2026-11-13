@@ -7,7 +7,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MenuOverlay from '../components/MenuOverlay.astro';
 import { getCollection } from 'astro:content';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { href, asset, locales, htmlLang, ogLocale, stripLocale, formatDate, type Locale } from '../i18n/config';
 import { categories } from '../i18n/home';
 import { ui } from '../i18n/ui';
@@ -51,6 +52,8 @@ const jsonLd = [
     ],
   }]),
 ];
+// boot.js is served from /public with a day of browser cache; the content hash in its URL makes every deploy fetch the new copy
+const bootVersion = createHash('sha256').update(readFileSync('public/js/boot.js', 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 10);
 ---
 <!doctype html>
 <html lang={htmlLang[locale]}>
@@ -80,7 +83,7 @@ const jsonLd = [
     <meta property="og:locale" content={ogLocale[locale]} />
     <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <script is:inline src={asset('/js/boot.js')}></script>
+    <script is:inline src={asset(`/js/boot.js?v=${bootVersion}`)}></script>
   </head>
   <body>
     <div class="fx" aria-hidden="true"><div class="fx__aurora"></div><div class="fx__dots"></div><div class="fx__lit" data-fx-lit><div class="fx__lit-dots"></div></div></div>
