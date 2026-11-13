@@ -1,14 +1,38 @@
 import type { T } from '../i18n/config';
 
-/** Home "numbers" band. Counted from the GitHub API and the product list on 2026-11-13. */
+/** Home "numbers" band. GitHub figures come from src/data/numbers.json, which the owner refreshes with
+    `node tools/count-numbers.mjs` (full access, private repositories included); products are counted from products.json. */
+import counts from './numbers.json';
+import products from './products.json';
+
+const statuses = Object.values(products as Record<string, { status: string }>).map((p) => p.status);
+const inUse = statuses.filter((s) => s === 'production' || s === 'live').length;
+const concepts = statuses.filter((s) => s === 'concept').length;
+const earlier = statuses.length - inUse - concepts;
+
 export const numbers: { value: number; suffix?: string; label: T; source: string | T }[] = [
-  { value: 15, label: { en: 'live products', uz: 'jonli mahsulot', ru: 'работающих продуктов' }, source: 'wonmor.io/products' },
-  { value: 26, label: { en: 'repositories', uz: 'repozitoriy', ru: 'репозиториев' }, source: 'github.com/dtwinuz' },
-  { value: 635, label: { en: 'merged pull requests', uz: 'birlashtirilgan pull request', ru: 'принятых pull request' }, source: { en: 'Public GitHub search: org:dtwinuz is:pr is:merged', uz: 'GitHubʼda ochiq qidiruv: org:dtwinuz is:pr is:merged', ru: 'Открытый поиск GitHub: org:dtwinuz is:pr is:merged' } },
-  { value: 21, label: { en: 'releases', uz: 'reliz', ru: 'релиз' }, source: { en: 'GitHub releases, all dtwinuz repositories', uz: 'GitHub relizlari, barcha dtwinuz repozitoriylari', ru: 'Релизы GitHub, все репозитории dtwinuz' } },
+  { value: statuses.length, label: { en: 'products', uz: 'mahsulot', ru: 'продуктов' },
+    source: {
+      en: `wonmor.io/products: ${inUse} in production, ${earlier} in beta or earlier, ${concepts} concept`,
+      uz: `wonmor.io/products: ${inUse} tasi ishlab turibdi, ${earlier} tasi beta yoki undan oldingi bosqichda, ${concepts} tasi konsept`,
+      ru: `wonmor.io/products: ${inUse} в работе, ${earlier} в бете или раньше, ${concepts} — концепт`,
+    } },
+  { value: counts.repos, label: { en: 'repositories', uz: 'repozitoriy', ru: 'репозиториев' },
+    source: { en: 'github.com/dtwinuz, public and private', uz: 'github.com/dtwinuz, ochiq va yopiq', ru: 'github.com/dtwinuz, открытые и закрытые' } },
+  { value: counts.mergedPRs, label: { en: 'merged pull requests', uz: 'birlashtirilgan pull request', ru: 'принятых pull request' },
+    source: { en: 'GitHub search with full access, private repositories included: org:dtwinuz is:pr is:merged', uz: 'Toʻliq kirish bilan GitHub qidiruvi, yopiq repozitoriylar ham: org:dtwinuz is:pr is:merged', ru: 'Поиск GitHub с полным доступом, включая закрытые репозитории: org:dtwinuz is:pr is:merged' } },
+  { value: counts.releases, label: { en: 'releases', uz: 'reliz', ru: 'релиз' }, source: { en: 'GitHub releases, all dtwinuz repositories', uz: 'GitHub relizlari, barcha dtwinuz repozitoriylari', ru: 'Релизы GitHub, все репозитории dtwinuz' } },
   { value: 3, label: { en: 'desktop systems for bitg', uz: 'bitg uchun kompyuter tizimi', ru: 'настольные системы для bitg' }, source: 'github.com/dtwinuz/bitg/releases' },
 ];
-export const numbersAsOf: T = { en: 'As of November 13, 2026. Counted from GitHub.', uz: '2026-yil 13-noyabr holatiga. GitHubʼdan sanalgan.', ru: 'На 13 ноября 2026 года. Подсчитано по GitHub.' };
+const UZ_MONTHS = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'];
+const [y, m, d] = counts.asOf.split('-').map(Number);
+const asOfDate = new Date(Date.UTC(y, m - 1, d));
+const longDate = (loc: string) => new Intl.DateTimeFormat(loc, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(asOfDate);
+export const numbersAsOf: T = {
+  en: `As of ${longDate('en-US')}. Counted from GitHub.`,
+  uz: `${y}-yil ${d}-${UZ_MONTHS[m - 1]} holatiga. GitHubʼdan sanalgan.`,
+  ru: `На ${longDate('ru-RU').replace(/\s?г\.$/, '')} года. Подсчитано по GitHub.`,
+};
 export const numbersTitle: T = { en: 'Wonmor in numbers', uz: 'Raqamlarda Wonmor', ru: 'Wonmor в цифрах' };
 
 /** /company */

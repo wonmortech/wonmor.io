@@ -36,7 +36,7 @@ const wide = (k: number) => k % 6 === 1 || k % 6 === 5;
   </div>
   <ul class="pb__grid" role="list" data-plist-grid>
     {sorted.map((p, k) => (
-      <li data-pitem data-g={k % 6} data-wide={wide(k) ? '' : undefined} data-date={p.date.toISOString()} data-title={p.title} data-text={`${p.title} ${p.description}`.toLowerCase()}>
+      <li data-pitem class={k < 12 ? 'reveal-up' : undefined} style={k < 12 ? `--i:${k % 4}` : undefined} data-g={k % 6} data-wide={wide(k) ? '' : undefined} data-date={p.date.toISOString()} data-title={p.title} data-text={`${p.title} ${p.description}`.toLowerCase()}>
         <PostCard locale={locale} post={p} ratio={view === 'gallery' ? '16/9' : '1/1'} />
       </li>
     ))}
