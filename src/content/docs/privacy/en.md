@@ -22,7 +22,7 @@ These points are not just promises; the site's security policy (Content-Security
 
 Two small values, both only on your device. The first time you open a page in a browser tab, the Wonmor logo plays a short opening animation. To avoid replaying it on every page, the site writes the key `wm-intro` with the value `1` to your browser's session storage. It contains nothing about you, never leaves your device and is deleted when you close the tab. If your browser blocks storage, the animation simply plays again.
 
-If you pick a theme in the header menu, the site saves your choice as the key `wm-theme` (`light`, `dark`, `ink`, `blueprint` or `cobalt`) in your browser's local storage, so the next page opens in the same theme. It stays until you clear this site's data and is never sent anywhere. Choosing “Match system” deletes it; if you never pick a theme, nothing is saved and the site follows your system setting.
+If you pick a theme in the header menu, the site saves your choice as the key `wm-theme` (`light`, `dark`, `ink`, `blueprint`, `cobalt`, `contrast`, `paper`, `dots` or `glass`) in your browser's local storage, so the next page opens in the same theme. It stays until you clear this site's data and is never sent anywhere. Choosing “Match system” deletes it; if you never pick a theme, nothing is saved and the site follows your system setting.
 
 ## Search
 

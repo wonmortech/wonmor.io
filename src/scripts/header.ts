@@ -29,7 +29,7 @@ if (logo && !reduce && scrollY < FOLD_AT) {
 /* ---------------- theme ---------------- */
 // "auto" removes the attribute and the saved value, so the CSS media query follows the system again.
 // The picker is a [data-dd] dropdown, so open/close and arrow keys come from the dropdown code below.
-const themeColour: Record<string, string> = { light: '#faf9f5', dark: '#1a1918', ink: '#0b0d24', blueprint: '#f5f8ff', cobalt: '#1a4fd6' };
+const themeColour: Record<string, string> = { light: '#faf9f5', dark: '#1a1918', ink: '#0b0d24', blueprint: '#f5f8ff', cobalt: '#1a4fd6', contrast: '#ffffff', paper: '#f4ecd8', dots: '#f6f7fb', glass: '#070818' };
 const themeDd = document.querySelector<HTMLElement>('[data-theme-dd]');
 const themeOpts = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-set]')];
 const themeMetas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];

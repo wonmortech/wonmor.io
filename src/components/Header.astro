@@ -15,13 +15,25 @@ const isActive = (m: NavMenu) => {
   return (m.items ?? []).some((it) => 'key' in it && here.startsWith(pageByKey[it.key].path + '/'));
 };
 /* Theme swatches: page colour, then accent. "auto" follows the system. */
-const themes = [
-  { key: 'auto', name: ui.themeAuto, a: '#faf9f5', b: '#1a1918' },
-  { key: 'light', name: ui.themeLight, a: '#faf9f5', b: '#141413' },
-  { key: 'dark', name: ui.themeDark, a: '#1a1918', b: '#faf9f5' },
-  { key: 'ink', name: ui.themeInk, a: '#0b0d24', b: '#2969ff' },
-  { key: 'blueprint', name: ui.themeBlueprint, a: '#f5f8ff', b: '#2969ff' },
-  { key: 'cobalt', name: ui.themeCobalt, a: '#1a4fd6', b: '#ffffff' },
+const themeGroups = [
+  { name: ui.themeGroupBasic, items: [
+    { key: 'auto', name: ui.themeAuto, a: '#faf9f5', b: '#1a1918' },
+    { key: 'light', name: ui.themeLight, a: '#faf9f5', b: '#141413' },
+    { key: 'dark', name: ui.themeDark, a: '#1a1918', b: '#faf9f5' },
+  ] },
+  { name: ui.themeGroupBrand, items: [
+    { key: 'ink', name: ui.themeInk, a: '#0b0d24', b: '#2969ff' },
+    { key: 'blueprint', name: ui.themeBlueprint, a: '#f5f8ff', b: '#2969ff' },
+    { key: 'cobalt', name: ui.themeCobalt, a: '#1a4fd6', b: '#ffffff' },
+  ] },
+  { name: ui.themeGroupRead, items: [
+    { key: 'contrast', name: ui.themeContrast, a: '#ffffff', b: '#000000' },
+    { key: 'paper', name: ui.themePaper, a: '#f4ecd8', b: '#2e2418' },
+  ] },
+  { name: ui.themeGroupFx, items: [
+    { key: 'dots', name: ui.themeDots, a: '#f6f7fb', b: '#2969ff', fx: 'dots' },
+    { key: 'glass', name: ui.themeGlass, a: '#070818', b: '#2969ff', fx: 'glass' },
+  ] },
 ];
 const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeNames[l], short: localeShort[l] }));
 ---
@@ -53,13 +65,18 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
         <div class="nav-dd hdr__theme" data-dd data-theme-dd hidden>
           <button class="btn btn--tertiary btn--small btn--rounded btn--icon nav-dd__trigger" type="button" aria-expanded="false" aria-controls="dd-theme" aria-label={ui.theme[locale]}><span class="hdr__swatch" aria-hidden="true"></span></button>
           <div class="nav-dd__popup nav-dd__popup--end" id="dd-theme" hidden>
-            <ul role="list">
-              {themes.map((t) => (
-                <li><button class="nav-item hdr__theme-opt" type="button" data-theme-set={t.key} aria-pressed="false">
-                  <span class="hdr__theme-name"><span class="hdr__dot" style={`--a:${t.a};--b:${t.b}`} aria-hidden="true"></span>{t.name[locale]}</span><Icon name="check" class="hdr__theme-check" />
-                </button></li>
-              ))}
-            </ul>
+            {themeGroups.map((g, gi) => (
+              <div class="hdr__theme-group" role="group" aria-labelledby={`thg-${gi}`}>
+                <p class="hdr__theme-label" id={`thg-${gi}`}>{g.name[locale]}</p>
+                <ul role="list">
+                  {g.items.map((t) => (
+                    <li><button class="nav-item hdr__theme-opt" type="button" data-theme-set={t.key} aria-pressed="false">
+                      <span class="hdr__theme-name"><span class:list={['hdr__dot', t.fx && `hdr__dot--${t.fx}`]} style={`--a:${t.a};--b:${t.b}`} aria-hidden="true"></span>{t.name[locale]}</span><Icon name="check" class="hdr__theme-check" />
+                    </button></li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
         <button class="btn btn--tertiary btn--small btn--rounded btn--icon" type="button" data-search-open aria-label={ui.search[locale]} aria-controls="hdr-search" aria-expanded="false"><Icon name="search" /></button>
@@ -77,6 +94,7 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
 
 <script>
   import '../scripts/header';
+  import '../scripts/fx';
 </script>
 
 <style is:global>
@@ -149,6 +167,12 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
   .hdr__theme-name { display: flex; align-items: center; gap: 10px; }
   .hdr__dot { flex: none; width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .45);
     background: linear-gradient(135deg, var(--a) 50%, var(--b) 50%); }
+  #dd-theme { max-height: calc(100svh - var(--header-nav-height) - 16px); overflow-y: auto; overscroll-behavior: contain; min-width: 228px; }
+  .hdr__theme-group + .hdr__theme-group { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--theme-border-tertiary); }
+  .hdr__theme-label { padding: 6px 12px 2px; font: 600 12px/1.4 var(--sans); letter-spacing: .03em; text-transform: uppercase; color: var(--theme-foreground-tertiary); }
+  /* effect themes preview their texture in the swatch: a dot lattice, or frosted light */
+  .hdr__dot--dots { background: radial-gradient(circle, var(--b) 1px, transparent 1.4px) 0 0 / 5px 5px, radial-gradient(circle, var(--b) 1px, transparent 1.4px) 2.5px 2.5px / 5px 5px, var(--a); }
+  .hdr__dot--glass { background: radial-gradient(circle at 30% 30%, rgba(143, 180, 255, .95), transparent 55%), radial-gradient(circle at 75% 80%, rgba(41, 105, 255, .8), transparent 60%), var(--a); }
   .hdr__theme-opt .hdr__theme-check { visibility: hidden; }
   .hdr__theme-opt[aria-pressed='true'] { color: var(--theme-foreground-primary); font-weight: 700; }
   .hdr__theme-opt[aria-pressed='true'] .hdr__theme-check { visibility: visible; color: var(--theme-foreground-primary); }
