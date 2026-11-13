@@ -1,0 +1,262 @@
+---
+/* Wonmor illustration plates: our own image style, replacing the borrowed paper-collage look.
+   Every plate is the brand's geometry (the diamond that becomes a V and then a W) on the diamond dot lattice used by the
+   dots/glass themes, with one emblem drawn for its subject: seven diamonds for the seven-principle charter, a 24-hour
+   ring for faith and society, stacked plates for infrastructure, and so on. Pure SVG, no raster assets, colours come
+   from theme tokens, so a plate follows all nine themes. Hovering the card that holds it redraws the emblem's lines,
+   lights the lattice and turns the accent (transform, opacity and stroke-dashoffset only); reduced motion keeps it still. */
+export type Motif =
+  | 'charter' | 'sponsorship' | 'research' | 'careers' | 'missing' | 'agents' | 'language' | 'infrastructure'
+  | 'supply-chain' | 'interfaces' | 'faith' | 'assets' | 'engineering' | 'products' | 'company' | 'open-source'
+  | 'security' | 'transparency' | 'release' | 'legal' | 'events' | 'timeline' | 'brand' | 'contact' | 'founder' | 'useful';
+export type Tone = 'ink' | 'blue' | 'mist' | 'sand';
+/** seed: any string (a post slug); picks one of four tones and a mirrored or plain emblem, so posts sharing a motif differ. */
+interface Props { motif: Motif; ratio?: '4/5' | '16/9' | '1/1'; tone?: Tone; seed?: string; idle?: boolean; class?: string }
+const { motif, ratio = '4/5', tone, seed, idle = false, class: cls } = Astro.props;
+
+const toneOf: Record<Motif, Tone> = {
+  charter: 'ink', sponsorship: 'sand', research: 'blue', careers: 'mist', missing: 'mist', agents: 'ink', language: 'sand',
+  infrastructure: 'blue', 'supply-chain': 'mist', interfaces: 'ink', faith: 'sand', assets: 'blue', engineering: 'ink',
+  products: 'mist', company: 'blue', 'open-source': 'mist', security: 'ink', transparency: 'mist', release: 'blue',
+  legal: 'sand', events: 'blue', timeline: 'ink', brand: 'blue', contact: 'sand', founder: 'ink', useful: 'sand',
+};
+const tones: Tone[] = ['ink', 'blue', 'mist', 'sand'];
+const h = seed ? [...seed].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) : 0;
+const t = tone ?? (seed ? tones[(tones.indexOf(toneOf[motif]) + (h % 4)) % 4] : toneOf[motif]);
+// letters, the brand sequence and pointers read one way only, so they never mirror
+const flip = seed && !['language', 'brand', 'company', 'interfaces', 'legal', 'contact'].includes(motif) ? (h >> 3) % 2 === 1 : false;
+const W = ratio === '16/9' ? 640 : 400, H = ratio === '4/5' ? 500 : ratio === '16/9' ? 360 : 400;
+const k = ratio === '4/5' ? 1.12 : ratio === '16/9' ? 0.84 : 1.02;
+
+// d = diamond centred on (x, y) with half-diagonal r
+const d = (x: number, y: number, r: number) => `M${x} ${y - r}L${x + r} ${y}L${x} ${y + r}L${x - r} ${y}Z`;
+const pt = (r: number, a: number) => [+(r * Math.cos(a)).toFixed(1), +(r * Math.sin(a)).toFixed(1)] as const;
+const ring = (r: number, n: number, off = 0) => Array.from({ length: n }, (_, i) => pt(r, (Math.PI * 2 * i) / n - Math.PI / 2 + off));
+const rr = (x: number, y: number, w: number, h: number, r: number) => `M${x + r} ${y}h${w - 2 * r}a${r} ${r} 0 0 1 ${r} ${r}v${h - 2 * r}a${r} ${r} 0 0 1 ${-r} ${r}h${-(w - 2 * r)}a${r} ${r} 0 0 1 ${-r} ${-r}v${-(h - 2 * r)}a${r} ${r} 0 0 1 ${r} ${-r}z`;
+
+// Each emblem: lines (stroked, redrawn on hover), fills (brand accent), soft (quiet fills), spin (accents on an orbit).
+// Coordinates sit in a 240 x 240 box centred on 0, 0.
+type Shape = { d: string; delay?: number };
+type Emblem = { lines: Shape[]; fills?: Shape[]; soft?: Shape[]; spin?: Shape[] };
+const seven = [-72, -48, -24, 0, 24, 48, 72];
+
+const E: Record<Motif, () => Emblem> = {
+  // seven principles: a seal of one large diamond holding a column of seven
+  charter: () => ({
+    lines: [{ d: d(0, 0, 112) }, { d: 'M0 -112V112' }, ...seven.map((y, i) => ({ d: `M${-(46 - Math.abs(y) / 3)} ${y}H${46 - Math.abs(y) / 3}`, delay: i }))],
+    fills: seven.map((y, i) => ({ d: d(0, y, 8), delay: i })),
+  }),
+  // where a self-funded studio's money goes: three columns of stacked diamonds on a base line
+  sponsorship: () => ({
+    lines: [{ d: 'M-110 100H110' }, ...([[-62, 3], [0, 5], [62, 2]] as const).flatMap(([x, n], c) => Array.from({ length: n }, (_, i) => ({ d: d(x, 82 - i * 34, 17), delay: c * 2 + i })))],
+    fills: [{ d: d(0, 82 - 4 * 34, 17), delay: 6 }],
+    soft: [{ d: d(-62, 82 - 2 * 34, 17) }, { d: d(62, 82 - 34, 17) }],
+  }),
+  // six research areas around one question
+  research: () => {
+    const n = ring(92, 6);
+    return {
+      lines: [{ d: `M${n.map(([x, y]) => `${x} ${y}`).join('L')}Z` }, ...n.map(([x, y], i) => ({ d: `M0 0L${x} ${y}`, delay: i })), ...n.map(([x, y], i) => ({ d: d(x, y, 11), delay: i }))],
+      fills: [{ d: d(0, 0, 24) }],
+    };
+  },
+  // an open door: a diamond frame opened on one side, a path of dots walking in
+  careers: () => ({
+    lines: [{ d: 'M0 -116L78 0L0 116' }, { d: 'M0 -116L-30 -70' }, { d: 'M0 116L-30 70' }],
+    fills: [{ d: d(18, 0, 18) }],
+    soft: [-100, -80, -60, -40, -20].map((x, i) => ({ d: d(x, 60 - i * 12, 4 + i), delay: i })),
+  }),
+  // 404: a lattice with one diamond gone
+  missing: () => ({
+    lines: [-1, 0, 1].flatMap((r) => [-1, 0, 1].filter((c) => !(r === 0 && c === 1)).map((c) => ({ d: d(c * 64, r * 64, 28), delay: r * 3 + c + 4 }))),
+    soft: [-1, 0, 1].flatMap((r) => [-1, 0, 1].filter((c) => !(r === 0 && c === 1)).map((c) => ({ d: d(c * 64, r * 64, 12) }))),
+    fills: [{ d: d(64, 0, 6) }],
+  }),
+  // agents: a core and three workers on one orbit
+  agents: () => ({
+    lines: [{ d: 'M-96 0a96 96 0 1 0 192 0a96 96 0 1 0 -192 0' }, { d: 'M-96 0a96 34 0 1 0 192 0a96 34 0 1 0 -192 0', delay: 2 }, { d: d(0, 0, 30), delay: 1 }],
+    fills: [{ d: d(0, 0, 14) }],
+    spin: ring(96, 3).map(([x, y]) => ({ d: d(x, y, 11) })),
+  }),
+  // language: keys of a keyboard, one pressed, with the ʻ mark the Uzbek alphabet needs
+  language: () => ({
+    lines: [-1, 0, 1].flatMap((c) => [-1, 0].map((r) => ({ d: rr(c * 76 - 34, r * 76 - 2, 68, 68, 10), delay: c + r + 2 }))),
+    fills: [{ d: rr(-34, -2, 68, 68, 10) }],
+    soft: [{ d: 'M-4 -38c-10 -3 -14 -14 -8 -22c4 -6 12 -8 17 -5c-6 3 -8 9 -5 14c2 4 7 5 10 4c-3 7 -8 11 -14 9z' }],
+  }),
+  // infrastructure: three stacked plates, the top one live
+  infrastructure: () => ({
+    lines: [...[56, 0].map((y, i) => ({ d: `M-104 ${y}L0 ${y - 44}L104 ${y}L0 ${y + 44}Z`, delay: i + 1 })), { d: 'M-104 56V70L0 114L104 70V56' }],
+    fills: [{ d: 'M-104 -56L0 -100L104 -56L0 -12Z' }],
+    soft: [{ d: d(0, 0, 10) }, { d: d(0, 56, 10) }],
+  }),
+  // supply chain: four linked diamonds, one verified
+  'supply-chain': () => ({
+    lines: [-84, -28, 28, 84].map((x, i) => ({ d: d(x, +(x * 0.6).toFixed(1), 40), delay: i })),
+    fills: [{ d: d(28, 16.8, 16) }],
+    soft: [{ d: d(-84, -50.4, 8) }, { d: d(-28, -16.8, 8) }, { d: d(84, 50.4, 8) }],
+  }),
+  // interfaces: a window with a pointer
+  interfaces: () => ({
+    lines: [{ d: rr(-124, -84, 248, 168, 12) }, { d: 'M-124 -52H124' }, { d: 'M-90 -16H40', delay: 1 }, { d: 'M-90 12H8', delay: 2 }, { d: 'M-90 40H60', delay: 3 }],
+    fills: [{ d: 'M60 30L104 48L84 56L98 80L88 86L74 62L60 76Z' }],
+    soft: [{ d: d(-104, -68, 5) }, { d: d(-88, -68, 5) }, { d: d(-72, -68, 5) }],
+  }),
+  // faith and society: dtwin's 24-hour ring with the five prayer times marked
+  faith: () => ({
+    lines: [{ d: 'M-100 0a100 100 0 1 0 200 0a100 100 0 1 0 -200 0' }, ...ring(1, 24).map(([x, y], i) => ({ d: `M${(x * 84).toFixed(1)} ${(y * 84).toFixed(1)}L${(x * (i % 6 ? 90 : 74)).toFixed(1)} ${(y * (i % 6 ? 90 : 74)).toFixed(1)}`, delay: i / 3 }))],
+    fills: [5.3, 12.6, 16.1, 18.7, 20.1].map((h, i) => { const [x, y] = pt(100, (Math.PI * 2 * h) / 24 - Math.PI / 2); return { d: d(x, y, 10), delay: i }; }),
+    soft: [{ d: d(0, 0, 18) }],
+  }),
+  // digital assets: a stack of coins under a diamond
+  assets: () => ({
+    lines: [...[60, 30, 0].map((y, i) => ({ d: `M-80 ${y}a80 26 0 1 0 160 0a80 26 0 1 0 -160 0`, delay: i })), { d: 'M-80 0V60M80 0V60' }],
+    fills: [{ d: d(0, -64, 36) }],
+  }),
+  // engineering: angle brackets around a diamond
+  engineering: () => ({
+    lines: [{ d: 'M-56 -80L-112 0L-56 80' }, { d: 'M56 -80L112 0L56 80', delay: 1 }, { d: 'M26 -100L-26 100', delay: 2 }],
+    fills: [{ d: d(0, 0, 18) }],
+  }),
+  // products: a grid of tiles, each a product, one in focus
+  products: () => ({
+    lines: [-1, 0, 1].flatMap((r) => [-1, 0, 1].map((c) => ({ d: rr(c * 76 - 30, r * 76 - 30, 60, 60, 8), delay: r + c + 2 }))),
+    fills: [{ d: d(0, 0, 20) }],
+    soft: [{ d: d(-76, -76, 10) }, { d: d(76, 76, 10) }, { d: d(76, -76, 6) }],
+  }),
+  // company: the mark's story, a diamond above the W it becomes
+  company: () => ({
+    lines: [{ d: 'M-110 -30L-55 80L0 -30L55 80L110 -30' }, { d: 'M-90 -30H90', delay: 2 }],
+    fills: [{ d: d(0, -78, 26) }],
+  }),
+  // open source: branches leaving a trunk
+  'open-source': () => ({
+    lines: [{ d: 'M-70 110V-110' }, { d: 'M-70 40C-70 0 60 20 60 -30V-74', delay: 1 }, { d: 'M-70 -10C-70 -40 0 -40 0 -74', delay: 2 }],
+    fills: [{ d: d(60, -90, 16) }],
+    soft: [{ d: d(-70, 110, 9) }, { d: d(-70, -110, 9) }, { d: d(0, -90, 9) }],
+  }),
+  // security: a shield shaped from the diamond, a keyhole inside
+  security: () => ({
+    lines: [{ d: 'M0 -116L96 -70V0C96 60 46 96 0 116C-46 96 -96 60 -96 0V-70Z' }, { d: 'M0 -84L66 -52V0C66 40 34 66 0 82C-34 66 -66 40 -66 0V-52Z', delay: 2 }],
+    fills: [{ d: 'M0 -30a16 16 0 0 1 9 29l7 33h-32l7 -33a16 16 0 0 1 9 -29z' }],
+  }),
+  // transparency: nested diamonds you can see through
+  transparency: () => ({
+    lines: [112, 84, 56, 28].map((r, i) => ({ d: d(0, 0, r), delay: i })),
+    fills: [{ d: d(0, 0, 12) }],
+    soft: [{ d: d(0, -84, 6) }, { d: d(84, 0, 6) }, { d: d(0, 84, 6) }, { d: d(-84, 0, 6) }],
+  }),
+  // release levels: gates, a filled diamond for each one passed
+  release: () => ({
+    lines: [...[-80, 0, 80].map((x, i) => ({ d: `M${x - 26} 90V-50L${x} -80L${x + 26} -50V90`, delay: i })), { d: 'M-120 90H120' }],
+    fills: [{ d: d(-80, 30, 14) }, { d: d(0, 30, 14), delay: 1 }],
+    soft: [{ d: d(80, 30, 14) }],
+  }),
+  // legal: a document with lines and a seal
+  legal: () => ({
+    lines: [{ d: 'M-76 -112H40L84 -68V112H-76Z' }, { d: 'M40 -112V-68H84' }, ...[-56, -30, -4, 22].map((y, i) => ({ d: `M-50 ${y}H${i % 2 ? 30 : 56}`, delay: i }))],
+    fills: [{ d: d(36, 74, 20) }],
+  }),
+  // events: a calendar with one day marked
+  events: () => ({
+    lines: [{ d: 'M-108 -84H108V100H-108Z' }, { d: 'M-108 -44H108' }, { d: 'M-60 -106V-64M60 -106V-64' }, ...[-1, 0, 1].map((c) => ({ d: `M${c * 54} -44V100`, delay: c + 2 })), { d: 'M-108 28H108', delay: 3 }],
+    fills: [{ d: d(54, 64, 18) }],
+  }),
+  // timeline: a line of diamonds, the latest one filled
+  timeline: () => ({
+    lines: [{ d: 'M-120 0H120' }, ...[-96, -48, 0, 48].map((x, i) => ({ d: d(x, 0, 14), delay: i }))],
+    fills: [{ d: d(96, 0, 18) }],
+    soft: [-96, -48, 0, 48].map((x, i) => ({ d: rr(x - 2, i % 2 ? 22 : -58, 4, 36, 2) })),
+  }),
+  // brand: diamond, V, W, the three frames of the brand film
+  brand: () => ({
+    lines: [{ d: 'M-34 -40L-4 40L26 -40', delay: 2 }, { d: 'M40 -40L62 40L84 -40L106 40L128 -40', delay: 4 }],
+    fills: [{ d: d(-92, 0, 30) }],
+  }),
+  // contact: two speech shapes meeting
+  contact: () => ({
+    lines: [{ d: 'M-90 -76h106a14 14 0 0 1 14 14v60a14 14 0 0 1 -14 14h-64l-30 26v-26h-12a14 14 0 0 1 -14 -14v-60a14 14 0 0 1 14 -14z' }, { d: 'M-10 22h100a14 14 0 0 1 14 14v52a14 14 0 0 1 -14 14h-14v24l-28 -24h-58a14 14 0 0 1 -14 -14v-52a14 14 0 0 1 14 -14z', delay: 2 }],
+    fills: [{ d: d(40, 62, 12) }],
+    soft: [{ d: d(-62, -32, 6) }, { d: d(-38, -32, 6) }, { d: d(-14, -32, 6) }],
+  }),
+  // founder: one diamond with the agents around it
+  founder: () => ({
+    lines: [{ d: 'M-96 0a96 96 0 1 0 192 0a96 96 0 1 0 -192 0' }, ...ring(96, 4, Math.PI / 4).map(([x, y], i) => ({ d: d(x, y, 12), delay: i + 1 }))],
+    fills: [{ d: d(0, 0, 40) }],
+  }),
+  // useful first: a phone with the day on it
+  useful: () => ({
+    lines: [{ d: rr(-72, -116, 144, 232, 18) }, { d: 'M-40 -64H40', delay: 1 }, { d: 'M-40 -34H20', delay: 2 }, { d: 'M-40 -4H36', delay: 3 }],
+    fills: [{ d: d(0, 56, 22) }],
+  }),
+};
+const em = E[motif]();
+const id = `pl-${motif}-${ratio.replace('/', '')}`;
+---
+<div class:list={['plate', `plate--${t}`, idle && 'plate--idle', cls]} style={`aspect-ratio:${ratio}`} aria-hidden="true">
+  <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <pattern id={`${id}-p`} class="plate__dots" width="24" height="24" patternUnits="userSpaceOnUse">
+        <circle cx="0" cy="0" r="1.2" /><circle cx="24" cy="0" r="1.2" /><circle cx="0" cy="24" r="1.2" /><circle cx="24" cy="24" r="1.2" /><circle cx="12" cy="12" r="1.2" />
+      </pattern>
+      <pattern id={`${id}-q`} class="plate__dots plate__dots--lit" width="24" height="24" patternUnits="userSpaceOnUse">
+        <circle cx="0" cy="0" r="1.5" /><circle cx="24" cy="0" r="1.5" /><circle cx="0" cy="24" r="1.5" /><circle cx="24" cy="24" r="1.5" /><circle cx="12" cy="12" r="1.5" />
+      </pattern>
+      <radialGradient id={`${id}-g`} cx="50%" cy="48%" r="55%"><stop offset="0" stop-color="#fff" /><stop offset="1" stop-color="#fff" stop-opacity="0" /></radialGradient>
+      <mask id={`${id}-m`}><rect width={W} height={H} fill={`url(#${id}-g)`} /></mask>
+    </defs>
+    <rect class="plate__bg" width={W} height={H} />
+    <rect class="plate__lattice" width={W} height={H} fill={`url(#${id}-p)`} />
+    <rect class="plate__lattice plate__lattice--lit" width={W} height={H} fill={`url(#${id}-q)`} mask={`url(#${id}-m)`} />
+    <g transform={`translate(${W / 2} ${H / 2}) scale(${flip ? -k : k} ${k})`}>
+      <g class="plate__em"><circle r="130" fill="none" />
+        {em.soft?.map((s) => <path class="plate__soft" d={s.d} />)}
+        {em.lines.map((s) => <path class="plate__line" d={s.d} pathLength="1" style={`--i:${s.delay ?? 0}`} />)}
+        {em.spin && <g class="plate__spin"><circle r="110" fill="none" />{em.spin.map((s) => <path class="plate__fill" d={s.d} />)}</g>}
+        {em.fills?.map((s) => <path class="plate__fill" d={s.d} style={`--i:${s.delay ?? 0}`} />)}
+      </g>
+    </g>
+  </svg>
+</div>
+
+<style>
+  /* Tones mix the brand colours into the current theme's surfaces, so one plate sits right on all nine themes. */
+  .plate { position: relative; overflow: hidden; border-radius: var(--radius-media); isolation: isolate;
+    --pl-bg: var(--wm-ink); --pl-dot: rgba(143, 180, 255, .2); --pl-dot-lit: rgba(143, 180, 255, .75); --pl-line: rgba(224, 232, 255, .9);
+    --pl-fill: var(--wm-blue); --pl-soft: rgba(143, 180, 255, .28); }
+  .plate--blue { --pl-bg: var(--wm-blue); --pl-dot: rgba(255, 255, 255, .2); --pl-dot-lit: rgba(255, 255, 255, .8); --pl-line: rgba(255, 255, 255, .94);
+    --pl-fill: var(--wm-ink); --pl-soft: rgba(255, 255, 255, .26); }
+  .plate--mist { --pl-bg: color-mix(in oklab, var(--theme-background-primary), var(--wm-blue) 11%);
+    --pl-dot: color-mix(in oklab, var(--theme-foreground-primary) 18%, transparent); --pl-dot-lit: color-mix(in oklab, var(--wm-blue) 85%, transparent);
+    --pl-line: var(--theme-foreground-primary); --pl-fill: var(--wm-blue); --pl-soft: color-mix(in oklab, var(--wm-blue) 26%, transparent); }
+  .plate--sand { --pl-bg: color-mix(in oklab, var(--theme-background-primary), #c9a45c 26%);
+    --pl-dot: color-mix(in oklab, var(--theme-foreground-primary) 16%, transparent); --pl-dot-lit: color-mix(in oklab, var(--wm-blue) 80%, transparent);
+    --pl-line: var(--theme-foreground-primary); --pl-fill: var(--wm-blue); --pl-soft: color-mix(in oklab, var(--theme-foreground-primary) 13%, transparent); }
+  .plate::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--theme-border-tertiary); pointer-events: none; }
+  .plate svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .plate__bg { fill: var(--pl-bg); }
+  .plate__dots circle { fill: var(--pl-dot); }
+  .plate__dots--lit circle { fill: var(--pl-dot-lit); }
+  .plate__lattice--lit { opacity: 0; transition: opacity .9s var(--ease-out-quart); }
+  .plate__line { fill: none; stroke: var(--pl-line); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round;
+    vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .plate__fill { fill: var(--pl-fill); transform-box: fill-box; transform-origin: center; }
+  .plate__soft { fill: var(--pl-soft); }
+  .plate__em, .plate__spin { transform-box: fill-box; transform-origin: center; }
+  @media (prefers-reduced-motion: no-preference) {
+    .plate__em { transition: transform 1.2s var(--ease-out-quart); }
+    .plate__fill { transition: transform .9s var(--ease-out-quart); transition-delay: calc(var(--i, 0) * 50ms); }
+    .plate__spin { transition: transform 2.4s var(--ease-out-quart); }
+    /* the card that holds the plate redraws its emblem line by line, lights the lattice and turns the accents */
+    :global(:is(a, li, article):is(:hover, :focus-visible)) .plate .plate__line { animation: plate-draw 1.1s var(--ease-out-quart) both; animation-delay: calc(var(--i, 0) * 70ms); }
+    :global(:is(a, li, article):is(:hover, :focus-visible)) .plate .plate__lattice--lit { opacity: 1; }
+    :global(:is(a, li, article):is(:hover, :focus-visible)) .plate .plate__em { transform: scale(1.04); }
+    :global(:is(a, li, article):is(:hover, :focus-visible)) .plate .plate__fill { transform: scale(1.2); }
+    :global(:is(a, li, article):is(:hover, :focus-visible)) .plate .plate__spin { transform: rotate(120deg); }
+    /* plates that stand alone (section heads) breathe the lattice slowly instead */
+    .plate--idle .plate__lattice--lit { animation: plate-breathe 7s ease-in-out infinite; }
+  }
+  @keyframes plate-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes plate-breathe { 0%, 100% { opacity: .12; } 50% { opacity: .8; } }
+  @media (forced-colors: active) { .plate__bg { fill: Canvas; } .plate__line { stroke: CanvasText; } .plate__fill { fill: Highlight; } }
+</style>

@@ -199,6 +199,13 @@ export const pages: PageDef[] = [
       uz: 'Wonmor mahsulotlaridagi zaiflik haqida qanday xabar berish, buning evaziga nima vaʼda qilamiz va qanchalik tez javob beramiz.',
       ru: 'Как сообщить об уязвимости в любом продукте Wonmor, что мы обещаем взамен и как быстро отвечаем.' } },
 
+  // ---------------- changelog ----------------
+  { key: 'changelog', path: '/changelog', group: 'news',
+    title: { en: 'Changelog', uz: 'Oʻzgarishlar jurnali', ru: 'Журнал изменений' },
+    lede: { en: 'Every dated release and milestone across Wonmor’s products in one place, newest first. Filter by product, or follow it by RSS.',
+      uz: 'Wonmor mahsulotlaridagi barcha sanali reliz va bosqichlar bir joyda, eng yangisi tepada. Mahsulot boʻyicha saralang yoki RSS orqali kuzating.',
+      ru: 'Все датированные релизы и этапы продуктов Wonmor в одном месте, новые сверху. Фильтруйте по продукту или следите через RSS.' } },
+
   // ---------------- company ----------------
   { key: 'company', path: '/company', group: 'company',
     title: { en: 'About Wonmor', uz: 'Wonmor haqida', ru: 'О Wonmor' },
@@ -297,7 +304,7 @@ export const footerGroups: { label: T; items: NavItem[] }[] = [
   { label: groups.research, items: [{ key: 'research' }, { key: 'research-agents' }, { key: 'research-language' }, { key: 'research-infrastructure' }, { key: 'research-supply-chain' }, { key: 'research-interfaces' }, { key: 'research-faith-society' }, { key: 'engineering' }] },
   { label: groups.products, items: [{ key: 'p-dtwin' }, { key: 'p-bitg' }, { key: 'p-teletwin' }, { key: 'p-gateway' }, { key: 'p-tunnel' }, { key: 'p-fam' }, { label: { en: 'All products', uz: 'Barcha mahsulotlar', ru: 'Все продукты' }, href: '/products' }] },
   { label: groups.commitments, items: [{ key: 'charter' }, { key: 'rrp' }, { key: 'open-source' }, { key: 'transparency' }] },
-  { label: groups.company, items: [{ key: 'company' }, { key: 'founder' }, { key: 'sponsorship' }, { key: 'timeline' }, { key: 'careers' }, { key: 'events' }, { key: 'brand' }, { label: groups.news, href: '/news' }] },
+  { label: groups.company, items: [{ key: 'company' }, { key: 'founder' }, { key: 'sponsorship' }, { key: 'timeline' }, { key: 'careers' }, { key: 'events' }, { key: 'brand' }, { label: groups.news, href: '/news' }, { key: 'changelog' }] },
   { label: { en: 'Help and security', uz: 'Yordam va xavfsizlik', ru: 'Помощь и безопасность' }, items: [
     { key: 'security' }, { key: 'contact' },
     { label: { en: 'Service status', uz: 'Xizmatlar holati', ru: 'Статус сервисов' }, href: 'https://status.dtwin.uz', external: true },

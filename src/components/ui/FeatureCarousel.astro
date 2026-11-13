@@ -1,0 +1,89 @@
+---
+/* Featured block (anthropic.com "Features" / engineering lead pattern, our own art): text left with a 01 / 04 pager and
+   arrows, a large picture right. One slide at a time, cross-faded; swipe on touch, arrow keys inside. Pictures are real
+   product screenshots when the item has one, otherwise a Wonmor plate for its subject. */
+import Icon from '../Icon.astro';
+import Plate, { type Motif } from '../Plate.astro';
+import { formatDate, type Locale } from '../../i18n/config';
+
+export interface FeatureItem { eyebrow: string; date: Date; title: string; desc: string; href: string; motif: Motif; seed?: string; img?: string }
+/** level: heading level of slide titles, one below the section that holds the carousel. */
+interface Props { locale: Locale; label: string; items: FeatureItem[]; cta: string; prevLabel: string; nextLabel: string; level?: 2 | 3 }
+const { locale, label, items, cta, prevLabel, nextLabel, level = 3 } = Astro.props;
+const H = level === 2 ? 'h2' : 'h3';
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+<div class="fc" data-carousel data-label={label}>
+  <div class="fc__stage">
+    {items.map((it, k) => (
+      <article class="fc__slide" data-slide data-active={k === 0 ? '' : undefined} aria-roledescription="slide" aria-label={`${k + 1} / ${items.length}`}>
+        <div class="fc__text">
+          <p class="fc__meta t-caption"><span class="fc__eyebrow">{it.eyebrow}</span><time datetime={it.date.toISOString().slice(0, 10)}>{formatDate(it.date, locale)}</time></p>
+          <H class="t-headline-4 fc__title"><a href={it.href} class="fc__link">{it.title}</a></H>
+          <p class="t-body-4 fg-2 fc__desc">{it.desc}</p>
+          <a class="btn btn--secondary btn--small btn--rounded btn--trailing fc__cta" href={it.href} tabindex="-1" aria-hidden="true">{cta}<Icon name="arrow-right" size={14} /></a>
+        </div>
+        <a class="fc__art" href={it.href} tabindex="-1" aria-hidden="true">
+          {it.img ? <img src={it.img} alt="" width="1512" height="945" loading={k === 0 ? 'eager' : 'lazy'} decoding="async" /> : <Plate motif={it.motif} seed={it.seed} ratio="16/9" />}
+        </a>
+      </article>
+    ))}
+  </div>
+  {items.length > 1 && (
+    <div class="fc__pager">
+      <button type="button" class="fc__btn" data-prev aria-label={prevLabel}><Icon name="arrow-left" size={16} /></button>
+      <span class="fc__count t-caption" aria-live="polite"><span data-index>01</span> / {pad(items.length)}</span>
+      <button type="button" class="fc__btn" data-next aria-label={nextLabel}><Icon name="arrow-right" size={16} /></button>
+    </div>
+  )}
+</div>
+
+<script>
+  import { initCarousels } from '../../scripts/carousel';
+  initCarousels();
+</script>
+
+<style>
+  .fc { position: relative; display: grid; }
+  .fc__stage { display: grid; }
+  .fc__slide { grid-area: 1 / 1; display: grid; gap: 24px; align-content: start; visibility: hidden; opacity: 0; }
+  .fc__slide[data-active] { visibility: visible; opacity: 1; }
+  :global(html:not(.js)) .fc__slide:first-child { visibility: visible; opacity: 1; }
+  .fc__art { order: -1; display: block; border-radius: var(--radius-media); overflow: hidden; aspect-ratio: 16 / 9; background: var(--theme-background-secondary); }
+  .fc__art img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .fc__art :global(.plate) { height: 100%; }
+  .fc__meta { display: flex; gap: 16px; color: var(--theme-foreground-tertiary); }
+  .fc__eyebrow { color: var(--theme-foreground-secondary); }
+  .fc__title { margin-top: 12px; max-width: 18em; }
+  .fc__link { color: inherit; text-decoration: none; }
+  .fc__link:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .15em; }
+  .fc__desc { margin-top: 12px; max-width: 34em; }
+  .fc__cta { margin-top: 20px; }
+  .fc__pager { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
+  .fc__count { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--theme-foreground-tertiary); min-width: 5.5em; text-align: center; }
+  .fc__count [data-index] { color: var(--theme-foreground-primary); }
+  .fc__btn { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+    border: 1px solid var(--theme-border-secondary); background: transparent; color: var(--theme-foreground-primary); transition: background-color .2s, border-color .2s, transform .3s var(--ease-out-quart); }
+  .fc__btn:hover { background: var(--theme-background-secondary); border-color: var(--theme-border-primary); }
+  .fc__btn[data-prev]:hover { transform: translateX(-2px); }
+  .fc__btn[data-next]:hover { transform: translateX(2px); }
+  @media (pointer: coarse) { .fc__btn { width: 44px; height: 44px; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .fc__slide { transition: opacity .6s var(--ease-out-quart), visibility 0s .6s; }
+    .fc__slide[data-active] { transition: opacity .6s var(--ease-out-quart), visibility 0s; }
+    .fc__slide .fc__text > * { transform: translateY(10px); transition: transform .7s var(--ease-out-quart); }
+    .fc__slide[data-active] .fc__text > * { transform: none; }
+    .fc__slide[data-active] .fc__text > :nth-child(2) { transition-delay: 60ms; }
+    .fc__slide[data-active] .fc__text > :nth-child(3) { transition-delay: 120ms; }
+    .fc__art :global(svg), .fc__art img { transform: scale(1.04); transition: transform 1.4s var(--ease-out-quart); }
+    .fc__slide[data-active] .fc__art :global(svg), .fc__slide[data-active] .fc__art img { transform: none; }
+  }
+  @media (min-width: 1024px) {
+    .fc { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: var(--grid-gutter); }
+    .fc__stage { grid-column: 1 / -1; grid-row: 1; }
+    .fc__slide { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: var(--grid-gutter); }
+    .fc__art { order: 0; }
+    .fc__text { padding-top: 20px; border-top: 1px solid var(--theme-border-secondary); }
+    .fc__pager { grid-column: 1; grid-row: 1; align-self: end; margin: 0 0 4px; z-index: 1; }
+  }
+</style>

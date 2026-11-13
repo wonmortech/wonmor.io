@@ -14,6 +14,9 @@ import Numbers from '../components/home/Numbers.astro';
 import ProductsIndex from '../components/products/ProductsIndex.astro';
 import ProductPage from '../components/products/ProductPage.astro';
 import AboutPage from '../components/company/AboutPage.astro';
+import ChangelogPage from '../components/ChangelogPage.astro';
+import NewsIndex from '../components/news/NewsIndex.astro';
+import { categories } from '../i18n/home';
 import FounderPage from '../components/company/FounderPage.astro';
 import TimelinePage from '../components/company/TimelinePage.astro';
 import ResearchIndex from '../components/research/ResearchIndex.astro';
@@ -63,6 +66,8 @@ const lite = (e: (typeof rposts)[number]) => ({ slug: e.id.split('/')[0], title:
 let rpost: (typeof rposts)[number] | undefined, RContent: any, rheadings: { depth: number; slug: string; text: string }[] = [];
 if (kind === 'rpost') { rpost = rposts.find((n) => n.id === id)!; ({ Content: RContent, headings: rheadings } = await render(rpost)); }
 const areaOf = (k: string) => k.replace(/^research-/, '') as Area;
+const areaCounts: Record<string, number> = { engineering: rposts.filter((r) => r.data.kind === 'engineering').length };
+for (const r of rposts) areaCounts[r.data.area] = (areaCounts[r.data.area] ?? 0) + 1;
 
 /* Policy / company documents: a page whose key has src/content/docs/<key>/<locale>.md renders as a document. */
 const doc = kind === 'page' && page ? (await getCollection('docs')).find((d) => d.id === `${page.key}/${locale}`) : undefined;
@@ -99,13 +104,8 @@ const meta = kind === 'home'
   )}
 
   {kind === 'news' && (
-    <section class="container page-top section-lg">
-      <div class="rule-row"><h1 class="t-caption-bold">{ui.latestNews[locale]}</h1><span class="t-caption fg-3">{formatDate(news[0].data.date, locale)}</span></div>
-      <h2 class="t-headline-2 news-h">{groups.news[locale]}</h2>
-      <div class="home-cards">
-        {news.map((n) => { const c = card(n); return <NewsCard locale={locale} {...c} cta={ui.readPost[locale]} />; })}
-      </div>
-    </section>
+    <NewsIndex locale={locale} news={news.map((n) => ({ slug: n.id.split('/')[0], title: n.data.title, description: n.data.description, date: n.data.date,
+      category: n.data.category, product: n.data.product, featured: n.data.featured }))} />
   )}
 
   {kind === 'post' && post && (
@@ -117,9 +117,10 @@ const meta = kind === 'home'
 
   {kind === 'page' && page && (
     page.key === 'research' ? <ResearchIndex locale={locale} page={page} posts={rposts.map(lite)} />
-    : page.key.startsWith('research-') ? <AreaPage locale={locale} page={page} area={areaOf(page.key)} posts={rposts.filter((r) => r.data.area === areaOf(page.key)).map(lite)} />
-    : page.key === 'engineering' ? <AreaPage locale={locale} page={page} posts={rposts.filter((r) => r.data.kind === 'engineering').map(lite)} />
+    : page.key.startsWith('research-') ? <AreaPage locale={locale} page={page} area={areaOf(page.key)} posts={rposts.filter((r) => r.data.area === areaOf(page.key)).map(lite)} counts={areaCounts} />
+    : page.key === 'engineering' ? <AreaPage locale={locale} page={page} posts={rposts.filter((r) => r.data.kind === 'engineering').map(lite)} counts={areaCounts} />
     : page.key === 'products' ? <ProductsIndex locale={locale} page={page} />
+    : page.key === 'changelog' ? <ChangelogPage locale={locale} page={page} />
     : page.group === 'products' && page.key.startsWith('p-') ? <ProductPage locale={locale} page={page} />
     : page.key === 'company' ? <AboutPage locale={locale} page={page} />
     : page.key === 'founder' ? <FounderPage locale={locale} page={page} />

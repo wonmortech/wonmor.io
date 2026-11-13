@@ -1,0 +1,279 @@
+---
+/* /news (anthropic.com newsroom pattern, Wonmor content and art):
+   1. "Latest" mosaic: a picture story and a text story left, the lead story with a large picture in the middle, three
+      text stories right; phones stack it.
+   2. "Highlights": featured posts in a carousel.
+   3. Every post as a table (title, summary, topic, date) with topic tabs (?group=), search, sort and "See more".
+   4. A dark band to the press kit, contact and security pages.
+   Pictures are real product screenshots when the post is about a product with one, otherwise a Wonmor plate. */
+import Icon from '../Icon.astro';
+import Plate, { type Motif } from '../Plate.astro';
+import FeatureCarousel from '../ui/FeatureCarousel.astro';
+import { formatDate, href, type Locale } from '../../i18n/config';
+import { categories } from '../../i18n/home';
+import { groups, pageByKey } from '../../i18n/pages';
+import { ui } from '../../i18n/ui';
+import { productMedia } from '../../data/media';
+
+export interface NewsLite { slug: string; title: string; description: string; date: Date; category: string; product?: string; featured: boolean }
+interface Props { locale: Locale; news: NewsLite[] }
+const { locale, news } = Astro.props;
+
+const motifByProduct: Record<string, Motif> = {
+  dtwin: 'faith', bitg: 'language', teletwin: 'interfaces', gateway: 'agents', tunnel: 'infrastructure', fam: 'agents', operobot: 'agents',
+  shop: 'products', gym: 'useful', med: 'useful', 'faktura-twin': 'interfaces', attendo: 'events', oilaviy: 'contact', 'primus-library': 'legal',
+  halvet: 'brand', xnosir: 'founder',
+};
+const motifByCategory: Record<string, Motif> = { announcements: 'company', company: 'company', engineering: 'engineering', research: 'research', product: 'products' };
+const motif = (n: NewsLite): Motif => (n.product && motifByProduct[n.product]) || motifByCategory[n.category] || 'company';
+const shot = (n: NewsLite) => (n.product ? productMedia(n.product).desktop : undefined);
+const url = (n: NewsLite) => href(locale, `/news/${n.slug}`);
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+const [lead, a, b, ...rest] = news;
+const right = rest.slice(0, 3);
+// highlights skip the six stories already in the mosaic, so no picture repeats on one screen
+const inMosaic = new Set([lead, a, b, ...right].filter(Boolean).map((n) => n.slug));
+const pool = news.filter((n) => n.featured && !inMosaic.has(n.slug));
+const highlights = (pool.length > 1 ? pool : news.filter((n) => !inMosaic.has(n.slug))).slice(0, 5).map((n) => ({
+  eyebrow: categories[n.category][locale], date: n.date, title: n.title, desc: n.description, href: url(n), motif: motif(n), seed: n.slug, img: shot(n),
+}));
+const cats = Object.keys(categories).filter((k) => news.some((n) => n.category === k));
+const L = {
+  latest: ui.latestNews,
+  highlights: { en: 'Highlights', uz: 'Muhim', ru: 'Главное' },
+  articles: { en: 'posts', uz: 'ta post', ru: 'публикаций' },
+  title: { en: 'Title', uz: 'Sarlavha', ru: 'Заголовок' },
+  summary: { en: 'Summary', uz: 'Qisqacha', ru: 'Кратко' },
+  topic: { en: 'Topic', uz: 'Mavzu', ru: 'Тема' },
+  date: { en: 'Date', uz: 'Sana', ru: 'Дата' },
+  search: { en: 'Search news', uz: 'Yangiliklardan qidirish', ru: 'Поиск по новостям' },
+  newest: { en: 'Newest first', uz: 'Avval yangilari', ru: 'Сначала новые' },
+  oldest: { en: 'Oldest first', uz: 'Avval eskilari', ru: 'Сначала старые' },
+  none: { en: 'No posts match.', uz: 'Mos post topilmadi.', ru: 'Ничего не найдено.' },
+  more: { en: 'See more', uz: 'Yana koʻrsatish', ru: 'Показать ещё' },
+  prev: { en: 'Previous', uz: 'Oldingi', ru: 'Назад' },
+  next: { en: 'Next', uz: 'Keyingi', ru: 'Вперёд' },
+  band: { en: 'Contact us or download our press kit', uz: 'Biz bilan bogʻlaning yoki press-kitni yuklab oling', ru: 'Свяжитесь с нами или скачайте пресс-кит' },
+};
+const band = [
+  { icon: 'arrow-up-right' as const, title: pageByKey['contact'].title, sub: { en: 'Press and partnerships', uz: 'Matbuot va hamkorlik', ru: 'Пресса и партнёрство' }, href: '/contact' },
+  { icon: 'download' as const, title: pageByKey['brand'].title, sub: { en: 'Logos, colours, film', uz: 'Logotip, ranglar, film', ru: 'Логотипы, цвета, фильм' }, href: '/brand' },
+  { icon: 'check' as const, title: pageByKey['security'].title, sub: { en: 'Report a vulnerability', uz: 'Zaiflik haqida xabar bering', ru: 'Сообщить об уязвимости' }, href: '/security' },
+];
+---
+<div class="nx">
+  <section class="container page-top" aria-labelledby="nx-l">
+    <div class="rule-row"><h1 class="t-caption-bold" id="nx-l">{L.latest[locale]}</h1><span class="t-caption fg-3">{formatDate(lead.date, locale)}</span></div>
+    <div class="nx__mosaic">
+      <div class="nx__col nx__col--l">
+        {[a, b].filter(Boolean).map((n, k) => (
+          <article class="nx__story">
+            <p class="nx__meta t-caption"><span>{categories[n.category][locale]}</span><time datetime={iso(n.date)}>{formatDate(n.date, locale)}</time></p>
+            {k === 0 && <a class="nx__thumb" href={url(n)} tabindex="-1" aria-hidden="true">{shot(n) ? <img src={shot(n)} alt="" width="1512" height="945" loading="lazy" decoding="async" /> : <Plate motif={motif(n)} seed={n.slug} ratio="16/9" />}</a>}
+            <h2 class="t-headline-5"><a class="nx__a" href={url(n)}>{n.title}</a></h2>
+            <p class="t-body-4 fg-2 nx__desc">{n.description}</p>
+          </article>
+        ))}
+      </div>
+      <article class="nx__lead">
+        <p class="nx__meta t-caption"><span>{categories[lead.category][locale]}</span><time datetime={iso(lead.date)}>{formatDate(lead.date, locale)}</time></p>
+        <a class="nx__media" href={url(lead)} tabindex="-1" aria-hidden="true">
+          {shot(lead) ? <img src={shot(lead)} alt="" width="1512" height="945" decoding="async" fetchpriority="high" /> : <Plate motif={motif(lead)} seed={lead.slug} ratio="16/9" />}
+        </a>
+        <h2 class="t-headline-3 nx__lead-title"><a class="nx__a" href={url(lead)}>{lead.title}</a></h2>
+        <p class="t-body-3 fg-2 nx__desc">{lead.description}</p>
+      </article>
+      <div class="nx__col nx__col--r">
+        {right.map((n) => (
+          <article class="nx__story nx__story--text">
+            <p class="nx__meta t-caption"><span>{categories[n.category][locale]}</span><time datetime={iso(n.date)}>{formatDate(n.date, locale)}</time></p>
+            <h2 class="t-headline-5"><a class="nx__a" href={url(n)}>{n.title}</a></h2>
+            <p class="t-body-4 fg-2 nx__desc">{n.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {highlights.length > 1 && (
+    <section class="container section-lg" aria-labelledby="nx-h">
+      <div class="rule-row"><h2 class="t-caption-bold" id="nx-h">{L.highlights[locale]}</h2></div>
+      <div class="nx__hl"><FeatureCarousel locale={locale} label={L.highlights[locale]} items={highlights} cta={ui.readPost[locale]} prevLabel={L.prev[locale]} nextLabel={L.next[locale]} /></div>
+    </section>
+  )}
+
+  <section class="container section-lg" data-filter-scope data-ntable aria-labelledby="nx-all">
+    <div class="nx__head">
+      <h2 class="t-headline-2" id="nx-all">{groups.news[locale]}</h2>
+      <div class="fbar nx__tabs" role="group" aria-label={ui.filterNews[locale]} data-filter data-filter-param="group">
+        <button type="button" class="fchip" data-filter-set="" aria-pressed="true">{ui.allNews[locale]}</button>
+        {cats.map((k) => <button type="button" class="fchip" data-filter-set={k} aria-pressed="false">{categories[k][locale]}</button>)}
+      </div>
+    </div>
+    <div class="nx__bar">
+      <p class="nx__count t-caption"><span data-filter-count>{news.length}</span> {L.articles[locale]}</p>
+      <div class="nx__tools">
+        <label class="nx__ctl"><span class="sr-only">{L.newest[locale]}</span>
+          <select data-nt-sort><option value="new">{L.newest[locale]}</option><option value="old">{L.oldest[locale]}</option></select>
+          <Icon name="chevron-down" size={14} />
+        </label>
+        <label class="nx__ctl"><span class="sr-only">{L.search[locale]}</span>
+          <input type="search" data-nt-q placeholder={L.search[locale]} autocomplete="off" />
+          <Icon name="search" size={14} />
+        </label>
+      </div>
+    </div>
+    <div class="nx__table" role="table" aria-labelledby="nx-all">
+      <div class="nx__tr nx__th" role="row">
+        <span role="columnheader">{L.title[locale]}</span><span role="columnheader">{L.summary[locale]}</span>
+        <span role="columnheader">{L.topic[locale]}</span><span role="columnheader">{L.date[locale]}</span>
+      </div>
+      <div role="rowgroup" data-nt-body>
+        {news.map((n) => (
+          <div class="nx__tr nx__tr--link" role="row" data-filter-key={n.category} data-date={iso(n.date)} data-text={`${n.title} ${n.description}`.toLowerCase()}>
+            <span role="cell" class="nx__t"><a class="nx__rowlink" href={url(n)}>{n.title}</a></span>
+            <span role="cell" class="nx__d">{n.description}</span>
+            <span role="cell" class="nx__c">{categories[n.category][locale]}</span>
+            <span role="cell" class="nx__dt"><time datetime={iso(n.date)}>{formatDate(n.date, locale)}</time><Icon name="arrow-right" size={14} /></span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="t-body-4 fg-3 nx__none" data-nt-none hidden>{L.none[locale]}</p>
+    <div class="nx__more"><button type="button" class="btn btn--secondary btn--small btn--rounded btn--trailing" data-nt-more hidden>{L.more[locale]}<Icon name="arrow-down" size={14} /></button></div>
+  </section>
+
+  <section class="nx__band theme-slate" aria-labelledby="nx-b">
+    <div class="container nx__band-in">
+      <h2 class="t-headline-4" id="nx-b">{L.band[locale]}</h2>
+      <ul class="nx__tiles" role="list">
+        {band.map((t) => (
+          <li><a class="nx__tile" href={href(locale, t.href)}>
+            <Icon name={t.icon} size={16} />
+            <span class="nx__tile-t">{t.title[locale]}</span>
+            <span class="nx__tile-s t-caption">{t.sub[locale]}</span>
+          </a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+  import { initFilters } from '../../scripts/filter';
+  initFilters();
+  // search, sort and "See more" on top of the topic filter (filter.ts hides rows of other topics)
+  document.querySelectorAll<HTMLElement>('[data-ntable]').forEach((root) => {
+    const body = root.querySelector<HTMLElement>('[data-nt-body]')!;
+    const rows = [...body.children] as HTMLElement[];
+    const q = root.querySelector<HTMLInputElement>('[data-nt-q]')!;
+    const sort = root.querySelector<HTMLSelectElement>('[data-nt-sort]')!;
+    const more = root.querySelector<HTMLButtonElement>('[data-nt-more]')!;
+    const none = root.querySelector<HTMLElement>('[data-nt-none]')!;
+    const count = root.querySelector<HTMLElement>('[data-filter-count]');
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-filter-set]')];
+    const per = 10;
+    let shown = per;
+    const render = () => {
+      const topic = chips.find((c) => c.getAttribute('aria-pressed') === 'true')?.dataset.filterSet ?? '';
+      const term = q.value.trim().toLowerCase();
+      const order = [...rows].sort((x, y) => { const c = (x.dataset.date ?? '').localeCompare(y.dataset.date ?? ''); return sort.value === 'old' ? c : -c; });
+      order.forEach((r) => body.append(r));
+      const hits = order.filter((r) => (!topic || r.dataset.filterKey === topic) && (!term || (r.dataset.text ?? '').includes(term)));
+      order.forEach((r) => { r.hidden = true; });
+      hits.forEach((r, k) => { r.hidden = k >= shown; });
+      if (count) count.textContent = String(hits.length);
+      none.hidden = hits.length > 0;
+      more.hidden = hits.length <= shown;
+    };
+    chips.forEach((c) => c.addEventListener('click', () => { shown = per; queueMicrotask(render); }));
+    q.addEventListener('input', () => { shown = per; render(); });
+    sort.addEventListener('change', render);
+    more.addEventListener('click', () => { shown += per; render(); });
+    render();
+  });
+</script>
+
+<style>
+  .nx__mosaic { display: grid; gap: 40px; margin-top: 24px; }
+  .nx__col { display: grid; gap: 32px; align-content: start; }
+  .nx__story { display: grid; gap: 10px; align-content: start; }
+  .nx__col--r .nx__story + .nx__story, .nx__col--l .nx__story + .nx__story { padding-top: 24px; border-top: 1px solid var(--theme-border-secondary); }
+  .nx__meta { display: flex; gap: 14px; color: var(--theme-foreground-tertiary); }
+  .nx__meta span { color: var(--theme-foreground-secondary); }
+  .nx__a { color: inherit; text-decoration: none; }
+  .nx__a::after { content: ''; position: absolute; inset: 0; }
+  .nx__story, .nx__lead { position: relative; }
+  .nx__desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .nx__thumb, .nx__media { position: relative; z-index: 1; display: block; border-radius: var(--radius-media); overflow: hidden; aspect-ratio: 16 / 9; background: var(--theme-background-secondary); }
+  .nx__thumb img, .nx__media img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .nx__thumb :global(.plate), .nx__media :global(.plate) { height: 100%; }
+  .nx__lead { display: grid; gap: 14px; align-content: start; }
+  .nx__lead-title { max-width: 20em; }
+  :is(.nx__thumb, .nx__media) :is(img, :global(svg)) { transition: transform 1s var(--ease-out-quart); }
+  @media (hover: hover) {
+    .nx__story:hover :is(h2, .nx__desc), .nx__lead:hover :is(h2, .nx__desc) { color: var(--theme-foreground-quaternary); }
+    .nx__story:hover .nx__thumb :is(img, :global(svg)), .nx__lead:hover .nx__media :is(img, :global(svg)) { transform: scale(1.025); }
+  }
+  .nx__story h2, .nx__lead h2, .nx__desc { transition: color .2s; }
+  @media (min-width: 1024px) {
+    .nx__mosaic { grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr); column-gap: var(--grid-gutter); }
+    .nx__col--l { order: -1; }
+  }
+  @media (max-width: 1023px) { .nx__lead { order: -1; } }
+
+  .nx__hl { margin-top: 28px; }
+
+  .nx__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; }
+  :global(.js) .nx__tabs { position: static; margin: 0; padding: 0; background: none; }
+  .nx__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 32px; padding-bottom: 14px; border-bottom: 1px solid var(--theme-border-secondary); }
+  .nx__count { font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--theme-foreground-tertiary); }
+  .nx__tools { display: none; }
+  :global(.js) .nx__tools { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nx__ctl { position: relative; display: inline-flex; align-items: center; }
+  .nx__ctl :is(select, input) { height: 36px; padding: 0 34px 0 14px; border-radius: 999px; border: 1px solid var(--theme-border-secondary); background: var(--theme-background-secondary);
+    color: var(--theme-foreground-primary); font: 500 var(--fs-caption-1)/1 var(--sans); }
+  .nx__ctl select { appearance: none; cursor: pointer; }
+  .nx__ctl input { width: min(240px, 60vw); }
+  .nx__ctl input::-webkit-search-cancel-button { display: none; }
+  .nx__ctl :global(.icon) { position: absolute; right: 12px; pointer-events: none; color: var(--theme-foreground-tertiary); }
+  @media (pointer: coarse) { .nx__ctl :is(select, input) { height: 44px; } }
+
+  .nx__tr { display: grid; gap: 4px 24px; padding: 16px 0; border-bottom: 1px solid var(--theme-border-tertiary); color: var(--theme-foreground-primary); text-decoration: none; }
+  .nx__tr[hidden] { display: none; }
+  .nx__th { display: none; }
+  .nx__tr--link { position: relative; }
+  .nx__rowlink { color: inherit; text-decoration: none; }
+  .nx__rowlink::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .nx__rowlink:focus-visible { outline: none; }
+  .nx__tr--link:has(.nx__rowlink:focus-visible) { outline: 2px solid var(--theme-focus-ring); outline-offset: 2px; }
+  .nx__t { font: 600 var(--fs-body-4)/1.35 var(--sans); }
+  .nx__d { color: var(--theme-foreground-secondary); font: 400 var(--fs-body-4)/1.45 var(--sans); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .nx__c, .nx__dt { font: 400 var(--fs-caption-1)/1.4 var(--sans); color: var(--theme-foreground-tertiary); }
+  .nx__dt { display: inline-flex; align-items: center; gap: 8px; }
+  .nx__dt :global(.icon) { margin-left: auto; opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .4s var(--ease-out-quart); }
+  @media (min-width: 900px) {
+    .nx__tr { grid-template-columns: minmax(0, 3.2fr) minmax(0, 4fr) minmax(0, 1.4fr) minmax(0, 1.6fr); align-items: baseline; padding: 14px 8px; margin-inline: -8px; border-radius: 8px; transition: background-color .2s; }
+    .nx__th { display: grid; padding-block: 10px; font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--theme-foreground-tertiary); }
+    .nx__d { -webkit-line-clamp: 1; }
+    .nx__tr--link:hover { background: var(--theme-background-secondary); }
+    .nx__tr--link:hover .nx__dt :global(.icon) { opacity: 1; transform: none; }
+  }
+  .nx__none { margin-top: 24px; }
+  .nx__more { display: flex; justify-content: center; margin-top: 32px; }
+  .nx__more [hidden] { display: none; }
+
+  .nx__band { background: var(--theme-background-primary); color: var(--theme-foreground-primary); padding-block: 56px; }
+  .nx__band-in { display: grid; gap: 28px; align-items: center; }
+  .nx__tiles { list-style: none; display: grid; gap: 10px; }
+  .nx__tile { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: center; padding: 14px 16px; border-radius: 12px; text-decoration: none;
+    color: inherit; background: var(--theme-background-secondary); border: 1px solid var(--theme-border-secondary); transition: background-color .2s, border-color .2s; }
+  .nx__tile :global(.icon) { grid-row: 1 / span 2; transition: transform .4s var(--ease-out-quart); }
+  .nx__tile-t { font: 600 var(--fs-body-4)/1.3 var(--sans); }
+  .nx__tile-s { color: var(--theme-foreground-tertiary); }
+  .nx__tile:hover { background: var(--theme-background-tertiary); border-color: var(--theme-border-primary); }
+  .nx__tile:hover :global(.icon) { transform: translate(1px, -1px) scale(1.12); }
+  @media (min-width: 768px) { .nx__tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .nx__band-in { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--grid-gutter); } }
+</style>

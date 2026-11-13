@@ -36,6 +36,30 @@ document.addEventListener('click', (e) => {
   const l = a?.hreflang.slice(0, 2);
   if (l && /^(en|uz|ru)$/.test(l)) { try { localStorage.setItem('wm-lang', l); } catch { /* storage blocked */ } }
 }, true);
+// Language suggestion (set by public/js/boot.js): a small dismissible banner in the visitor's own language.
+const suggest = doc.dataset.langSuggest;
+if (suggest === 'uz' || suggest === 'ru') {
+  const copy = {
+    uz: { text: 'Bu sahifa o‘zbek tilida ham bor.', go: 'O‘zbekchada ochish', close: 'Yopish' },
+    ru: { text: 'Эта страница есть и на русском.', go: 'Открыть на русском', close: 'Закрыть' },
+  }[suggest];
+  const bar = document.createElement('div');
+  bar.className = 'lang-hint';
+  bar.setAttribute('role', 'region');
+  bar.setAttribute('aria-label', copy.text);
+  bar.lang = suggest === 'uz' ? 'uz-Latn' : 'ru';
+  const p = document.createElement('p'); p.className = 'lang-hint__text'; p.textContent = copy.text;
+  const go = document.createElement('a'); go.className = 'btn btn--primary btn--small btn--rounded'; go.hreflang = suggest;
+  go.href = `/${suggest}${location.pathname}${location.search}${location.hash}`; go.textContent = copy.go;
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'lang-hint__close'; x.setAttribute('aria-label', copy.close);
+  x.innerHTML = '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  x.addEventListener('click', () => {
+    try { localStorage.setItem('wm-lang', 'en'); } catch { /* storage blocked */ }
+    bar.remove();
+  });
+  bar.append(p, go, x);
+  document.body.append(bar);
+}
 // Safety net: if a cached old boot.js did not know the saved theme, apply it here (one late repaint beats a wrong theme).
 try {
   const saved = localStorage.getItem('wm-theme');

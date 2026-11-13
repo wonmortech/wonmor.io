@@ -148,3 +148,42 @@ a { color: inherit; }
 /* github-dark comments (#6A737D on #24292e) are 3:1; lift them to 4.5:1 in every dark theme. */
 :root:is([data-theme="dark"], [data-theme="ink"], [data-theme="cobalt"], [data-theme="glass"]) .astro-code span[style*="--shiki-dark:#6A737D"] { color: #959da5 !important; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme]) .astro-code span[style*="--shiki-dark:#6A737D"] { color: #959da5 !important; } }
+
+/* Language suggestion banner (src/scripts/header.ts) */
+.lang-hint { position: fixed; z-index: 150; left: var(--grid-margin); bottom: 20px; max-width: min(440px, calc(100vw - 2 * var(--grid-margin)));
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px; padding: 14px 14px 14px 18px; border-radius: 14px;
+  background: var(--theme-popup-background); color: var(--theme-foreground-primary); border: 1px solid var(--theme-border-secondary);
+  box-shadow: 0 12px 40px -12px rgba(0, 0, 0, .28); animation: lang-hint-in .5s var(--ease-rise) both; }
+.lang-hint__text { flex: 1 1 180px; font: 500 var(--fs-body-4)/1.4 var(--sans); }
+.lang-hint__close { display: grid; place-items: center; width: 40px; height: 40px; margin: -4px -4px -4px 0; border: 0; border-radius: 10px;
+  background: transparent; color: var(--theme-foreground-secondary); cursor: pointer; }
+.lang-hint__close:hover { background: var(--theme-background-tertiary); color: var(--theme-foreground-primary); }
+@keyframes lang-hint-in { from { opacity: 0; transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .lang-hint { animation: none; } }
+
+/* Filter bar + chips (src/scripts/filter.ts): hidden without JS, sticky under the header, scrolls sideways on phones */
+.fbar { display: none; }
+.js .fbar { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 8px var(--grid-margin) 12px; margin-inline: calc(var(--grid-margin) * -1);
+  position: sticky; top: var(--header-nav-height); z-index: 5; background: var(--theme-background-primary); }
+.fbar::-webkit-scrollbar { display: none; }
+@media (min-width: 1024px) { .js .fbar { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; } }
+.fchip { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--theme-border-secondary); background: transparent; color: var(--theme-foreground-secondary);
+  font: 500 var(--fs-caption-1)/1 var(--sans); transition: background-color .2s, color .2s, border-color .2s; }
+.fchip span { font-variant-numeric: tabular-nums; color: var(--theme-foreground-tertiary); transition: color .2s; }
+.fchip i { width: 8px; height: 8px; flex: none; transform: rotate(45deg); border-radius: 1px; background: var(--c, var(--wm-blue)); transition: transform .4s var(--ease-out-quart); }
+.fchip:hover { border-color: var(--theme-border-primary); color: var(--theme-foreground-primary); }
+.fchip:hover i { transform: rotate(135deg); }
+.fchip[aria-pressed="true"] { background: var(--theme-foreground-primary); border-color: var(--theme-foreground-primary); color: var(--theme-background-primary); }
+.fchip[aria-pressed="true"] span { color: inherit; opacity: .7; }
+@media (pointer: coarse) { .fchip { min-height: 44px; } }
+[data-filter-key][hidden], [data-filter-group][hidden] { display: none !important; }
+
+/* headings never break words with a hyphen (long product names read badly split) */
+:is(h1, h2, h3, h4) { hyphens: manual; overflow-wrap: break-word; }
+/* Russian has words longer than a phone line (Конфиденциальность), so it keeps automatic hyphenation */
+:lang(ru) :is(h1, h2, h3, h4) { hyphens: auto; }
+
+/* quiet and underlined links outside running text are at least 24px tall to tap (WCAG 2.5.8) */
+a:is(.link-quiet, .link-underline) { padding-block: 2px; }
+dd > a.link-underline { display: inline-block; min-width: 24px; }

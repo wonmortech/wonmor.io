@@ -1,0 +1,110 @@
+---
+/* /changelog: every dated product milestone (src/data/products.json via src/i18n/changelog.ts), grouped by month.
+   Product filter chips are buttons that hide rows on the client and keep the choice in ?product=, so a filtered view
+   can be shared; without JavaScript the chips are hidden and the whole list shows. RSS per language. */
+import Icon from './Icon.astro';
+import Plate from './Plate.astro';
+import { href, formatDate, type Locale, type T } from '../i18n/config';
+import type { PageDef } from '../i18n/pages';
+import { changes } from '../i18n/changelog';
+
+interface Props { locale: Locale; page: PageDef }
+const { locale, page } = Astro.props;
+
+const monthName: Record<Locale, string[]> = {
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  uz: ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'],
+  ru: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+};
+const monthLabel = (ym: string) => {
+  const [y, m] = ym.split('-').map(Number);
+  const n = monthName[locale][m - 1];
+  return locale === 'uz' ? `${y}-yil ${n}` : `${n} ${y}`;
+};
+const months = [...new Set(changes.map((c) => c.date.slice(0, 7)))].map((ym) => ({ ym, items: changes.filter((c) => c.date.startsWith(ym)) }));
+const counts = new Map<string, { name: T; n: number; accent: string }>();
+for (const c of changes) { const e = counts.get(c.product); if (e) e.n++; else counts.set(c.product, { name: c.name, n: 1, accent: c.accent }); }
+const filters = [...counts.entries()].sort((a, b) => b[1].n - a[1].n);
+const L = {
+  all: { en: 'All products', uz: 'Barcha mahsulotlar', ru: 'Все продукты' },
+  filter: { en: 'Filter by product', uz: 'Mahsulot boʻyicha saralash', ru: 'Фильтр по продукту' },
+  shown: { en: 'entries', uz: 'ta yozuv', ru: 'записей' },
+  rss: { en: 'RSS feed', uz: 'RSS lenta', ru: 'RSS-лента' },
+  source: { en: 'Each entry comes from the product’s page; dates are when the change went live.', uz: 'Har bir yozuv mahsulot sahifasidan olingan; sana — oʻzgarish ishga tushgan kun.', ru: 'Каждая запись взята со страницы продукта; дата — день, когда изменение заработало.' },
+} satisfies Record<string, T>;
+const rss = locale === 'en' ? '/changelog.xml' : `/${locale}/changelog.xml`;
+---
+<article class="cl" data-filter-scope>
+  <header class="container page-top cl__head">
+    <div class="cl__head-text">
+      <h1 class="t-headline-1 cl__title">{page.title[locale]}</h1>
+      <p class="t-sub-2 fg-2 cl__lede">{page.lede[locale]}</p>
+      <p class="cl__meta t-caption fg-3">
+        <span><b class="cl__count" data-filter-count>{changes.length}</b> {L.shown[locale]}</span>
+        <a class="link-quiet cl__rss" href={rss}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 3a10 10 0 0 1 10 10M3 7a6 6 0 0 1 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /><circle cx="3.6" cy="12.4" r="1.4" fill="currentColor" /></svg>
+          {L.rss[locale]}
+        </a>
+      </p>
+    </div>
+    <div class="cl__art"><Plate motif="timeline" ratio="16/9" idle /></div>
+  </header>
+
+  <div class="container cl__body">
+    <div class="fbar" role="group" aria-label={L.filter[locale]} data-filter data-filter-param="product">
+      <button type="button" class="fchip" data-filter-set="" aria-pressed="true">{L.all[locale]} <span>{changes.length}</span></button>
+      {filters.map(([key, f]) => (
+        <button type="button" class="fchip" data-filter-set={key} aria-pressed="false" style={`--c:${f.accent}`}><i aria-hidden="true"></i>{f.name[locale]} <span>{f.n}</span></button>
+      ))}
+    </div>
+
+    <div class="cl__months">
+      {months.map((m) => (
+        <section class="cl__month" aria-labelledby={`cl-${m.ym}`} data-filter-group>
+          <h2 class="cl__month-h t-caption-bold" id={`cl-${m.ym}`}>{monthLabel(m.ym)}</h2>
+          <ol class="cl__list" role="list">
+            {m.items.map((c) => (
+              <li class="cl__row" data-filter-key={c.product}>
+                <time class="cl__date t-caption fg-3" datetime={c.date}>{formatDate(new Date(`${c.date}T00:00:00Z`), locale)}</time>
+                <a class="cl__product t-caption-bold" href={href(locale, c.path)} style={`--c:${c.accent}`}><i aria-hidden="true"></i>{c.name[locale]}</a>
+                <p class="cl__text t-body-3">{c.text[locale]}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+    <p class="t-caption fg-3 cl__note"><Icon name="check" size={14} /> {L.source[locale]}</p>
+  </div>
+</article>
+
+<script>
+  import { initFilters } from '../scripts/filter';
+  initFilters();
+</script>
+
+<style>
+  .cl__head { display: grid; gap: 32px; align-items: end; }
+  .cl__lede { margin-top: 20px; max-width: 46ch; }
+  .cl__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 24px; }
+  .cl__count { font-weight: 600; color: var(--theme-foreground-primary); font-variant-numeric: tabular-nums; }
+  .cl__rss { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; }
+  @media (min-width: 1024px) { .cl__head { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--grid-gutter); } }
+
+  .cl__body { margin-top: 56px; padding-bottom: 96px; }
+  .cl__months { display: grid; gap: 48px; margin-top: 32px; }
+  .cl__month[hidden] { display: none; }
+  .cl__month-h { padding-bottom: 12px; border-bottom: 1px solid var(--theme-border-secondary); text-transform: capitalize; }
+  .cl__list { list-style: none; }
+  .cl__row { display: grid; gap: 6px 24px; grid-template-columns: minmax(0, 1fr); padding: 20px 0; border-bottom: 1px solid var(--theme-border-tertiary); }
+  .cl__row[hidden] { display: none; }
+  .cl__product { display: inline-flex; align-items: center; gap: 8px; min-height: 28px; justify-self: start; text-decoration: none; color: var(--theme-foreground-primary); }
+  .cl__product:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .cl__product i { width: 8px; height: 8px; flex: none; transform: rotate(45deg); border-radius: 1px; background: var(--c, var(--wm-blue)); transition: transform .4s var(--ease-out-quart); }
+  .cl__product:hover i { transform: rotate(135deg); }
+  .cl__text { max-width: 68ch; color: var(--theme-foreground-secondary); }
+  @media (min-width: 768px) {
+    .cl__row { grid-template-columns: 10rem 12rem minmax(0, 1fr); align-items: baseline; }
+  }
+  .cl__note { display: flex; align-items: center; gap: 8px; margin-top: 32px; }
+</style>

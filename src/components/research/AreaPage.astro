@@ -1,31 +1,49 @@
 ---
-/* /research/<area> and /engineering: header with the area mark, posts, related products, other areas. */
-import AreaMark from './AreaMark.astro';
-import PostRow, { type PostLite } from './PostRow.astro';
+/* /research/<area> and /engineering (anthropic.com engineering pattern, Wonmor art):
+   1. a one-sentence statement with the area's line icon set into it,
+   2. a featured carousel of the latest posts (when there are two or more),
+   3. every post with sort / grid-list / search / see more,
+   4. related products (real screenshots),
+   5. "Explore work from other areas". */
+import AreaIcon from '../ui/AreaIcon.astro';
+import FeatureCarousel from '../ui/FeatureCarousel.astro';
+import ExploreAreas from './ExploreAreas.astro';
+import PostBrowser from './PostBrowser.astro';
+import type { PostLite } from './PostRow.astro';
 import { href, type Locale } from '../../i18n/config';
 import { pageByKey, type PageDef } from '../../i18n/pages';
-import { areaList, areaPageKey, postCount, researchUi as R, type Area } from '../../data/research';
+import { areaList, areaMotif, areaPageKey, researchUi as R, type Area } from '../../data/research';
 import { productMedia } from '../../data/media';
-interface Props { locale: Locale; page: PageDef; posts: PostLite[]; area?: Area }
-const { locale, page, posts, area } = Astro.props;
+interface Props { locale: Locale; page: PageDef; posts: PostLite[]; area?: Area; counts: Record<string, number> }
+const { locale, page, posts, area, counts } = Astro.props;
 const meta = area ? areaList.find((a) => a.key === area)! : undefined;
 const research = pageByKey['research'];
+const lead = [...posts.filter((p) => p.featured), ...posts.filter((p) => !p.featured)].slice(0, 4);
+const items = lead.map((p) => ({
+  eyebrow: `${pageByKey[areaPageKey(p.area)].title[locale]} · ${R[p.kind][locale]}`, date: p.date, title: p.title, desc: p.description,
+  href: href(locale, `/${p.kind}/${p.slug}`), motif: areaMotif[p.area], seed: p.slug,
+}));
 ---
 <article class="ap">
   <header class="container page-top ap__head">
-    <div>
-      <p class="t-caption fg-3"><a class="link-quiet" href={href(locale, research.path)}>{research.title[locale]}</a></p>
-      <h1 class="t-headline-2 ap__title">{page.title[locale]}</h1>
-      {page.chip && <span class="chip chip--dot">{page.chip[locale]}</span>}
-      <p class="t-sub-3 fg-2 ap__lede">{page.lede[locale]}</p>
-    </div>
-    {meta && <AreaMark area={meta.key} color={meta.color} class="ap__mark" />}
+    <p class="t-caption fg-3 ap__crumb"><a class="link-quiet" href={href(locale, research.path)}>{research.title[locale]}</a></p>
+    <h1 class="ap__statement">
+      <span class="ap__name">{page.title[locale]}</span>
+      <span class="ap__badge" aria-hidden="true"><AreaIcon name={area ?? 'engineering'} size={30} /></span>
+      <span class="ap__lede">{page.lede[locale]}</span>
+    </h1>
+    {page.chip && <span class="chip chip--dot ap__chip">{page.chip[locale]}</span>}
   </header>
 
-  <section class="container section-lg" aria-label={page.title[locale]}>
-    <div class="rule-row"><h2 class="t-caption-bold">{R.all[locale]}</h2><span class="t-caption fg-3">{postCount(posts.length, locale)}</span></div>
-    {posts.length ? <ol class="ap__list" role="list">{posts.map((p) => <PostRow locale={locale} post={p} />)}</ol> : <p class="t-body-4 fg-3 ap__empty">{R.noPosts[locale]}</p>}
-  </section>
+  {items.length > 1 && (
+    <div class="container ap__feat">
+      <FeatureCarousel locale={locale} label={R.latest[locale]} items={items} cta={R.readPost[locale]} prevLabel={R.prev[locale]} nextLabel={R.next[locale]} level={2} />
+    </div>
+  )}
+
+  <div class="container section-lg">
+    {posts.length ? <PostBrowser locale={locale} posts={posts} label={page.title[locale]} /> : <p class="t-body-4 fg-3">{R.noPosts[locale]}</p>}
+  </div>
 
   {meta && meta.products.length > 0 && (
     <section class="container" aria-labelledby="ap-pr">
@@ -40,31 +58,24 @@ const research = pageByKey['research'];
     </section>
   )}
 
-  <nav class="container section-lg" aria-label={R.allAreas[locale]}>
-    <div class="rule-row"><h2 class="t-caption-bold">{R.allAreas[locale]}</h2></div>
-    <ul class="ap__areas" role="list">
-      {areaList.filter((a) => a.key !== area).map((a) => { const pg = pageByKey[areaPageKey(a.key)]; return (
-        <li><a class="ap__area" href={href(locale, pg.path)}><i style={`--c:${a.color}`}></i>{pg.title[locale]}</a></li>); })}
-    </ul>
-  </nav>
+  <ExploreAreas locale={locale} counts={counts} exclude={area ?? 'engineering'} />
 </article>
 
 <style>
-  .ap__head { display: grid; gap: 40px; align-items: end; }
-  @media (min-width: 1024px) { .ap__head { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); column-gap: var(--grid-gutter); } }
-  .ap__title { margin: 12px 0 16px; }
-  .ap__lede { max-width: 34em; margin-top: 20px; }
-  .ap__head :global(.ap__mark) { width: 100%; }
-  .ap__list { list-style: none; margin-top: 8px; border-bottom: 1px solid var(--theme-border-secondary); }
-  .ap__empty { margin-top: 24px; }
+  .ap__crumb { margin-bottom: 20px; }
+  .ap__statement { max-width: 30em; font: 500 clamp(26px, calc(26px + 14 * ((100vw - 390px) / 1530)), 40px)/1.22 var(--sans); letter-spacing: -.02em; text-wrap: pretty; hyphens: manual; }
+  .ap__name { font-weight: 700; color: var(--theme-foreground-primary); }
+  .ap__lede { color: var(--theme-foreground-secondary); }
+  .ap__badge { display: inline-grid; place-items: center; width: 1.25em; height: 1.25em; margin: 0 .15em; vertical-align: -.22em; border-radius: .28em;
+    background: var(--theme-foreground-primary); color: var(--theme-background-primary); }
+  .ap__badge :global(.aicon) { width: .82em; height: .82em; }
+  .ap__chip { margin-top: 20px; }
+  .ap__feat { margin-top: 64px; }
+  @media (min-width: 1024px) { .ap__feat { margin-top: 96px; } }
   .ap__prods { list-style: none; display: grid; gap: 32px var(--grid-gutter); margin-top: 28px; }
   @media (min-width: 768px) { .ap__prods { grid-template-columns: repeat(3, 1fr); } }
   .ap__prod { display: grid; gap: 8px; text-decoration: none; color: inherit; }
   .ap__pimg { display: block; aspect-ratio: 16 / 10; border-radius: var(--radius-media); overflow: hidden; background: #141413; margin-bottom: 6px; }
   .ap__pimg img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .8s var(--ease-out-quart); }
   @media (hover: hover) { .ap__prod:hover img { transform: scale(1.03); } }
-  .ap__areas { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .ap__area { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--theme-border-primary); text-decoration: none; font: 500 15px/1 var(--sans); transition: background-color .2s; }
-  .ap__area i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
-  @media (hover: hover) { .ap__area:hover { background: var(--theme-background-secondary); } }
 </style>

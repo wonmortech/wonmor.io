@@ -1,6 +1,6 @@
 ---
 /* "Learn more" carousel (DESIGN.md §5.8): rule eyebrow + 4:5 cards; scroll-snap instead of a JS carousel. */
-import Collage from '../Collage.astro';
+import Plate from '../Plate.astro';
 import { href, type Locale } from '../../i18n/config';
 import { pageByKey } from '../../i18n/pages';
 import { ui } from '../../i18n/ui';
@@ -15,7 +15,7 @@ const { locale } = Astro.props;
     {home.learnMore.map((c) => { const p = pageByKey[c.key]; return (
       <li class="lm__slide">
         <a class="lm__card" href={href(locale, p.path)}>
-          <Collage art={c.art} />
+          <Plate motif={c.art} />
           <h3 class="lm__title t-headline-5">{p.title[locale]}</h3>
           <p class="lm__sub t-caption">{c.sub[locale]}</p>
         </a>

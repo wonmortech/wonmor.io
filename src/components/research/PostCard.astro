@@ -1,0 +1,22 @@
+---
+/* Research/engineering post as a square picture card (grid view): date, plate for its area, title. */
+import Plate from '../Plate.astro';
+import { formatDate, href, type Locale } from '../../i18n/config';
+import { areaMotif } from '../../data/research';
+import type { PostLite } from './PostRow.astro';
+interface Props { locale: Locale; post: PostLite }
+const { locale, post } = Astro.props;
+---
+<a class="pcard" href={href(locale, `/${post.kind}/${post.slug}`)}>
+  <time class="pcard__date t-caption" datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date, locale)}</time>
+  <Plate motif={areaMotif[post.area]} seed={post.slug} ratio="1/1" />
+  <span class="pcard__title t-headline-5">{post.title}</span>
+</a>
+
+<style>
+  .pcard { display: grid; gap: 10px; text-decoration: none; color: var(--theme-foreground-primary); }
+  .pcard__date { color: var(--theme-foreground-tertiary); }
+  .pcard__title { margin-top: 4px; max-width: 22em; transition: color .2s; text-wrap: balance; }
+  @media (hover: hover) { .pcard:hover .pcard__title { color: var(--theme-foreground-quaternary); } }
+  .pcard:focus-visible .pcard__title { color: var(--theme-foreground-quaternary); }
+</style>
