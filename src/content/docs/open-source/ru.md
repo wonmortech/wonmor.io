@@ -34,7 +34,7 @@ GitHub показывает для bitg только Apache-2.0, потому ч
 
 ## Общие материалы Wonmor: wonmortech
 
-Материалы, которые относятся ко всему Wonmor, а не к одному продукту, лежат во второй организации — [github.com/wonmortech](https://github.com/wonmortech). Её семь репозиториев открыты 13 ноября 2026 года:
+Материалы, которые относятся ко всему Wonmor, а не к одному продукту, лежат во второй организации — [github.com/wonmortech](https://github.com/wonmortech). Первые семь репозиториев открыты 13 ноября 2026 года, с тех пор список вырос:
 
 | Репозиторий | Что это | Лицензия |
 |---|---|---|
@@ -45,6 +45,10 @@ GitHub показывает для bitg только Apache-2.0, потому ч
 | [brand](https://github.com/wonmortech/brand) | Знак, локапы, цвета и брендовый фильм | Не под открытой лицензией, см. [Бренд](/ru/brand/) |
 | [open-source-fund](https://github.com/wonmortech/open-source-fund) | Запланированный фонд: критерии и шаблон заявки; пока не открыт | CC BY 4.0 |
 | [.github](https://github.com/wonmortech/.github) | Профиль организации, руководство для участников, кодекс поведения и политика безопасности | — |
+| [muhr](https://github.com/wonmortech/muhr) | Запланировано: доказательства времени для документов, релизов и статей: хеш привязывается к Bitcoin через OpenTimestamps и к открытому журналу. Без токенов. [muhr.wonmor.io](https://muhr.wonmor.io) | Apache-2.0 |
+| [sanad](https://github.com/wonmortech/sanad) | Запланировано: проверяемые сертификаты и значки (W3C Verifiable Credentials 2.0), проверка офлайн или через Telegram-бота. Без токенов. [sanad.wonmor.io](https://sanad.wonmor.io) | Apache-2.0 |
+| [shaffof](https://github.com/wonmortech/shaffof) | Запланировано: благотворительные отчёты, запечатанные корнями Меркла, и калькулятор закята с источниками после проверки улемов. Не работает с деньгами. [shaffof.wonmor.io](https://shaffof.wonmor.io) | Apache-2.0 |
+| [wonmor.io](https://github.com/wonmortech/wonmor.io) | Исходный код этого сайта | Лицензии пока нет: открыт для чтения, но не под открытой лицензией |
 
 ## Что мы открываем по умолчанию
 

@@ -34,7 +34,7 @@ GitHub bitgʼni Apache-2.0 deb koʻrsatadi, chunki u bitta litsenziya faylini an
 
 ## Wonmorʼning umumiy materiallari: wonmortech
 
-Bitta mahsulotga emas, butun Wonmorʼga tegishli materiallar ikkinchi tashkilotda — [github.com/wonmortech](https://github.com/wonmortech) da turadi. Uning yettita repozitoriysi 2026-yil 13-noyabrda ochildi:
+Bitta mahsulotga emas, butun Wonmorʼga tegishli materiallar ikkinchi tashkilotda — [github.com/wonmortech](https://github.com/wonmortech) da turadi. Uning dastlabki yettita repozitoriysi 2026-yil 13-noyabrda ochildi, roʻyxat oʻshandan beri kengaydi:
 
 | Repozitoriy | Nima | Litsenziya |
 |---|---|---|
@@ -45,6 +45,10 @@ Bitta mahsulotga emas, butun Wonmorʼga tegishli materiallar ikkinchi tashkilotd
 | [brand](https://github.com/wonmortech/brand) | Belgi, lockupʼlar, ranglar va brend filmi | Ochiq litsenziya emas, [Brend](/uz/brand/) sahifasiga qarang |
 | [open-source-fund](https://github.com/wonmortech/open-source-fund) | Rejalashtirilgan fond: mezonlar va ariza shabloni; hali ochilmagan | CC BY 4.0 |
 | [.github](https://github.com/wonmortech/.github) | Tashkilot profili, hissa qoʻshish qoʻllanmasi, xulq kodeksi va xavfsizlik siyosati | — |
+| [muhr](https://github.com/wonmortech/muhr) | Rejalashtirilgan: hujjat, reliz va maqolalar uchun vaqt isboti: xesh OpenTimestamps orqali Bitcoinʼga va ochiq jurnalga bogʻlanadi. Token yoʻq. [muhr.wonmor.io](https://muhr.wonmor.io) | Apache-2.0 |
+| [sanad](https://github.com/wonmortech/sanad) | Rejalashtirilgan: tekshiriladigan sertifikat va nishonlar (W3C Verifiable Credentials 2.0), oflayn yoki Telegram bot orqali tekshiriladi. Token yoʻq. [sanad.wonmor.io](https://sanad.wonmor.io) | Apache-2.0 |
+| [shaffof](https://github.com/wonmortech/shaffof) | Rejalashtirilgan: Merkle ildizi bilan muhrlangan xayriya hisobotlari va ulamolar koʻrigidan keyin manbali zakot kalkulyatori. Pulga tegmaydi. [shaffof.wonmor.io](https://shaffof.wonmor.io) | Apache-2.0 |
+| [wonmor.io](https://github.com/wonmortech/wonmor.io) | Ushbu saytning manba kodi | Hozircha litsenziya yoʻq: oʻqish uchun ochiq, ochiq litsenziya emas |
 
 ## Sukut boʻyicha nimani ochamiz
 

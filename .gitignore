@@ -8,3 +8,5 @@ __pycache__/
 site/
 .playwright-cli/
 site-external-links.txt
+lhci/
+.lighthouseci/
