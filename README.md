@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/wonmortech/wonmor.io/actions/workflows/ci.yml/badge.svg)](https://github.com/wonmortech/wonmor.io/actions/workflows/ci.yml)
 [![Deploy](https://github.com/wonmortech/wonmor.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/wonmortech/wonmor.io/actions/workflows/deploy.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/wonmortech/wonmor.io/badge)](https://scorecard.dev/viewer/?uri=github.com/wonmortech/wonmor.io)
 
 Source of [wonmor.io](https://wonmor.io), the site of Wonmor, an independent studio from Uzbekistan. Static [Astro](https://astro.build) site in three languages: English at `/`, Uzbek at `/uz/`, Russian at `/ru/`.
 
