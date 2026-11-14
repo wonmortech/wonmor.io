@@ -1,0 +1,267 @@
+---
+/* /swarm — a free-standing page that a swarm of cursors builds live (see DESIGN.md in this folder).
+   Standalone layout on purpose: its own night theme, top bar and footer; shares only fonts and data with the site. */
+import '../../styles/tokens.css';
+import './swarm.css';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { href, asset, locales, htmlLang, ogLocale, localeShort, formatDate, type Locale } from '../../i18n/config';
+import { pageByKey } from '../../i18n/pages';
+import { clusters, pageKey } from '../../data/ecosystem';
+import { products } from '../../data/products';
+import { productMedia } from '../../data/media';
+import { numbers, numbersAsOf, timeline, timelineKinds } from '../../data/company';
+import { copy as C, fill } from './copy';
+
+interface Props { locale: Locale }
+const { locale: L } = Astro.props;
+const site = Astro.site ?? new URL('https://wonmor.io');
+const canonical = new URL(href(L, '/swarm'), site).toString();
+const ogImage = new URL(asset('/og/wonmor.png'), site).toString();
+const bootV = createHash('sha256').update(readFileSync('public/js/swarm-boot.js', 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 10);
+const fmt = new Intl.NumberFormat(L === 'uz' ? 'uz-Latn' : L);
+
+const list = clusters.flatMap((c) => c.products.map((p) => ({ key: p, cluster: c, page: pageByKey[pageKey(p)], data: products[p], media: productMedia(p) })));
+const total = list.length;
+const firstSentence = (s: string) => (s.match(/^.+?[.!?](\s|$)/)?.[0] ?? s).trim();
+
+const stackCount = new Map<string, number>();
+for (const p of list) for (const s of p.data.stack) stackCount.set(s, (stackCount.get(s) ?? 0) + 1);
+const stack = [...stackCount.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const maxStack = stack[0]?.[1] ?? 1;
+
+const heroStats = numbers.slice(0, 3);
+const cfg = {
+  locale: htmlLang[L],
+  you: C.hud.you[L],
+  verbs: Object.fromEntries(Object.entries(C.verbs).map(([k, v]) => [k, v[L]])),
+  clusters: clusters.map((c) => ({ color: c.color, products: c.products.length })),
+  agentColors: ['#2969ff', '#ff6b3d', '#ff4fa3', '#34d399', '#22d3ee', '#ffb020', '#f43f5e', '#8b6cff', '#a3e635', '#facc15'],
+};
+const jsonLd = { '@context': 'https://schema.org', '@type': 'WebPage', name: C.title[L], description: C.description[L], url: canonical, inLanguage: htmlLang[L], image: ogImage, publisher: { '@type': 'Organization', name: 'Wonmor', url: 'https://wonmor.io' } };
+---
+<!doctype html>
+<html lang={htmlLang[L]} class="sw-root">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{C.title[L]}</title>
+    <meta name="description" content={C.description[L]} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={new URL(href(l, '/swarm'), site).toString()} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(href('en', '/swarm'), site).toString()} />
+    <meta name="theme-color" content="#05060f" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href={asset('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={asset('/apple-touch-icon.png')} />
+    <link rel="preload" href={asset('/fonts/sans-latin.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={asset(L === 'ru' ? '/fonts/serif-cyrillic.woff2' : '/fonts/serif-latin.woff2')} as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Wonmor" />
+    <meta property="og:title" content={C.title[L]} />
+    <meta property="og:description" content={C.description[L]} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={ogLocale[L]} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline src={asset(`/js/swarm-boot.js?v=${bootV}`)}></script>
+  </head>
+  <body class="sw-body">
+    <canvas class="sw-canvas" data-sw-canvas aria-hidden="true"></canvas>
+    <div class="sw-fallback" aria-hidden="true">
+      <svg viewBox="4 2 33 28"><g fill="#2969ff"><g opacity=".5"><path d="M9.3704 3H22.6265C23.8941 3 25.0353 3.7685 25.5119 4.94317L27.25 9.22751H4.75L6.48432 4.94496C6.93972 3.82046 8.00401 3.06766 9.20572 3.00434L9.3704 3Z"/><path d="M4.75 12.3411H10.6056C11.6407 12.3411 12.6081 12.8555 13.187 13.7136L16 17.8836L18.8115 13.7141C19.3904 12.8557 20.3579 12.3411 21.3932 12.3411H27.25L16 29.0206Z"/></g><g transform="translate(9.4 0)"><path d="M9.3704 3H22.6265C23.8941 3 25.0353 3.7685 25.5119 4.94317L27.25 9.22751H4.75L6.48432 4.94496C6.93972 3.82046 8.00401 3.06766 9.20572 3.00434L9.3704 3Z"/><path d="M4.75 12.3411H10.6056C11.6407 12.3411 12.6081 12.8555 13.187 13.7136L16 17.8836L18.8115 13.7141C19.3904 12.8557 20.3579 12.3411 21.3932 12.3411H27.25L16 29.0206Z"/></g></g></svg>
+    </div>
+    <div class="sw-bar" data-sw-bar aria-hidden="true"></div>
+    <a class="sw-skiplink" href="#sw-main">{C.skip[L]}</a>
+
+    <header class="sw-top">
+      <a class="sw-brand" href={href(L, '/')} aria-label="Wonmor">
+        <svg viewBox="4 2 33 28" width="30" height="26" aria-hidden="true"><g fill="currentColor"><g opacity=".5"><path d="M9.3704 3H22.6265C23.8941 3 25.0353 3.7685 25.5119 4.94317L27.25 9.22751H4.75L6.48432 4.94496C6.93972 3.82046 8.00401 3.06766 9.20572 3.00434L9.3704 3Z"/><path d="M4.75 12.3411H10.6056C11.6407 12.3411 12.6081 12.8555 13.187 13.7136L16 17.8836L18.8115 13.7141C19.3904 12.8557 20.3579 12.3411 21.3932 12.3411H27.25L16 29.0206Z"/></g><g transform="translate(9.4 0)"><path d="M9.3704 3H22.6265C23.8941 3 25.0353 3.7685 25.5119 4.94317L27.25 9.22751H4.75L6.48432 4.94496C6.93972 3.82046 8.00401 3.06766 9.20572 3.00434L9.3704 3Z"/><path d="M4.75 12.3411H10.6056C11.6407 12.3411 12.6081 12.8555 13.187 13.7136L16 17.8836L18.8115 13.7141C19.3904 12.8557 20.3579 12.3411 21.3932 12.3411H27.25L16 29.0206Z"/></g></g></svg>
+        <span>swarm</span>
+      </a>
+      <div class="sw-hud" role="toolbar" aria-label="Swarm">
+        <span class="sw-hud__stat" aria-hidden="true"><b data-sw-agents>0</b> {C.hud.agents[L]}</span>
+        <span class="sw-hud__stat sw-hud__meter" aria-hidden="true" data-sw-meter><b data-sw-tasks>0/0</b> {C.hud.tasks[L]}</span>
+        <button type="button" class="sw-btn sw-btn--ghost" data-act="rebuild" title="R">{C.hud.rebuild[L]}</button>
+        <button type="button" class="sw-btn sw-btn--ghost sw-hide-s" data-act="wreck" title="W">{C.hud.wreck[L]}</button>
+        <button type="button" class="sw-btn sw-btn--ghost sw-hide-s" data-act="bp" aria-pressed="false" title="B">{C.hud.blueprint[L]}</button>
+        <button type="button" class="sw-btn sw-btn--ghost sw-hide-s" data-act="speed" title={C.hud.speed[L]}>{C.hud.speed[L]} <span data-v>1×</span></button>
+        <button type="button" class="sw-btn sw-btn--ghost" data-act="log" aria-pressed="false" title="L">{C.hud.log[L]}</button>
+        <button type="button" class="sw-btn sw-btn--ghost" data-act="skip" title="Esc">{C.hud.skip[L]}</button>
+      </div>
+      <nav class="sw-lang" aria-label="Language">
+        {locales.map((l) => <a href={href(l, '/swarm')} hreflang={htmlLang[l]} aria-current={l === L ? 'page' : undefined}>{localeShort[l]}</a>)}
+      </nav>
+    </header>
+
+    <main id="sw-main" data-pagefind-body>
+      <div id="sw" data-cfg={JSON.stringify(cfg)}>
+
+        <!-- 0 · hero -->
+        <section class="sw-hero" data-sw-sec data-stage="0" aria-labelledby="sw-h1">
+          <div class="sw-hero__text">
+            <p class="sw-eyebrow" data-b="stamp"><span>{C.eyebrow[L]}</span></p>
+            <h1 id="sw-h1" class="sw-h1" data-sw-h>
+              {C.h1[L].map((line, i) => <span class:list={['sw-h1__line', i === 1 && 'sw-h1__line--accent']} data-b="type">{line}</span>)}
+            </h1>
+            <p class="sw-sub" data-b="type">{C.sub[L]}</p>
+            <div class="sw-cta" data-b="stamp">
+              <button type="button" class="sw-btn sw-btn--primary" data-act="rebuild">{C.rebuild[L]}</button>
+              <button type="button" class="sw-btn" data-act="skip">{C.skip[L]}</button>
+            </div>
+            <dl class="sw-stats">
+              {heroStats.map((n) => (
+                <div class="sw-stat" title={typeof n.source === 'string' ? n.source : n.source[L]}>
+                  <dt data-b="stamp"><span>{n.label[L]}</span></dt>
+                  <dd data-b="count" data-to={n.value}>{fmt.format(n.value)}</dd>
+                </div>
+              ))}
+            </dl>
+            <p class="sw-keys sw-hide-s" aria-hidden="true">{C.keys[L]}</p>
+          </div>
+          <div class="sw-hero__art" data-b="mesh" data-label="WebGL · swarm" aria-hidden="true"></div>
+        </section>
+
+        <!-- 1 · products -->
+        <section class="sw-sec" data-sw-sec data-stage="1" aria-labelledby="sw-products">
+          <header class="sw-head">
+            <p class="sw-idx" data-b="stamp"><span>01 / {C.products[L]}</span></p>
+            <h2 id="sw-products" class="sw-h2" data-sw-h data-b="type">{C.productsH[L]}</h2>
+            <p class="sw-lede" data-b="paint">{fill(C.productsLede[L], { n: total })}</p>
+          </header>
+          <ul class="sw-grid" role="list">
+            {list.map((p, i) => {
+              const img = p.media.desktop ?? p.media.poster;
+              return (
+                <li style={`--c:${p.cluster.color}`} class:list={[i === 0 && 'sw-grid__wide']}>
+                  <a class="sw-card" href={href(L, p.page.path)} data-b="frame" data-label={`card · ${p.page.title[L]}`}>
+                    <span class="sw-card__shot" data-b="paint" data-label={`${p.key}.webp`}>
+                      {img ? <img src={img} alt="" width="1512" height="945" loading={i < 4 ? 'eager' : 'lazy'} decoding="async" /> : <span class="sw-card__mono">{p.page.title[L].slice(0, 1)}</span>}
+                    </span>
+                    <span class="sw-card__body">
+                      <span class="sw-card__top">
+                        <span class="sw-card__title" data-b="type">{p.page.title[L]}</span>
+                        {p.page.chip && <span class="sw-chip" data-b="stamp"><span>{p.page.chip[L]}</span></span>}
+                      </span>
+                      <span class="sw-card__lede" data-b="paint">{firstSentence(p.data.summary[L])}</span>
+                      <span class="sw-card__meta" data-b="stamp">
+                        <span class="sw-tag sw-tag--c">{p.cluster.label[L]}</span>
+                        {p.data.stack.slice(0, 3).map((s) => <span class="sw-tag">{s}</span>)}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        <!-- 2 · numbers -->
+        <section class="sw-sec sw-nums" data-sw-sec data-stage="2" aria-labelledby="sw-numbers">
+          <header class="sw-head">
+            <p class="sw-idx" data-b="stamp"><span>02 / data</span></p>
+            <h2 id="sw-numbers" class="sw-h2" data-sw-h data-b="type">{C.numbersH[L]}</h2>
+            <p class="sw-lede" data-b="paint">{numbersAsOf[L]}</p>
+          </header>
+          <dl class="sw-nums__grid">
+            {numbers.map((n) => (
+              <div class="sw-num" data-b="frame" title={typeof n.source === 'string' ? n.source : n.source[L]}>
+                <dt class="sw-num__l" data-b="paint">{n.label[L]}</dt>
+                <dd class="sw-num__v" data-b="count" data-to={n.value}>{fmt.format(n.value)}</dd>
+                <dd class="sw-num__src" data-b="paint">{typeof n.source === 'string' ? n.source : n.source[L]}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <!-- 2 · timeline -->
+        <section class="sw-sec sw-tl" data-sw-sec data-stage="2" aria-labelledby="sw-timeline">
+          <header class="sw-head">
+            <p class="sw-idx" data-b="stamp"><span>03 / timeline</span></p>
+            <h2 id="sw-timeline" class="sw-h2" data-sw-h data-b="type">{C.timelineH[L]}</h2>
+            <p class="sw-lede" data-b="paint">{C.timelineLede[L]}</p>
+          </header>
+          <div class="sw-tl__wrap">
+            <svg class="sw-tl__rail" data-b="ink" data-label="timeline rail" viewBox="0 0 10 1000" preserveAspectRatio="none" aria-hidden="true"><path d="M5 0 V1000" pathLength="1" vector-effect="non-scaling-stroke" /></svg>
+            <ol class="sw-tl__list">
+              {timeline.map((e) => (
+                <li class={`sw-tl__row sw-tl__row--${e.kind}`} data-b="paint" data-label={`${e.date} · ${timelineKinds[e.kind].en.toLowerCase()}`}>
+                  <span class="sw-tl__meta"><time datetime={e.date}>{formatDate(new Date(`${e.date}T00:00:00Z`), L)}</time><span class="sw-tag">{timelineKinds[e.kind][L]}</span></span>
+                  {e.href
+                    ? <a class="sw-tl__t" href={href(L, e.href)}>{e.title[L]}</a>
+                    : <span class="sw-tl__t">{e.title[L]}</span>}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <!-- 3 · stack -->
+        <section class="sw-sec sw-stack" data-sw-sec data-stage="3" aria-labelledby="sw-stackh">
+          <header class="sw-head">
+            <p class="sw-idx" data-b="stamp"><span>04 / stack</span></p>
+            <h2 id="sw-stackh" class="sw-h2" data-sw-h data-b="type">{C.stackH[L]}</h2>
+            <p class="sw-lede" data-b="paint">{C.stackLede[L]}</p>
+          </header>
+          <ul class="sw-cloud" role="list" data-b="stamp" data-label={`${stack.length} technologies`}>
+            {stack.map(([name, n]) => <li style={`--w:${(n / maxStack).toFixed(3)}`} title={`${n}`}><span>{name}</span><sup>{n}</sup></li>)}
+          </ul>
+        </section>
+
+        <!-- 3 · how -->
+        <section class="sw-sec sw-how" data-sw-sec data-stage="3" aria-labelledby="sw-howh">
+          <header class="sw-head">
+            <p class="sw-idx" data-b="stamp"><span>05 / how</span></p>
+            <h2 id="sw-howh" class="sw-h2" data-sw-h data-b="type">{C.howH[L]}</h2>
+          </header>
+          <ol class="sw-steps">
+            {C.steps.map((s, i) => (
+              <li class="sw-step" data-b="frame" data-label={`step ${i + 1}`}>
+                <svg class="sw-step__ico" data-b="ink" viewBox="0 0 48 48" aria-hidden="true">
+                  {i === 0 && <><rect x="6" y="8" width="36" height="32" rx="4" pathLength="1" /><path d="M6 18 H42" pathLength="1" /></>}
+                  {i === 1 && <><path d="M8 12 H40 M24 12 V40" pathLength="1" /><path d="M34 30 V42" pathLength="1" /></>}
+                  {i === 2 && <><path d="M6 36 C14 20, 22 40, 30 22 S40 10, 42 14" pathLength="1" /></>}
+                  {i === 3 && <><circle cx="24" cy="24" r="17" pathLength="1" /><path d="M15 24 L21.5 30.5 L33 18" pathLength="1" /></>}
+                </svg>
+                <span class="sw-step__n">0{i + 1}</span>
+                <h3 class="sw-step__k" data-b="type">{s.k[L]}</h3>
+                <p class="sw-step__t" data-b="paint">{s.t[L]}</p>
+              </li>
+            ))}
+          </ol>
+          <p class="sw-note" data-b="paint">{C.howNote[L]}</p>
+          <p class="sw-note sw-note--honest" data-b="paint">{C.honest[L]}</p>
+        </section>
+
+        <!-- 4 · final -->
+        <section class="sw-sec sw-final" data-sw-sec data-stage="4" aria-labelledby="sw-final">
+          <h2 id="sw-final" class="sw-h1 sw-final__h" data-sw-h data-b="type">{C.finalH[L]}</h2>
+          <p class="sw-sub" data-b="type">{C.finalLede[L]}</p>
+          <div class="sw-cta sw-cta--center" data-b="stamp">
+            <button type="button" class="sw-btn sw-btn--primary" data-act="rebuild">{C.wreckAll[L]}</button>
+            <a class="sw-btn" href={href(L, '/products')}>{C.products[L]}</a>
+            <a class="sw-btn" href={href(L, '/')}>{C.back[L]}</a>
+          </div>
+          <p class="sw-plain"><a href={`${href(L, '/swarm')}?static`}>{C.plain[L]}</a></p>
+        </section>
+      </div>
+    </main>
+
+    <aside class="sw-log" aria-hidden="true">
+      <p class="sw-log__h">swarm.log</p>
+      <ol data-sw-log></ol>
+    </aside>
+
+    <footer class="sw-foot">
+      <span>© 2026 Wonmor</span>
+      <a href={href(L, '/')}>wonmor.io</a>
+      <a href={href(L, '/legal/privacy')}>Privacy</a>
+      <span class="sw-foot__d">{formatDate(new Date('2026-11-15T00:00:00Z'), L)}</span>
+    </footer>
+
+    <script>
+      import '../../scripts/swarm/main.ts';
+    </script>
+  </body>
+</html>
