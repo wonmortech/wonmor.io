@@ -125,6 +125,8 @@ export const founder = {
 /** /company/timeline. Only public, dated events. */
 export type TLKind = 'career' | 'product' | 'org' | 'release';
 export const timeline: { date: string; kind: TLKind; title: T; text?: T; href?: string }[] = [
+  { date: '2026-11-13', kind: 'org', title: { en: 'Muhr, Sanad and Shaffof: three planned token-free proof tools go public', uz: 'Muhr, Sanad va Shaffof: rejalashtirilgan tokensiz uchta isbot vositasi ochildi', ru: 'Muhr, Sanad и Shaffof: открыты три запланированных инструмента доказательств без токенов' }, href: '/news/muhr-sanad-shaffof' },
+  { date: '2026-11-13', kind: 'release', title: { en: 'bitg 0.4.0: personal dictionary and verified updates', uz: 'bitg 0.4.0: shaxsiy lugʻat va tekshiriladigan yangilanish', ru: 'bitg 0.4.0: личный словарь и проверяемые обновления' }, href: '/news/introducing-bitg-0-4' },
   { date: '2026-11-13', kind: 'org', title: { en: 'wonmor.io becomes the studio site', uz: 'wonmor.io studiya saytiga aylandi', ru: 'wonmor.io становится сайтом студии' }, href: '/news/introducing-wonmor-io' },
   { date: '2026-11-13', kind: 'release', title: { en: 'bitg 0.3.1, then OpenSSF silver and gold', uz: 'bitg 0.3.1, keyin OpenSSF kumush va oltin', ru: 'bitg 0.3.1, затем серебро и золото OpenSSF' }, href: '/news/bitg-openssf-silver' },
   { date: '2026-11-13', kind: 'product', title: { en: 'Zero-downtime deploys on the dtwin edge', uz: 'dtwin edgeʼida uzilishsiz deploylar', ru: 'Деплои без простоя на edge dtwin' }, href: '/news/zero-downtime-deploys' },

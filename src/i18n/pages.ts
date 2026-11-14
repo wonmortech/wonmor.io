@@ -33,7 +33,7 @@ const C = {
   production: { en: 'In daily use', uz: 'Har kuni ishlatiladi', ru: 'Используется каждый день' },
   concept: { en: 'Concept', uz: 'Konsepsiya', ru: 'Концепт' },
   live: { en: 'Live', uz: 'Jonli', ru: 'Онлайн' },
-  oss: { en: 'Open source · v0.3.1', uz: 'Ochiq kod · v0.3.1', ru: 'Открытый код · v0.3.1' },
+  oss: { en: 'Open source · v0.4.0', uz: 'Ochiq kod · v0.4.0', ru: 'Открытый код · v0.4.0' },
 } satisfies Record<string, T>;
 
 export const pages: PageDef[] = [
@@ -74,11 +74,11 @@ export const pages: PageDef[] = [
       uz: 'Odamlar kunini qanday tashkil qilishini hurmat qiladigan dasturlar: besh vaqt namozga tayangan kun rejalashtirgichi, OpenStreetMapʼdan olingan 2 285 ta masjid xaritasi va qazo namozlarini rejalashtirish.',
       ru: 'Программы, которые уважают то, как люди на самом деле строят свой день: планировщик вокруг пяти ежедневных намазов, 2 285 мечетей на карте из OpenStreetMap и планирование пропущенных намазов.' } },
   { key: 'research-digital-assets', path: '/research/digital-assets', group: 'research',
-    chip: { en: 'Research only', uz: 'Faqat tadqiqot', ru: 'Только исследование' },
+    chip: { en: 'Research and experiments', uz: 'Tadqiqot va tajribalar', ru: 'Исследования и эксперименты' },
     title: { en: 'Digital assets', uz: 'Raqamli aktivlar', ru: 'Цифровые активы' },
-    lede: { en: 'An open question, not a product: whether a community app should have a token at all. Our current answer is no — the reasoning, covering Uzbek law, platform rules and Islamic finance, is written up as an architecture decision.',
-      uz: 'Bu mahsulot emas, ochiq savol: jamoa ilovasiga umuman token kerakmi? Hozirgi javobimiz — yoʻq. Oʻzbekiston qonunchiligi, platforma qoidalari va islomiy moliya nuqtai nazaridan asoslash arxitektura qarori sifatida yozib qoʻyilgan.',
-      ru: 'Это открытый вопрос, а не продукт: нужен ли приложению сообщества токен вообще. Наш текущий ответ — нет. Обоснование с учётом законов Узбекистана, правил платформ и исламских финансов записано как архитектурное решение.' } },
+    lede: { en: 'Should a community app have a token at all? Our answer is still no, for reasons of Uzbek law, platform rules and Islamic finance. What we kept from the technology instead are three planned open tools without tokens, each with a working in-browser demo today: Muhr for timestamp proofs, Sanad for verifiable certificates and Shaffof for verifiable charity reports.',
+      uz: 'Jamoa ilovasiga umuman token kerakmi? Javobimiz hamon yoʻq: Oʻzbekiston qonunchiligi, platforma qoidalari va islomiy moliya shuni koʻrsatadi. Buning oʻrniga texnologiyadan tokensiz uchta ochiq vositani rejalashtirdik, har birining brauzerda ishlaydigan namoyishi hozir bor: vaqt isboti uchun Muhr, tekshiriladigan sertifikatlar uchun Sanad va tekshiriladigan xayriya hisobotlari uchun Shaffof.',
+      ru: 'Нужен ли приложению сообщества токен вообще? Наш ответ по-прежнему нет — из-за законов Узбекистана, правил платформ и исламских финансов. Вместо этого мы запланировали три открытых инструмента без токенов, у каждого уже есть рабочая демонстрация в браузере: Muhr для доказательств времени, Sanad для проверяемых сертификатов и Shaffof для проверяемых благотворительных отчётов.' } },
   { key: 'engineering', path: '/engineering', group: 'research',
     title: { en: 'Engineering', uz: 'Muhandislik', ru: 'Инженерия' },
     lede: { en: 'Notes from building and running the dtwin ecosystem: deploys, builds, incidents and the fixes behind them, with the commands to reproduce each one.',

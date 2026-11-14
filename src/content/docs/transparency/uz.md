@@ -80,7 +80,7 @@ curl -s https://www.bestpractices.dev/projects/16620.json | jq .badge_level
 curl -s https://api.securityscorecards.dev/projects/github.com/dtwinuz/bitg | jq .score
 ```
 
-2026-yil 13-noyabrda bu buyruqlar 25 ta repozitoriy va 648 ta merge qilingan pull request (toʻliq kirish huquqi bilan sanalgan), bitg uchun “gold” nishon darajasi va 8,1 Scorecard bahosini qaytardi. Bosh sahifadagi raqamlarni biz shu buyruqlar bilan qayta sanaymiz (sayt repozitoriyasidagi `tools/count-numbers.mjs`), yonida sanash sanasi turadi; sanashlar orasida tashkilot harakatda davom etadi.
+2026-yil 14-noyabrda bu buyruqlar 26 ta repozitoriy va 659 ta merge qilingan pull request (toʻliq kirish huquqi bilan sanalgan), bitg uchun “gold” nishon darajasi va 8,5 Scorecard bahosini qaytardi. Bosh sahifadagi raqamlarni biz shu buyruqlar bilan qayta sanaymiz (sayt repozitoriyasidagi `tools/count-numbers.mjs`), yonida sanash sanasi turadi; sanashlar orasida tashkilot harakatda davom etadi.
 
 ## Raqam notoʻgʻri boʻlsa
 

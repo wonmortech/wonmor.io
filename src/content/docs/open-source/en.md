@@ -34,7 +34,7 @@ GitHub shows bitg as Apache-2.0 because it detects one licence file. bitg actual
 
 ## Shared Wonmor material: wonmortech
 
-Material that belongs to Wonmor as a whole, rather than to one product, lives in a second organization, [github.com/wonmortech](https://github.com/wonmortech). Its seven repositories went public on November 13, 2026:
+Material that belongs to Wonmor as a whole, rather than to one product, lives in a second organization, [github.com/wonmortech](https://github.com/wonmortech). Its first seven repositories went public on November 13, 2026, and the list has grown since:
 
 | Repository | What it is | Licence |
 |---|---|---|
@@ -45,6 +45,10 @@ Material that belongs to Wonmor as a whole, rather than to one product, lives in
 | [brand](https://github.com/wonmortech/brand) | The mark, lockups, colours and brand film | Not open-licensed, see [Brand](/brand/) |
 | [open-source-fund](https://github.com/wonmortech/open-source-fund) | The planned fund: criteria and application template; not open yet | CC BY 4.0 |
 | [.github](https://github.com/wonmortech/.github) | Organization profile, contributing guide, code of conduct and security policy | — |
+| [muhr](https://github.com/wonmortech/muhr) | Planned: timestamp proofs for documents, releases and articles: a hash anchored to Bitcoin through OpenTimestamps and a public log. No tokens. [muhr.wonmor.io](https://muhr.wonmor.io) | Apache-2.0 |
+| [sanad](https://github.com/wonmortech/sanad) | Planned: verifiable certificates and badges (W3C Verifiable Credentials 2.0), checked offline or through a Telegram bot. No tokens. [sanad.wonmor.io](https://sanad.wonmor.io) | Apache-2.0 |
+| [shaffof](https://github.com/wonmortech/shaffof) | Planned: charity reports sealed with Merkle roots, and a sourced zakat calculator after scholar review. Never handles money. [shaffof.wonmor.io](https://shaffof.wonmor.io) | Apache-2.0 |
+| [wonmor.io](https://github.com/wonmortech/wonmor.io) | The source of this site | No licence yet: public to read, not open-licensed |
 
 ## What we open by default
 

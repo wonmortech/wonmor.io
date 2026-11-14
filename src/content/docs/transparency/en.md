@@ -80,7 +80,7 @@ curl -s https://www.bestpractices.dev/projects/16620.json | jq .badge_level
 curl -s https://api.securityscorecards.dev/projects/github.com/dtwinuz/bitg | jq .score
 ```
 
-On November 13, 2026 these returned 25 repositories and 648 merged pull requests (counted with full access), a bitg badge level of "gold" and a Scorecard score of 8.1. The figures on the home page are recounted by us with the same commands (`tools/count-numbers.mjs` in the site repository) and carry the date of that count; between counts the organization keeps moving.
+On November 14, 2026 these returned 26 repositories and 659 merged pull requests (counted with full access), a bitg badge level of "gold" and a Scorecard score of 8.5. The figures on the home page are recounted by us with the same commands (`tools/count-numbers.mjs` in the site repository) and carry the date of that count; between counts the organization keeps moving.
 
 ## If a number is wrong
 
