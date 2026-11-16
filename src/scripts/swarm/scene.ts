@@ -5,12 +5,16 @@
 import {
   AdditiveBlending, BufferAttribute, BufferGeometry, Color, PerspectiveCamera, Points, Scene, ShaderMaterial, SRGBColorSpace, Vector3, WebGLRenderer,
 } from 'three';
+import { cardViews } from './products3d';
 
 export interface SceneOpts {
   canvas: HTMLCanvasElement;
   clusters: { color: string; products: number }[];
   agentColors: string[];
   reduced: boolean;
+  /** Product card 3D areas ([data-p]), each rendered with its own small scene. */
+  cards?: HTMLElement[];
+  locale?: string;
 }
 export interface SceneHandle {
   setStage(s: number): void;
@@ -123,6 +127,7 @@ export function mount(o: SceneOpts): SceneHandle {
   renderer.debug.checkShaderErrors = import.meta.env.DEV;
   renderer.setPixelRatio(dpr);
   const scene = new Scene();
+  const cards = o.cards?.length ? cardViews(renderer, o.cards, o.locale ?? 'en', o.reduced) : null;
   const camera = new PerspectiveCamera(40, 1, .1, 100);
   camera.position.set(0, 0, 11);
 
@@ -274,6 +279,7 @@ export function mount(o: SceneOpts): SceneHandle {
     U.uMouse.value = { x: mouse.wx, y: mouse.wy };
     U.uMouseOn.value += ((mouse.on ? 1 : 0) - U.uMouseOn.value) * (1 - Math.exp(-dt * 5));
     renderer.render(scene, camera);
+    cards?.render(dt || 1 / 60, w, h);
   };
 
   const loop = (now: number) => {
@@ -308,7 +314,7 @@ export function mount(o: SceneOpts): SceneHandle {
     dispose() {
       cancelAnimationFrame(raf); io.disconnect();
       removeEventListener('resize', resize); document.removeEventListener('visibilitychange', onVis);
-      geo.dispose(); mat.dispose(); renderer.renderLists.dispose(); renderer.forceContextLoss(); renderer.dispose();
+      cards?.dispose(); geo.dispose(); mat.dispose(); renderer.renderLists.dispose(); renderer.forceContextLoss(); renderer.dispose();
     },
   };
 }

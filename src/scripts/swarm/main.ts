@@ -4,6 +4,7 @@ import type { SceneHandle } from './scene';
 
 interface Cfg {
   verbs: Record<string, string>;
+  chat?: Record<string, string[]>;
   you: string;
   locale: string;
   clusters: { color: string; products: number }[];
@@ -26,7 +27,8 @@ if (root) {
   if (canvas && glOk && !saveData) {
     import('./scene').then(({ mount }) => {
       try {
-        scene = mount({ canvas, clusters: cfg.clusters, agentColors: cfg.agentColors, reduced });
+        const cards = [...document.querySelectorAll<HTMLElement>('[data-b="cast"][data-p]')];
+        scene = mount({ canvas, clusters: cfg.clusters, agentColors: cfg.agentColors, reduced, cards, locale: cfg.locale });
         canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); html.classList.add('sw-nogl'); }, { once: true });
         html.classList.add('sw-gl');
         if (!swarmOn || meshPending) scene.gather(swarmOn ? meshPending : 0);
@@ -73,6 +75,7 @@ if (root) {
   if (swarmOn) {
     sw = new Swarm({
       verbs: cfg.verbs as never,
+      chat: cfg.chat,
       you: cfg.you,
       locale: cfg.locale,
       onMesh: (ms) => {
@@ -142,16 +145,13 @@ if (root) {
     if (map[k]) { act(map[k]); }
   });
 
-  /* card tilt and light follow the mouse (transform only) */
+  /* card light follows the mouse; the card does not tilt, its 3D scene turns instead (products3d.ts) */
   document.querySelectorAll<HTMLElement>('.sw-card').forEach((c) => {
     c.addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse' || reduced) return;
-      const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-      c.style.setProperty('--rx', `${(.5 - y) * 7}deg`);
-      c.style.setProperty('--ry', `${(x - .5) * 9}deg`);
-      c.style.setProperty('--mx', `${x * 100}%`);
-      c.style.setProperty('--my', `${y * 100}%`);
+      const r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
+      c.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
     });
-    c.addEventListener('pointerleave', () => { c.style.removeProperty('--rx'); c.style.removeProperty('--ry'); });
   });
 }

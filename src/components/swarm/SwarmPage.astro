@@ -35,6 +35,7 @@ const cfg = {
   locale: htmlLang[L],
   you: C.hud.you[L],
   verbs: Object.fromEntries(Object.entries(C.verbs).map(([k, v]) => [k, v[L]])),
+  chat: Object.fromEntries(Object.entries(C.chat).map(([k, v]) => [k, v[L]])),
   clusters: clusters.map((c) => ({ color: c.color, products: c.products.length })),
   agentColors: ['#2969ff', '#ff6b3d', '#ff4fa3', '#34d399', '#22d3ee', '#ffb020', '#f43f5e', '#8b6cff', '#a3e635', '#facc15'],
 };
@@ -133,11 +134,20 @@ const jsonLd = { '@context': 'https://schema.org', '@type': 'WebPage', name: C.t
           <ul class="sw-grid" role="list">
             {list.map((p, i) => {
               const img = p.media.desktop ?? p.media.poster;
+              const edge = C.edges[p.key];
               return (
                 <li style={`--c:${p.cluster.color}`} class:list={[i === 0 && 'sw-grid__wide']}>
                   <a class="sw-card" href={href(L, p.page.path)} data-b="frame" data-label={`card · ${p.page.title[L]}`}>
-                    <span class="sw-card__shot" data-b="paint" data-label={`${p.key}.webp`}>
-                      {img ? <img src={img} alt="" width="1512" height="945" loading={i < 4 ? 'eager' : 'lazy'} decoding="async" /> : <span class="sw-card__mono">{p.page.title[L].slice(0, 1)}</span>}
+                    <span class="sw-card__shot sw-card__shot--3d" data-b="cast" data-p={p.key} data-c={p.data.accent || p.cluster.color} data-label={`${p.key}.scene`}>
+                      {edge && (
+                        <span class="sw-edge3d">
+                          <b class="sw-edge3d__v" data-b="type">{edge.v}</b>
+                          <span class="sw-edge3d__t" data-b="paint">{edge.t[L]}</span>
+                        </span>
+                      )}
+                      {img
+                        ? <span class="sw-pip" data-b="stamp" data-label={`${p.key}.webp`}><img src={img} alt="" width="1512" height="945" loading={i < 4 ? 'eager' : 'lazy'} decoding="async" /><em>{C.shot[L]}</em></span>
+                        : <span class="sw-card__mono">{p.page.title[L].slice(0, 1)}</span>}
                     </span>
                     <span class="sw-card__body">
                       <span class="sw-card__top">
