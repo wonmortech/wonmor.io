@@ -12,7 +12,7 @@ const links = (m.items ?? []).map((it) => resolve(it, locale));
 const id = `dd-${m.id}`;
 ---
 {m.href ? (
-  <a class="btn btn--tertiary btn--small btn--pill" href={href(locale, m.href)} aria-current={active ? 'page' : undefined}>{m.label[locale]}</a>
+  <a class="btn btn--tertiary btn--small btn--pill" data-menu={m.id} href={href(locale, m.href)} aria-current={active ? 'page' : undefined}>{m.label[locale]}</a>
 ) : (
   <div class="nav-dd" data-dd data-menu={m.id}>
     <button class="btn btn--tertiary btn--small btn--pill btn--trailing nav-dd__trigger" type="button" aria-expanded="false" aria-controls={id} aria-current={active ? 'page' : undefined}>

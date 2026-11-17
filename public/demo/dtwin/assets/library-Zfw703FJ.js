@@ -1,0 +1,1 @@
+var e=(e,t)=>`/demo/dtwin/library/${e}/${String(t).padStart(3,`0`)}.webp`,t=e=>`/demo/dtwin/library/${e}/book.pdf`,n=t=>e(t,1),r=e=>`/read/${e}`;export{r as i,e as n,t as r,n as t};

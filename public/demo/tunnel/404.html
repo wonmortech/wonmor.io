@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="uz" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<base href="/demo/tunnel/admin/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>tunnel admin · Demo</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#050a1a">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="../demo/demo.css">
+</head>
+<body>
+<div class="tn ad" id="tn">
+  <div class="tn-stage" aria-hidden="true"></div>
+
+  <header class="tn-header">
+    <div class="tn-header-in">
+      <a class="tn-brand" href="./" aria-label="tunnel admin">
+        <span class="tn-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 18 0"/><path d="M7 12a5 5 0 0 1 10 0"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg></span>
+        <b>tunnel<span>.acme.example</span></b>
+        <em class="ad-pill">admin</em>
+      </a>
+      <span class="tn-flex"></span>
+      <span class="ad-live" id="live"><i></i><span>ulanmoqda…</span></span>
+      <a class="tn-iconbtn" href="#" onclick="return false" aria-disabled="true" title="frps klassik dashboard" aria-label="frps klassik dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+      </a>
+      <button class="tn-iconbtn" id="theme" aria-label="Tema">
+        <svg class="i-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="i-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="tn-head-cta" href="/demo/tunnel/">Sayt</a>
+    </div>
+  </header>
+
+  <main class="ad-main">
+    <section class="ad-hero">
+      <div class="ad-kpis">
+        <div class="ad-kpi" data-k="online"><span class="ic">🛰️</span><b data-v>0</b><small>onlayn tunnel</small><em data-sub></em></div>
+        <div class="ad-kpi" data-k="clients"><span class="ic">💻</span><b data-v>0</b><small>ulangan klient</small><em data-sub></em></div>
+        <div class="ad-kpi" data-k="conns"><span class="ic">⚡</span><b data-v>0</b><small>joriy ulanish</small><em data-sub></em></div>
+        <div class="ad-kpi" data-k="today"><span class="ic">📦</span><b data-v>0 B</b><small>bugungi trafik</small><em data-sub></em></div>
+      </div>
+      <div class="ad-orbit">
+        <div class="ad-orbit-head">
+          <div><div class="tn-eyebrow">jonli xarita</div><h1>Tunnel orbitasi</h1></div>
+          <span class="tn-mono" id="srv">frps …</span>
+        </div>
+        <div class="ad-canvas-wrap" id="orbitWrap">
+          <canvas id="orbit"></canvas>
+          <div class="ad-labels" id="labels"></div>
+          <div class="ad-empty" id="orbitEmpty" hidden>Hozircha ulangan klient yo'q</div>
+        </div>
+        <div class="ad-legend">
+          <span><i class="lg core"></i>frps server</span>
+          <span><i class="lg cli"></i>klient</span>
+          <span><i class="lg on"></i>onlayn tunnel</span>
+          <span><i class="lg off"></i>oflayn tunnel</span>
+          <span><i class="lg beam"></i>faol trafik</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="ad-card ad-chart">
+      <div class="ad-card-head">
+        <div><h2>Trafik tezligi</h2><p class="tn-mono">oxirgi 3 daqiqa · har 3 soniyada</p></div>
+        <div class="ad-chart-legend"><span><i class="sw in"></i>Kiruvchi</span><span><i class="sw out"></i>Chiquvchi</span></div>
+      </div>
+      <div class="ad-chart-box" id="rateBox">
+        <canvas id="rate"></canvas>
+        <div class="ad-tip" id="rateTip" hidden></div>
+      </div>
+    </section>
+
+    <section class="ad-sec">
+      <div class="ad-sec-head"><h2>Tunnellar</h2><span class="tn-mono" id="tunCount"></span></div>
+      <div class="ad-tunnels" id="tunnels"></div>
+    </section>
+
+    <section class="ad-card ad-log" id="log">
+      <div class="ad-card-head">
+        <div><h2>So'rovlar jurnali</h2><p class="tn-mono">🔒 faqat metama'lumot: tana, cookie, parol va token saqlanmaydi · 7 kun</p></div>
+        <label class="ad-live-toggle"><input type="checkbox" id="logLive" checked><span></span>Jonli</label>
+      </div>
+      <div class="ad-filters">
+        <select id="fTunnel" aria-label="Tunnel"><option value="">Barcha tunnellar</option></select>
+        <select id="fStatus" aria-label="Status">
+          <option value="">Barcha status</option><option value="2">2xx</option><option value="3">3xx</option><option value="4">4xx</option><option value="5">5xx</option><option value="err">Faqat xatolar</option>
+        </select>
+        <select id="fMethod" aria-label="Metod"><option value="">Barcha metod</option><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option><option>WS</option></select>
+        <input id="fQ" type="search" placeholder="Yo'l, IP yoki brauzer bo'yicha qidirish" aria-label="Qidirish">
+      </div>
+      <div class="ad-log-stats" id="logStats"></div>
+      <div class="ad-table-wrap ad-log-wrap">
+        <table class="ad-table ad-reqs" id="reqs">
+          <thead><tr><th>Vaqt</th><th>Tunnel</th><th>Metod</th><th>Yo'l</th><th>Status</th><th>Vaqt (ms)</th><th>Hajm</th><th>IP</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="ad-log-foot"><span class="tn-mono" id="logInfo"></span><button class="tn-btn tn-btn-ghost ad-more" id="logMore">Ko'proq</button></div>
+    </section>
+
+    <section class="ad-card ad-users" id="users">
+      <div class="ad-card-head">
+        <div><h2>🔑 Foydalanuvchilar va tokenlar</h2><p class="tn-mono">har odamga o'z tokeni va o'z subdomenlari · token faqat bir marta ko'rsatiladi</p></div>
+      </div>
+      <form class="ad-filters" id="uForm">
+        <input id="uName" placeholder="nom (masalan: nosir)" maxlength="31" required pattern="[a-z0-9][a-z0-9-]{1,30}" aria-label="Foydalanuvchi nomi">
+        <input id="uSubs" placeholder="subdomenlar: bo'sh = nom-* va nom" aria-label="Subdomenlar">
+        <button class="tn-btn tn-btn-acc ad-more" type="submit">+ Token yaratish</button>
+      </form>
+      <div class="ad-token" id="uToken" hidden></div>
+      <div class="ad-table-wrap"><table class="ad-table" id="uTable"><thead><tr><th>Nom</th><th>Subdomenlar</th><th>Tunnellar</th><th>Oxirgi ulanish</th><th></th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <aside class="ad-drawer" id="drawer" hidden>
+      <div class="ad-drawer-in">
+        <div class="ad-card-head"><h2 id="dTitle">So'rov</h2><button class="tn-iconbtn" id="dClose" aria-label="Yopish">✕</button></div>
+        <dl class="ad-dl" id="dBody"></dl>
+        <p class="ad-safe">🔒 Bu so'rovning tanasi, cookie'lari va Authorization sarlavhasi serverga yozilmagan. URL'dagi token, parol va kod qiymatlari <code>***</code> bilan yashirilgan.</p>
+        <div class="ad-drawer-acts">
+          <button class="tn-btn tn-btn-ghost" id="dCurl">📋 curl nusxasi</button>
+          <button class="tn-btn tn-btn-ghost" id="dSame">🔎 Shu yo'l bo'yicha</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="ad-modal" id="pauseModal" hidden>
+      <form class="ad-modal-in" id="pauseForm">
+        <h2>⏸️ Tunnelni to'xtatish</h2>
+        <p id="pauseText"></p>
+        <input id="pauseReason" maxlength="200" placeholder="Sabab (ixtiyoriy): mehmonlarga ko'rsatiladi">
+        <div class="ad-drawer-acts"><button type="button" class="tn-btn tn-btn-ghost" id="pauseCancel">Bekor qilish</button><button class="tn-btn tn-btn-acc" type="submit">To'xtatish</button></div>
+      </form>
+    </div>
+
+    <section class="ad-sec ad-two">
+      <div class="ad-card">
+        <div class="ad-card-head"><h2>Klientlar</h2></div>
+        <div class="ad-table-wrap"><table class="ad-table" id="clients"><thead><tr><th>Kompyuter</th><th>Holat</th><th>Versiya</th><th>Ulangan</th></tr></thead><tbody></tbody></table></div>
+      </div>
+      <div class="ad-card">
+        <div class="ad-card-head"><h2>Server</h2></div>
+        <dl class="ad-dl" id="server"></dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tn-footer">
+    <div class="tn-footer-in">
+      <span class="tn-mono">tunnel.acme.example · admin</span>
+      <span class="tn-flex"></span>
+      <a class="tn-mono" href="#" onclick="return false" aria-disabled="true">frps klassik</a>
+      <a class="tn-mono" href="/demo/tunnel/">sayt</a>
+    </div>
+  </footer>
+</div>
+<script src="../demo/mock.js"></script>
+<script src="../vendor/gsap.min.js"></script>
+<script src="admin.js"></script>
+<script src="requests.js"></script>
+<script src="users.js"></script>
+<script type="module" src="orbit.js"></script>
+</body>
+</html>

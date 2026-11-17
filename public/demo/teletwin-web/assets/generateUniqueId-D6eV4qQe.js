@@ -1,0 +1,1 @@
+function e(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}var t=0;function n(){let e=Date.now()%1e8,n=Math.floor(Math.random()*1e3),r=Math.max(e+n,t+1);return t=r,r}export{n,e as t};

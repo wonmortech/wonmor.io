@@ -1,0 +1,1 @@
+import{P as e,Yt as t,Zt as n}from"./SwitchLayoutGroupContext-HqjoecIo.js";import{d as r,p as i}from"./i18n-DWpmv4A5.js";var a=n(t(),1);function o(t){let n=i(()=>e(t)),{isStatic:o}=(0,a.useContext)(r);if(o){let[,e]=(0,a.useState)(t);(0,a.useEffect)(()=>n.on(`change`,e),[])}return n}export{o as t};

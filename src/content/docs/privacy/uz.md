@@ -1,11 +1,11 @@
 ---
-updated: 2026-11-13
+updated: 2026-11-17
 summary: "Saytga kirganingizda wonmor.io nimani yigʻadi (juda oz), u qayerda va qancha muddat saqlanadi, va nimani hech qachon qilmaydi."
 ---
 
 ## Qisqasi
 
-wonmor.io — statik sayt. Unda akkauntlar, formalar, izohlar va xabarnoma yoʻq, shuning uchun u sizdan hech qachon shaxsiy maʼlumot soʻramaydi. U cookie oʻrnatmaydi, analitika skriptlari yoki uchinchi tomon kuzatuvchilarini ishlatmaydi, reklama koʻrsatmaydi va boshqa serverlardan hech narsa yuklamaydi. Tashrifingizning yagona qaydi — quyida tasvirlangan, veb-server yuritadigan standart soʻrovlar logi.
+wonmor.io — statik sayt. Unda akkauntlar, formalar, izohlar va xabarnoma yoʻq, shuning uchun u sizdan hech qachon shaxsiy maʼlumot soʻramaydi. U cookie oʻrnatmaydi, analitika skriptlari yoki uchinchi tomon kuzatuvchilarini ishlatmaydi, reklama koʻrsatmaydi va boshqa serverlardan hech narsa yuklamaydi (yagona istisno — mahsulot demolari, quyida qarang). Tashrifingizning yagona qaydi — quyida tasvirlangan, veb-server yuritadigan standart soʻrovlar logi.
 
 Bu bildirishnoma faqat wonmor.io ga tegishli. Undan havola qilingan mahsulotlar, masalan dtwin.uz yoki bitg.uz, oʻz maxfiylik siyosatlari boʻlgan alohida saytlardir.
 
@@ -45,6 +45,16 @@ Sayt deyarli har bir sayt kabi har bir soʻrovning texnik logini yuritadigan veb
 Manzil va oʻtib kelingan sahifadagi uzun, tasodifiy koʻrinadigan qatorlar yozilishidan oldin yashiriladi, cookie va avtorizatsiya sarlavhalari esa olib tashlanadi. Log aylantirib turiladi va har bir fayl eng koʻpi bilan **30 kun** ichida oʻchiriladi.
 
 Bu loglardan uch narsa uchun foydalanamiz: saytni xavfsiz saqlash, muammolarni tuzatish va tashriflarni umumiy holda sanash (qaysi sahifani nechta odam oʻqigani). Biz ularni sotmaymiz, sizni aniqlash uchun boshqa maʼlumotlar bilan birlashtirmaymiz va qonun talab qilmasa, hech kimga bermaymiz.
+
+## Mahsulot demolari
+
+[wonmor.io/demo/](/demo/) ostidagi sahifalar — mahsulotlarimizning brauzeringizda namuna maʼlumot bilan ishlaydigan nusxalari. Ular yuqoridagi qoidalardan yagona istisno, va faqat har bir demoning oʻz manzili ichida (masalan `/demo/dtwin/`):
+
+- Baʼzi demolar haqiqiy ilova yuklaydigan narsani yuklaydi: Google Fonts shriftlari (`fonts.googleapis.com`, `fonts.gstatic.com`) hamda OpenFreeMap va OpenStreetMap xarita plitkalari. Bu xizmatlar har qanday saytdagidek IP manzilingiz va soʻrovni koʻradi. Boshqa serverlardan boshqa hech narsa yuklanmaydi, demolar siz haqingizda maʼlumot yubormaydi.
+- Demoga kiritganingiz oʻsha brauzer oynasida qoladi. Baʼzi demolar mavzu yoki til kabi oʻz sozlamalarini brauzeringiz xotirasida saqlaydi, bir nechtasi esa faqat oʻz manzili bilan cheklangan service worker oʻrnatadi: u ilova soʻrovlariga server oʻrniga qurilmangizda javob beradi.
+- Demolardagi odamlar, akkauntlar, buyurtmalar va xabarlar toʻqima.
+
+Demo saqlagan hamma narsani brauzeringizda shu sayt maʼlumotlarini tozalab oʻchirishingiz mumkin.
 
 ## Saytdan chiqish
 

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TeleTwin Admin</title>
+<link rel="icon" href="/demo/teletwin/favicon.svg" type="image/svg+xml">
+<style>:root{--bg:#f4f6fb;--panel:#fff;--ink:#141b2d;--muted:#5b6478;--line:#e2e6ef;--accent:#3557e0;--ok:#119a5c;--bad:#d6334d;--warn:#c9821b;--r:12px}@media (prefers-color-scheme:dark){:root{--bg:#0d1220;--panel:#151c2e;--ink:#e8ecf6;--muted:#97a1b8;--line:#263049;--accent:#6f8cff;--ok:#38c98a;--bad:#ff6b81;--warn:#f0b04d}}*{box-sizing:border-box}body{background:var(--bg);color:var(--ink);margin:0;font:15px/1.45 Segoe UI,system-ui,-apple-system,BlinkMacSystemFont,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif}header{background:var(--panel);border-bottom:1px solid var(--line);align-items:center;gap:12px;padding:14px 20px;display:flex}header b{font-size:18px}header .sp{flex:1}main{gap:20px;max-width:1100px;margin:20px auto;padding:0 16px;display:grid}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}h2{margin:0 0 12px;font-size:17px}table{border-collapse:collapse;width:100%}th,td{text-align:left;border-bottom:1px solid var(--line);vertical-align:middle;padding:8px 6px}th{color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-size:12px}input,select,textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px}textarea{width:100%;min-height:70px}button{font:inherit;cursor:pointer;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:7px 12px;font-weight:600}button.ghost{color:var(--accent);border:1px solid var(--line);background:0 0}button.bad{background:var(--bad)}button.ok{background:var(--ok)}button:disabled{opacity:.5;cursor:default}.row{flex-wrap:wrap;align-items:center;gap:8px;display:flex}.pill{border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;display:inline-block}.pill.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}.pill.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}.pill.acc{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}.muted{color:var(--muted);font-size:13px}#login{gap:10px;max-width:360px;margin:12vh auto;display:grid}#toast{background:var(--ink);color:var(--bg);opacity:0;border-radius:10px;max-width:420px;padding:10px 14px;transition:opacity .2s;position:fixed;bottom:16px;right:16px}#toast.on{opacity:.95}.members{flex-wrap:wrap;gap:6px 14px;margin-top:6px;display:flex}.members label{font-size:14px}.hidden{display:none!important}.badge{background:var(--bad);color:#fff;text-align:center;vertical-align:middle;border-radius:999px;min-width:22px;margin-left:6px;padding:1px 7px;font-size:12px;font-weight:700;display:inline-block}.badge.zero{background:var(--line);color:var(--muted)}.reg{border-top:1px solid var(--line);padding:10px 0}.reg:first-child{border-top:0}.members .adm{color:var(--muted);margin-left:2px;font-size:12px}.hookurl{border:1px dashed var(--accent);border-radius:8px;align-items:center;gap:8px;margin-top:8px;padding:10px;display:flex}.hookurl code{word-break:break-all;flex:1;font-size:13px}@media (max-width:700px){th:nth-child(3),td:nth-child(3){display:none}}#toast{bottom:60px}</style>
+  <script type="module" crossorigin src="/demo/teletwin/assets/admin-CZuPtRTc.js"></script>
+  <link rel="modulepreload" crossorigin href="/demo/teletwin/assets/preload-helper-D-Gwj-h3.js">
+</head>
+<body>
+<div id="login" class="card">
+  <h2>TeleTwin · Admin</h2>
+  <input id="lLogin" placeholder="login" autocomplete="username">
+  <input id="lPass" type="password" placeholder="parol" autocomplete="current-password">
+  <button id="lBtn">Kirish</button>
+  <div id="lErr" class="muted"></div>
+</div>
+
+<div id="app" class="hidden">
+  <header><b>TeleTwin · Admin</b><span class="sp"></span><span id="me" class="muted"></span><button class="ghost" id="logout">Chiqish</button></header>
+  <main>
+    <section class="card">
+      <h2>So'rovlar <span id="regCount" class="badge zero">0</span></h2>
+      <div id="regs"></div>
+    </section>
+
+    <section class="card">
+      <h2>Xodimlar</h2>
+      <table><thead><tr><th>Login</th><th>F.I.Sh.</th><th>Lavozim / bo'lim</th><th>Sessiya</th><th>Holat</th><th></th></tr></thead><tbody id="emps"></tbody></table>
+      <h2 style="margin-top:18px">Profil (ma'lumotnoma)</h2>
+      <div class="row">
+        <select id="fEmp"></select>
+        <input id="fTitle" placeholder="lavozim (Bosh buxgalter)">
+        <input id="fDept" placeholder="bo'lim (Buxgalteriya)">
+        <input id="fPhone" placeholder="telefon">
+        <input id="fBirth" type="date" title="tug'ilgan kun">
+        <button id="fSave">Saqlash</button>
+      </div>
+      <h2 style="margin-top:18px">Yangi xodim</h2>
+      <div class="row">
+        <input id="eLogin" placeholder="login (a.karimov)">
+        <input id="eName" placeholder="Familiya Ism">
+        <input id="ePass" placeholder="vaqtinchalik parol (8+)">
+        <label class="muted"><input type="checkbox" id="eAdmin"> admin</label>
+        <button id="eAdd">Qo'shish</button>
+      </div>
+      <div class="members" id="eChats"></div>
+    </section>
+
+    <section class="card">
+      <h2>Chatlar va kanallar</h2>
+      <div id="chats"></div>
+      <h2 style="margin-top:18px">Yangi chat</h2>
+      <div class="row">
+        <input id="cTitle" placeholder="nomi (Buxgalteriya)">
+        <select id="cKind"><option value="1">Guruh</option><option value="2">Kanal (e'lonlar)</option></select>
+        <label class="muted"><input type="checkbox" id="cAuto"> Hamma xodimlarga avtomatik qo'shish (AutoJoin)</label>
+        <label class="muted"><input type="checkbox" id="cPublic"> Ochiq (katalogda ko'rinadi, o'zi qo'shila oladi)</label>
+        <input id="cDesc" placeholder="tavsif (ixtiyoriy)">
+        <button id="cAdd">Yaratish</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Guruhlar</h2>
+      <p class="muted"><code>@handle</code> deb yozilganda guruhning shu chatdagi barcha a'zolariga bildirishnoma boradi.</p>
+      <table><thead><tr><th>Handle</th><th>Nomi</th><th>A'zolar</th><th></th></tr></thead><tbody id="groups"></tbody></table>
+      <div class="row" style="margin-top:12px">
+        <input id="gHandle" placeholder="handle (buxgalteriya)">
+        <input id="gName" placeholder="nomi (Buxgalteriya bo'limi)">
+        <button id="gSave">Yaratish</button>
+        <button class="ghost hidden" id="gCancel">Bekor qilish</button>
+      </div>
+      <div class="members" id="gMembers"></div>
+    </section>
+
+    <section class="card">
+      <h2>Webhooklar</h2>
+      <p class="muted">Tashqi tizim (GitLab, Jira) shu manzilga <code>{"text":"..."}</code> yuborsa, xabar tanlangan chatga bot nomidan tushadi. Manzil faqat bir marta ko'rsatiladi.</p>
+      <table><thead><tr><th>Nomi</th><th>Chat</th><th>Oxirgi</th><th></th></tr></thead><tbody id="hooks"></tbody></table>
+      <div class="row" style="margin-top:12px">
+        <input id="hName" placeholder="nomi (GitLab CI)">
+        <select id="hChat"></select>
+        <button id="hAdd">Yaratish</button>
+      </div>
+      <div id="hNew"></div>
+    </section>
+
+    <section class="card">
+      <h2>Ilovalar</h2>
+      <p class="muted">Xodimlar klientida "Ilovalar" papkasida ko'rinadigan veb-ilovalar (iframe'da ochiladi). Ilova TeleTwin'dan 60 soniyalik imzolangan token oladi va uni <code>/.well-known/jwks.json</code> orqali tekshiradi. Bo'limlar bo'sh bo'lsa, hamma ko'radi; adminlar hammasini ko'radi.</p>
+      <table><thead><tr><th>Ilova</th><th>Manzil</th><th>Kimga</th><th>Holat</th><th></th></tr></thead><tbody id="apps"></tbody></table>
+      <div class="row" style="margin-top:12px">
+        <input id="apId" placeholder="id (lunch)" style="width:110px">
+        <input id="apIcon" placeholder="belgi" style="width:60px">
+        <input id="apTitle" placeholder="nomi (Tushlik)">
+        <input id="apUrl" placeholder="https://faktura.dtwin.uz/..." style="flex:1">
+      </div>
+      <div class="row" style="margin-top:8px">
+        <input id="apAud" placeholder="audience (faktura-twin)">
+        <input id="apDepts" placeholder="bo'limlar, vergul bilan (bo'sh = hamma)" style="flex:1">
+        <input id="apSort" type="number" placeholder="tartib" style="width:80px">
+        <label class="muted"><input type="checkbox" id="apAdmin"> faqat adminlar</label>
+        <label class="muted"><input type="checkbox" id="apActive" checked> faol</label>
+        <button id="apSave">Qo'shish</button>
+        <button class="ghost hidden" id="apCancel">Bekor qilish</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Audit</h2>
+      <div class="row">
+        <input id="aActor" placeholder="kim (login, ism yoki id)">
+        <input id="aAction" placeholder="amal (chat.members, webhook.*)" list="aActions">
+        <datalist id="aActions">
+          <option value="chat.members"><option value="chat.create"><option value="chat.update"><option value="chat.join">
+          <option value="employee.create"><option value="employee.update"><option value="employee.revoke"><option value="employee.restore">
+          <option value="employee.password"><option value="registration.approve"><option value="registration.reject">
+          <option value="webhook.create"><option value="webhook.delete"><option value="group.*"><option value="session.delete">
+          <option value="app.*">
+        </datalist>
+        <input id="aFrom" type="date" title="dan">
+        <input id="aTo" type="date" title="gacha (shu kun ham)">
+        <button id="aFind">Qidirish</button>
+      </div>
+      <table style="margin-top:10px"><thead><tr><th>Vaqt</th><th>Kim</th><th>Amal</th><th>Obyekt</th><th>Tafsilot</th></tr></thead><tbody id="audit"></tbody></table>
+      <div class="row" style="margin-top:8px"><button class="ghost hidden" id="aMore">Yana</button></div>
+    </section>
+
+    <section class="card">
+      <h2>E'lon / xabar yuborish</h2>
+      <div class="row"><select id="pChat"></select></div>
+      <textarea id="pText" placeholder="Matn"></textarea>
+      <div class="row"><button id="pSend">Yuborish</button></div>
+    </section>
+  </main>
+</div>
+<div id="toast"></div>
+
+</body>
+</html>

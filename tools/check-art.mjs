@@ -13,7 +13,9 @@ const pages = [];
 (function walk(dir) {
   for (const f of readdirSync(dir)) {
     const p = join(dir, f);
-    if (statSync(p).isDirectory()) { if (!['admin', 'pagefind'].includes(relative(ROOT, p).split(sep)[0])) walk(p); }
+    // admin, pagefind and the product demo copies under /demo/<slug>/ carry no site illustrations
+    const parts = relative(ROOT, p).split(sep);
+    if (statSync(p).isDirectory()) { if (!['admin', 'pagefind'].includes(parts[0]) && !(parts[0] === 'demo' && parts.length === 2)) walk(p); }
     else if (f === 'index.html') pages.push(p);
   }
 })(ROOT);

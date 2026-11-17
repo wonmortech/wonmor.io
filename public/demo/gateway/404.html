@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gateway Admin · Demo</title>
+<meta name="robots" content="noindex">
+<script src="/demo/gateway/theme.js"></script>
+<link rel="icon" href="/demo/gateway/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/demo/gateway/admin/admin.css">
+<link rel="stylesheet" href="/demo/gateway/demo/demo.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="/demo/gateway/" title="Demo boshi"><img src="/demo/gateway/favicon.svg" alt="" width="24" height="24"> Gateway <span>admin</span></a>
+  <nav class="tabs" id="tabs" aria-label="Bo'limlar">
+    <a href="#overview" data-view="overview"><i>◎</i>Umumiy</a>
+    <a href="#audit" data-view="audit"><i>☰</i>Audit</a>
+    <a href="#agents" data-view="agents"><i>◉</i>Agentlar <b class="count" id="cAgents"></b></a>
+    <a href="#connectors" data-view="connectors"><i>⇄</i>Konnektorlar <b class="count" id="cConns"></b></a>
+    <a href="#playground" data-view="playground"><i>▷</i>Playground</a>
+    <a href="#settings" data-view="settings"><i>⚙</i>Sozlamalar</a>
+  </nav>
+  <div class="bar-r">
+    <span id="conn" class="pill" title="Admin oqimi bilan aloqa">ulanmoqda…</span>
+    <button id="theme" class="icon-btn" type="button" title="Mavzu (yorug'/qorong'i)" aria-label="Mavzuni almashtirish">◐</button>
+    <button id="kill" class="kill" type="button" title="Barcha agent chaqiruvlarini darhol to'xtatish">■ Kill-switch</button>
+  </div>
+</header>
+
+<div id="killed" class="banner bad" hidden><b>Gateway to'xtatilgan.</b> <span id="killedWhy"></span> Barcha agent chaqiruvlari rad etilmoqda. <button id="unkill" type="button">Qayta yoqish</button></div>
+<div id="maskWarn" class="banner warn" hidden><b>Niqoblash o'chiq:</b> <span id="maskWarnList"></span> — agentlar bu ma'lumotlarni ochiq ko'radi. <a href="#settings">Sozlamalar</a></div>
+
+<main>
+  <!-- ============================================================ OVERVIEW -->
+  <section class="view" data-view="overview">
+    <div class="tiles" id="tiles"></div>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-h"><h2>So'nggi 24 soat</h2><div class="legend"><span><i class="k-ok"></i>muvaffaqiyatli</span><span><i class="k-err"></i>xato</span><span><i class="k-den"></i>rad etildi</span></div></div>
+        <div id="chart" class="chart"></div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Tizim holati</h2><span class="muted small" id="sysLine"></span></div>
+        <div id="health"></div>
+        <h3 class="sub">Jarayonda</h3>
+        <div id="inflight" class="inflight"><p class="muted small">Hozir chaqiruv yo'q.</p></div>
+      </section>
+    </div>
+    <section class="card stage" id="stageCard">
+      <div class="card-h"><h2>Jonli oqim · 3D</h2><button class="s" type="button" id="toggle3d">yashirish</button></div>
+      <div class="flow-wrap" id="flowWrap"><canvas id="flow3d" aria-label="Agentlar, gateway va toollar orasidagi jonli chaqiruvlar (sichqoncha bilan aylantiring)"></canvas><div class="flow-hud" id="flowHud"></div><div class="flow-legend"><span><i style="background:var(--a2)"></i>so'rov</span><span><i style="background:var(--ok)"></i>javob</span><span><i style="background:var(--a1)"></i>niqoblangan</span><span><i style="background:var(--bad)"></i>rad etildi</span></div></div>
+    </section>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-h"><h2>Jonli lenta</h2><a class="link" href="#audit">hammasi →</a></div>
+        <ol id="feed" class="feed"></ol>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Toollar · bugun</h2></div>
+        <div class="tbl-wrap"><table class="tbl" id="topTools"></table></div>
+        <h3 class="sub">Agentlar · bugun</h3>
+        <div class="tbl-wrap"><table class="tbl" id="topAgents"></table></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============================================================ AUDIT -->
+  <section class="view" data-view="audit" hidden>
+    <section class="card">
+      <form class="filters" id="filters" autocomplete="off">
+        <input type="hidden" name="sid">
+        <label class="search"><span>⌕</span><input name="q" type="search" placeholder="Qidirish: so'rov, xato, javob, IP…  ( / )"></label>
+        <select name="days" title="Davr"><option value="1">bugun</option><option value="2">2 kun</option><option value="7">7 kun</option><option value="30">30 kun</option></select>
+        <select name="agent" title="Agent"><option value="">hamma agent</option></select>
+        <select name="tool" title="Tool"><option value="">hamma tool</option></select>
+        <select name="status" title="Holat"><option value="">har qanday holat</option><option value="ok">muvaffaqiyatli</option><option value="error">xato</option><option value="denied">rad etildi</option><option value="admin">admin harakati</option></select>
+        <label class="switch" title="Yangi chaqiruvlar avtomatik qo'shilsin"><input type="checkbox" name="live" checked><i></i>jonli</label>
+        <span class="grow"></span>
+        <button class="s" type="button" id="fReset">tozalash</button>
+        <button class="s" type="button" data-export="csv">⤓ CSV</button>
+        <button class="s" type="button" data-export="jsonl">⤓ JSONL</button>
+      </form>
+      <div class="summary" id="aSummary"></div>
+      <div class="tbl-wrap audit-wrap">
+        <table class="tbl audit" id="audit">
+          <thead><tr><th>Vaqt</th><th>Agent</th><th>Tool</th><th>Holat</th><th class="num">ms</th><th class="num">Natija</th><th>So'rov</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="more"><button class="s" type="button" id="aMore" hidden>Yana yuklash</button></div>
+    </section>
+  </section>
+
+  <!-- ============================================================ AGENTS -->
+  <section class="view" data-view="agents" hidden>
+    <div class="view-h"><div><h1>Agentlar</h1><p class="muted">Har bir AI mijoz o'z tokeni bilan ulanadi. Token faqat bir marta ko'rsatiladi; serverda faqat sha256 saqlanadi.</p></div><button class="btn" type="button" id="addAgent">+ Yangi agent</button></div>
+    <div class="cards" id="agents"></div>
+  </section>
+
+  <!-- ============================================================ CONNECTORS -->
+  <section class="view" data-view="connectors" hidden>
+    <div class="view-h"><div><h1>Konnektorlar</h1><p class="muted">Ichki tizimlarga kiruvchi MCP serverlar. Gateway har daqiqada tekshiradi; kredensiallar konnektorda qoladi.</p></div><button class="btn" type="button" id="addConn">+ Konnektor ulash</button></div>
+    <div id="connectors" class="stack"></div>
+  </section>
+
+  <!-- ============================================================ PLAYGROUND -->
+  <section class="view" data-view="playground" hidden>
+    <div class="view-h"><div><h1>Playground</h1><p class="muted">Toolni admin nomidan sinash. Chaqiruv agentlarnikidek niqoblanadi va auditga <code>admin</code> sifatida yoziladi.</p></div></div>
+    <div class="pg">
+      <section class="card">
+        <label class="fld"><span>Tool</span><select id="pgTool"></select></label>
+        <p class="muted small" id="pgDesc"></p>
+        <form id="pgForm" class="pg-form"></form>
+        <div class="pg-actions"><button class="btn" type="button" id="pgRun">▷ Ishga tushirish <kbd>Ctrl</kbd>+<kbd>Enter</kbd></button></div>
+      </section>
+      <section class="card pg-out">
+        <div class="card-h"><h2>Natija</h2><div id="pgMeta" class="meta-inline"></div></div>
+        <div id="pgResult" class="result"><p class="muted">Tool tanlang va ishga tushiring.</p></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============================================================ SETTINGS -->
+  <section class="view" data-view="settings" hidden>
+    <div class="view-h"><div><h1>Sozlamalar</h1></div></div>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-h"><h2>Shaxsiy ma'lumotni niqoblash</h2></div>
+        <p class="muted small">Har bir tool javobi va audit yozuviga qo'llanadi. O'chirish sabab bilan auditga yoziladi.</p>
+        <div id="mask" class="mask"></div>
+        <div class="card-h" style="margin-top:18px"><h3 class="sub" style="margin:0">Maxsus niqoblar</h3><button class="s" type="button" id="addMask">+ Niqob qo'shish</button></div>
+        <p class="muted small" style="margin-top:0">O'z naqshingiz: matndagi regex yoki jadval ustuni nomi bo'yicha. Saqlashdan oldin sinab ko'rasiz.</p>
+        <div id="customMasks" class="mask"></div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Tizim</h2></div>
+        <dl class="kv" id="sysInfo"></dl>
+      </section>
+    </div>
+    <section class="card">
+      <div class="card-h"><h2>Telegram ogohlantirishlari</h2><span id="tgState"></span><span class="grow"></span><button class="s" type="button" id="tgTest">🔔 Sinov xabari</button></div>
+      <div class="grid-2" style="gap:24px">
+        <div id="alertRules" class="mask"></div>
+        <div><h3 class="sub" style="margin-top:0">So'nggi ogohlantirishlar</h3><div id="alertLog"></div></div>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-h"><h2>Admin harakatlari · 30 kun</h2><button class="s" type="button" id="admRefresh">↻</button></div>
+      <div class="tbl-wrap"><table class="tbl" id="admLog"></table></div>
+    </section>
+  </section>
+</main>
+
+<!-- call detail drawer -->
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Chaqiruv tafsiloti">
+  <div class="drawer-h">
+    <div class="grow"><div class="d-title" id="dTitle"></div><div class="muted small" id="dSub"></div></div>
+    <button class="icon-btn" type="button" id="dPrev" title="Oldingi (k)">↑</button>
+    <button class="icon-btn" type="button" id="dNext" title="Keyingi (j)">↓</button>
+    <button class="icon-btn" type="button" id="dClose" title="Yopish (Esc)">✕</button>
+  </div>
+  <div class="drawer-b" id="dBody"></div>
+</aside>
+
+<!-- modal -->
+<div class="modal-bg" id="modal" hidden><div class="modal" role="dialog" aria-modal="true"><div id="modalBody"></div></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="/demo/gateway/demo/mock.js"></script>
+<script src="/demo/gateway/vendor/gsap.min.js"></script>
+<script src="/demo/gateway/admin/admin.js"></script>
+<script type="module" src="/demo/gateway/admin/flow3d.js"></script>
+</body>
+</html>

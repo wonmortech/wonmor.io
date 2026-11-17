@@ -1,0 +1,1 @@
+export{t as default,n as permLabel,r as roleDescription}from"./Roles-B2MJuYIH.js";

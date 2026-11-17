@@ -1,11 +1,11 @@
 ---
-updated: 2026-11-13
+updated: 2026-11-17
 summary: "What wonmor.io collects when you visit (very little), where it is kept, for how long, and what it never does."
 ---
 
 ## The short version
 
-wonmor.io is a static website. It has no accounts, no forms, no comments and no newsletter, so it never asks you for personal information. It sets no cookies, runs no analytics scripts or third-party trackers, shows no ads and loads nothing from other servers. The only record of your visit is the standard request log kept by the web server, described below.
+wonmor.io is a static website. It has no accounts, no forms, no comments and no newsletter, so it never asks you for personal information. It sets no cookies, runs no analytics scripts or third-party trackers, shows no ads and loads nothing from other servers (the product demos are the one exception, see below). The only record of your visit is the standard request log kept by the web server, described below.
 
 This notice covers wonmor.io only. The products linked from it, such as dtwin.uz or bitg.uz, are separate sites with their own privacy policies.
 
@@ -45,6 +45,16 @@ The site runs behind a web server that keeps a technical log of each request, as
 Long random-looking strings in addresses and referrers are masked before they are written, and cookie and authorization headers are redacted. The log is rotated and each file is deleted after **30 days** at the latest.
 
 We use these logs for three things: keeping the site secure, fixing problems, and counting visits in aggregate (how many people read which page). We do not sell them, do not combine them with other data to identify you, and do not share them with anyone, unless the law requires it.
+
+## Product demos
+
+The pages under [wonmor.io/demo/](/demo/) are copies of our products running in your browser on sample data. They are the one exception to the rules above, and only inside each demo's own address (for example `/demo/dtwin/`):
+
+- Some demos load what the real app loads: fonts from Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`), and map tiles from OpenFreeMap and OpenStreetMap. Those services see your IP address and the request, as with any website. Nothing else from other servers is allowed, and the demos send no data about you.
+- What you type into a demo stays in that browser tab. Some demos also keep their own settings, such as a theme or language, in your browser's storage, and a few install a service worker limited to their own address that answers the app's requests on your device instead of a server.
+- The people, accounts, orders and messages in the demos are invented.
+
+You can remove everything a demo stored by clearing this site's data in your browser.
 
 ## Leaving the site
 

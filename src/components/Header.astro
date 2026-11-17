@@ -110,6 +110,9 @@ const langLinks = locales.map((l) => ({ l, href: href(l, here), name: localeName
     grid-template-columns: auto 1fr; grid-template-areas: 'logo end';
   }
   .hdr__start { grid-area: start; display: none; align-items: center; gap: 4px; }
+/* Demos is also in the Products menu; the top-level link appears only where the row has room for it (ru is the widest). */
+.hdr__start > [data-menu='demos'] { display: none; }
+@media (min-width: 1400px) { .hdr__start > [data-menu='demos'] { display: inline-flex; } }
   .hdr__logo { grid-area: logo; display: flex; justify-content: flex-start; }
   .hdr__end { grid-area: end; position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; }
   .hdr__end-nav { display: flex; align-items: center; gap: 4px; transition: opacity .2s; }

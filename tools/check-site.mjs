@@ -27,11 +27,20 @@ const PRIVATE = [
   [/-----BEGIN [A-Z ]*PRIVATE KEY-----/, 'private key'],
 ];
 
+// /demo/<slug>/ holds static copies of other products (public/demo, see src/data/demos.ts). They ship their own
+// CSP (deploy/Caddyfile), inline scripts and SPA routes, and their sample data uses placeholder addresses such as
+// 10.0.0.5, so only the secret checks run on them. The /demo/ gallery pages themselves get every check.
+const DEMO = /^demo\/(?!_covers\/)[^/]+\//;
+const SECRETS = new Set(['token-like string', 'private key', 'forbidden string (WM_FORBIDDEN)']);
+let demoFiles = 0;
+
 for (const f of files) {
   const s = readFileSync(f, 'utf8');
   const name = rel(f);
-  for (const [re, what] of PRIVATE) if (re.test(s)) errors.push(`${name}: ${what} (${s.match(re)[0]})`);
-  if (!f.endsWith('.html')) continue;
+  const demo = DEMO.test(name);
+  if (demo) demoFiles++;
+  for (const [re, what] of PRIVATE) if ((!demo || SECRETS.has(what)) && re.test(s)) errors.push(`${name}: ${what} (${s.match(re)[0]})`);
+  if (demo || !f.endsWith('.html')) continue;
 
   // Case-insensitive and tolerant of `</script >`, so no spelling of an inline script slips through.
   for (const m of s.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi)) {
@@ -48,9 +57,9 @@ for (const f of files) {
   }
 }
 
-const pages = files.filter((f) => f.endsWith('index.html')).length;
+const pages = files.filter((f) => f.endsWith('index.html') && !DEMO.test(rel(f))).length;
 if (errors.length) {
   console.error(`check-site: ${errors.length} problem(s)\n` + [...new Set(errors)].slice(0, 80).join('\n'));
   process.exit(1);
 }
-console.log(`check-site ok: ${pages} pages, ${files.length} files scanned`);
+console.log(`check-site ok: ${pages} pages, ${files.length} files scanned (${demoFiles} in /demo/<slug>/, secrets only)`);

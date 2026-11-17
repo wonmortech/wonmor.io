@@ -1,0 +1,1 @@
+import{Yt as e,Zt as t,d as n,f as r,u as i}from"./SwitchLayoutGroupContext-HqjoecIo.js";var a=t(e(),1);function o(){!n.current&&i();let[e]=(0,a.useState)(r.current);return e}export{o as t};

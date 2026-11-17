@@ -1,0 +1,7 @@
+import{i as e,t}from"./mock-CKzKuciW.js";e();for(let e of[`pushState`,`replaceState`]){let n=history[e].bind(history);history[e]=(e,r,i)=>{t&&typeof i==`string`&&i.startsWith(`/`)&&!i.startsWith(t+`/`)&&i!==t&&(i=t+i),n(e,r,i)}}document.addEventListener(`click`,e=>{let n=e.target?.closest?.(`a[href^="/"]`),r=n?.getAttribute(`href`);n&&r&&t&&!r.startsWith(t+`/`)&&n.setAttribute(`href`,t+r)},!0);var n=document.createElement(`div`);n.className=`demo-pill`,n.setAttribute(`role`,`note`),n.innerHTML=`<b>Demo</b> · namuna ma'lumotlar, qayta yuklanganda tiklanadi`;var r=document.createElement(`style`);r.textContent=`.demo-pill{position:fixed;right:12px;bottom:12px;z-index:2147483000;display:flex;gap:6px;align-items:center;
+padding:6px 12px;border-radius:999px;font:500 12px/1.2 'Inter Variable',system-ui,sans-serif;color:#e2e8f0;
+background:rgba(15,23,42,.82);border:1px solid rgba(148,163,184,.35);backdrop-filter:blur(8px);pointer-events:none;
+box-shadow:0 4px 18px rgba(0,0,0,.25);max-width:calc(100vw - 24px)}
+.demo-pill b{color:#fbbf24;font-weight:700}
+html.kiosk .demo-pill{opacity:.7}
+@media (max-width:520px){.demo-pill{font-size:11px;left:8px;right:auto;bottom:84px;padding:5px 10px}}`,document.head.appendChild(r);var i=()=>document.body.appendChild(n);document.body?i():document.addEventListener(`DOMContentLoaded`,i);

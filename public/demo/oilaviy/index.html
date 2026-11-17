@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="uz" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#072a20">
+<meta name="color-scheme" content="dark light">
+<title>Oilaviy shaharcha · Demo</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Oilaviy shaharcha restorani: milliy taomlar, steyklar, salatlar. Menyudan tanlang, Telegram orqali tasdiqlang — yetkazib beramiz yoki olib ketasiz.">
+<meta property="og:title" content="Oilaviy shaharcha">
+<meta property="og:description" content="Menyu va onlayn buyurtma — yetkazib berish va olib ketish.">
+<meta property="og:image" content="/demo/oilaviy/hero/hero-main-960.webp">
+<link rel="icon" href="/demo/oilaviy/favicon.svg" type="image/svg+xml">
+<script>
+  (function () {
+    try {
+      // Telegram Mini App: load the WebApp SDK only inside Telegram (launch params live in the hash).
+      var h = location.hash || '';
+      var tg = h.indexOf('tgWebAppData') !== -1 || h.indexOf('tgWebAppPlatform') !== -1 || sessionStorage.getItem('oa_tg') === '1';
+      if (tg) {
+        sessionStorage.setItem('oa_tg', '1');
+        document.write('<script src="https://telegram.org/js/telegram-web-app.js?59"><\/script>');
+      }
+      var t = localStorage.getItem('oa_theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      var l = localStorage.getItem('oa_lang');
+      if (l === 'ru') document.documentElement.lang = 'ru';
+      // LCP: the hero plate is only on the home page
+      if ((location.hash.slice(1).split('?')[0] || '/') === '/') {
+        var p = document.createElement('link');
+        p.rel = 'preload'; p.as = 'image'; p.href = '/demo/oilaviy/hero/hero-main-960.webp';
+        p.setAttribute('imagesrcset', '/demo/oilaviy/hero/hero-main-480.webp 480w, /demo/oilaviy/hero/hero-main-960.webp 960w');
+        p.setAttribute('imagesizes', '(min-width: 960px) 480px, 78vw');
+        p.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(p);
+      }
+      // First visit (phones too): brand intro + loader (src/intro/intro.ts). Not inside Telegram, admin or print pages.
+      var path = location.hash.slice(1) || '/';
+      var skip = /^\/(admin|staff|cert|menu\/print)/.test(path);
+      var seen = sessionStorage.getItem('oa_intro') === '1';
+      var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!tg && !skip && !seen && !calm) {
+        document.documentElement.classList.add('oa-intro');
+        // the intro's images start downloading now, next to the scripts
+        ['t-green', 't-coral', 't-coral-fig', 't-yellow', 't-yellow-fig', 't-blue', 't-blue-fig', 'wordmark'].forEach(function (n) {
+          var l = document.createElement('link');
+          l.rel = 'preload'; l.as = 'image'; l.href = '/demo/oilaviy/brand/' + n + '.svg';
+          document.head.appendChild(l);
+        });
+        // safety: if the intro script never shows up, do not keep the curtain
+        setTimeout(function () {
+          if (!document.querySelector('.oa-in')) {
+            document.documentElement.classList.remove('oa-intro');
+            if (window.__oaReveal) window.__oaReveal();
+          }
+        }, 6000);
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>html.oa-intro:before{content:"";z-index:9999;background:radial-gradient(120% 90% at 50% 42%,#05472f 0%,#003325 55%,#00231a 100%);position:fixed;inset:0}</style>  <link rel="stylesheet" crossorigin href="/demo/oilaviy/assets/intro-DGyxZkoi.css"><script type="module" async crossorigin src="/demo/oilaviy/assets/intro-oo-T5lSP.js"></script>
+<script type="module" crossorigin src="/demo/oilaviy/assets/index-CpwdW0We.js"></script>
+  <link rel="modulepreload" crossorigin href="/demo/oilaviy/assets/preload-helper-D6n37kXJ.js">
+  <link rel="stylesheet" crossorigin href="/demo/oilaviy/assets/index-BmUPKs9I.css">
+</head>
+<body>
+<div id="root"></div>
+</body>
+</html>
