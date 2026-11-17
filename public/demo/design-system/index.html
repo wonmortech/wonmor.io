@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wonmor tokens · playground</title>
+  <meta name="description" content="Interactive playground for @wonmor/tokens: colour, type, spacing, motion, components and themes, driven by tokens.css and tokens.json.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="tokens/tokens.css">
+  <link rel="stylesheet" href="app.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="#/" aria-label="Wonmor tokens, overview">
+      <img src="favicon.svg" alt="" width="26" height="26">
+      <span class="brand-name">wonmor</span><span class="brand-pkg">@wonmor/tokens <span class="ver">0.1.0</span></span>
+    </a>
+    <div class="theme-switch" role="radiogroup" aria-label="Theme">
+      <button type="button" role="radio" data-theme="default" aria-checked="true">Default</button>
+      <button type="button" role="radio" data-theme="ivory-medium" aria-checked="false">Ivory</button>
+      <button type="button" role="radio" data-theme="slate" aria-checked="false">Slate</button>
+    </div>
+  </header>
+  <div class="shell">
+    <nav class="side" aria-label="Sections">
+      <a href="#/">Overview</a>
+      <a href="#/colour">Colour</a>
+      <a href="#/contrast">Contrast</a>
+      <a href="#/type">Type</a>
+      <a href="#/layout">Spacing &amp; layout</a>
+      <a href="#/motion">Motion</a>
+      <a href="#/components">Components</a>
+      <a href="#/themes">Themes</a>
+      <a href="#/playground">Playground</a>
+      <a href="#/tokens">All tokens</a>
+    </nav>
+    <main id="main" tabindex="-1"><p class="loading">Loading tokens…</p></main>
+  </div>
+  <div class="demo-pill" role="note"><span class="dot" aria-hidden="true"></span>Demo · sample data, changes reset on reload</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

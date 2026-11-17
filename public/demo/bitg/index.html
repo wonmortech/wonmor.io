@@ -1,0 +1,1918 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bitg demo</title>
+<meta name="description" content="bitg sozlamalar oynasi brauzerda: haqiqiy yadro, namuna ma'lumotlar.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="demo.css">
+<style>
+  :root {
+    --tosh: #eceeea;
+    --rail: #e2e5df;
+    --qogoz: #f8f9f6;
+    --siyoh: #18212d;
+    --kul: #5a6470;
+    --chiziq: #d3d7d1;
+    --lojuvard: #2a4bb0;
+    --lojuvard-och: #dfe5f6;
+    --firuza: #0c8475;
+    --firuza-och: #d6efe9;
+    --oxra: #946c0c;
+    --xato: #b3261e;
+    --ease: cubic-bezier(.22, .8, .24, 1);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --tosh: #141922; --rail: #10141b; --qogoz: #1b212c; --siyoh: #e4e8ee; --kul: #9aa3af;
+      --chiziq: #2c3440; --lojuvard: #8ea6ff; --lojuvard-och: #252f57; --firuza: #4fd1bd;
+      --firuza-och: #163a36; --oxra: #d9b04f; --xato: #ff8a80; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --tosh: #141922; --rail: #10141b; --qogoz: #1b212c; --siyoh: #e4e8ee; --kul: #9aa3af;
+    --chiziq: #2c3440; --lojuvard: #8ea6ff; --lojuvard-och: #252f57; --firuza: #4fd1bd;
+    --firuza-och: #163a36; --oxra: #d9b04f; --xato: #ff8a80; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--tosh); color: var(--siyoh);
+    font: 14px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; overflow: hidden;
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--lojuvard); outline-offset: 2px; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--chiziq); border-radius: 5px; border: 2px solid var(--tosh); }
+  ::-webkit-scrollbar-track { background: transparent; }
+  .num { font-family: Bahnschrift, "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; }
+
+  .app { display: grid; grid-template-columns: 216px minmax(0, 1fr); height: 100%; }
+
+  /* Chap panel */
+  .rail {
+    background: var(--rail); border-right: 1px solid var(--chiziq);
+    display: flex; flex-direction: column; padding: 18px 12px 14px; gap: 18px; min-height: 0;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
+  .logo svg { width: 30px; height: 30px; flex: none; }
+  .logo b { font: 600 22px/1 Bahnschrift, "Segoe UI", sans-serif; letter-spacing: .01em; }
+  nav { position: relative; display: flex; flex-direction: column; gap: 2px; }
+  nav button {
+    position: relative; display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 9px 12px; border: 0; border-radius: 8px; background: none; cursor: pointer;
+    color: var(--kul); text-align: left; transition: background .15s, color .15s;
+  }
+  nav button:hover { background: color-mix(in srgb, var(--chiziq) 55%, transparent); color: var(--siyoh); }
+  nav button[aria-current="page"] { color: var(--siyoh); font-weight: 600; }
+  nav svg { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  nav button[aria-current="page"] svg { stroke: var(--lojuvard); }
+  .navmark {
+    position: absolute; left: 0; top: 0; width: 3px; height: 22px; border-radius: 2px;
+    background: var(--lojuvard); transition: transform .45s var(--ease); pointer-events: none;
+  }
+  .master {
+    margin-top: auto; padding: 12px; border-radius: 10px; background: var(--qogoz);
+    border: 1px solid var(--chiziq); display: grid; gap: 4px;
+  }
+  .master .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .master .top span { font-weight: 600; }
+  .master small { color: var(--kul); font-size: 12px; line-height: 1.4; }
+  #saveState { color: var(--kul); font-size: 12px; padding: 0 8px; min-height: 18px; }
+  #saveState[data-state="error"] { color: var(--xato); }
+  #saveState[data-state="saved"]::before { content: "✓ "; color: var(--firuza); }
+
+  /* Sahifalar */
+  .pages { position: relative; min-height: 0; overflow: hidden; }
+  .page {
+    position: absolute; inset: 0; overflow: auto; padding: 32px 40px 40px;
+    opacity: 0; visibility: hidden; transform: translateY(6px);
+    transition: opacity .26s var(--ease), transform .26s var(--ease), visibility 0s .26s;
+  }
+  .page.on { opacity: 1; visibility: visible; transform: none; transition: opacity .26s var(--ease), transform .26s var(--ease); }
+  .page > .inner { max-width: 980px; }
+  h1 { font: 600 28px/1.15 Bahnschrift, "Segoe UI", sans-serif; margin: 0 0 6px; letter-spacing: -.005em; }
+  .lead { color: var(--kul); margin: 0 0 24px; max-width: 62ch; }
+  h2 { font: 600 15px/1.3 "Segoe UI Variable Display", "Segoe UI", sans-serif; margin: 26px 0 6px; }
+
+  /* Asosiy */
+  .home { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); gap: 32px; align-items: start; }
+  .stage { position: relative; }
+  .stage canvas { display: block; width: 100%; height: 400px; touch-action: none; }
+  .pairs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .pairs button {
+    display: flex; align-items: baseline; gap: 6px; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--chiziq); background: var(--qogoz); cursor: pointer;
+    font: 500 16px/1.2 Bahnschrift, "Segoe UI", sans-serif; transition: border-color .15s, background .15s;
+  }
+  .pairs button span { color: var(--kul); }
+  .pairs button b { color: var(--firuza); font-weight: 600; }
+  .pairs button[aria-pressed="true"] { border-color: var(--lojuvard); background: var(--lojuvard-och); }
+  .hero-copy h1 { font-size: 34px; }
+  .hero-copy p { color: var(--kul); margin: 6px 0 0; max-width: 52ch; }
+  .off .stage canvas { opacity: .55; }
+
+  .side { display: grid; gap: 22px; }
+  .today { display: grid; gap: 2px; }
+  .today .big { font: 600 64px/1 Bahnschrift, "Segoe UI", sans-serif; letter-spacing: -.02em; }
+  .today .lbl { color: var(--kul); }
+  .bars { display: flex; align-items: flex-end; gap: 5px; height: 72px; margin-top: 14px; }
+  .bars i {
+    flex: 1; height: 100%; border-radius: 3px 3px 1px 1px; background: var(--lojuvard);
+    transform-origin: bottom; transform: scaleY(0); transition: transform 1.3s var(--ease);
+    min-width: 6px; position: relative;
+  }
+  .bars i.zero { background: var(--chiziq); }
+  .bars i.today { background: var(--firuza); }
+  .bars-cap { display: flex; justify-content: space-between; color: var(--kul); font-size: 12px; margin-top: 6px; }
+  .checks { display: grid; gap: 0; border-top: 1px solid var(--chiziq); }
+  .check { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--chiziq); }
+  .check .dot { width: 20px; height: 20px; border-radius: 50%; flex: none; display: grid; place-items: center; margin-top: 1px; }
+  .check .dot svg { width: 12px; height: 12px; stroke: var(--qogoz); stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .check[data-ok="true"] .dot { background: var(--firuza); }
+  .check[data-ok="false"] .dot { background: var(--oxra); }
+  .check .t { display: block; }
+  .check .d { display: block; color: var(--kul); font-size: 12.5px; }
+  .where { margin-top: 30px; }
+  .where ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .where li { display: grid; grid-template-columns: 160px 1fr 56px; align-items: center; gap: 12px; }
+  .where .bar { height: 8px; border-radius: 4px; background: var(--chiziq); overflow: hidden; }
+  .where .bar i { display: block; height: 100%; background: var(--lojuvard); transform-origin: left; transform: scaleX(0); transition: transform 1.3s var(--ease); }
+  .where .n { text-align: right; color: var(--kul); }
+  .empty-note { color: var(--kul); margin: 0; }
+
+  /* Umumiy boshqaruv elementlari */
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--chiziq); }
+  .row .t { display: block; }
+  .row .d { display: block; color: var(--kul); font-size: 12.5px; line-height: 1.45; margin-top: 2px; max-width: 64ch; }
+  .group { border-top: 1px solid var(--chiziq); max-width: 760px; }
+  .sw {
+    flex: none; position: relative; width: 42px; height: 24px; border-radius: 12px;
+    border: 1.5px solid var(--kul); background: transparent; padding: 0; cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .sw::after {
+    content: ""; position: absolute; top: 3.5px; left: 4px; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--kul); transition: transform .3s var(--ease), background .2s, width .15s;
+  }
+  .sw:active::after { width: 18px; }
+  .sw[aria-checked="true"] { background: var(--lojuvard); border-color: var(--lojuvard); }
+  .sw[aria-checked="true"]::after { transform: translateX(17px); background: var(--qogoz); }
+  .sw[aria-checked="true"]:active::after { transform: translateX(13px); }
+  .sw:disabled { opacity: .45; cursor: not-allowed; }
+  .sw:disabled:active::after { width: 14px; }
+  .seg { display: inline-flex; gap: 4px; padding: 3px; border-radius: 10px; background: var(--rail); border: 1px solid var(--chiziq); flex-wrap: wrap; }
+  .seg button {
+    display: flex; align-items: baseline; gap: 8px; padding: 6px 12px; border-radius: 7px;
+    border: 0; background: none; cursor: pointer; color: var(--kul); transition: background .15s, color .15s;
+  }
+  .seg button[aria-checked="true"] { background: var(--qogoz); color: var(--siyoh); box-shadow: 0 1px 0 var(--chiziq); }
+  .seg .g { font: 600 22px/16px "Segoe UI", sans-serif; }
+  .btn {
+    padding: 7px 14px; border-radius: 8px; border: 1px solid var(--lojuvard);
+    background: var(--lojuvard); color: var(--qogoz); cursor: pointer; font-weight: 600; transition: transform .15s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.ghost { background: none; color: var(--siyoh); border-color: var(--chiziq); font-weight: 500; }
+  .link { border: 0; background: none; padding: 0; color: var(--lojuvard); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  input.text, textarea {
+    width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--chiziq); background: var(--qogoz);
+  }
+  textarea { resize: vertical; line-height: 1.55; padding: 12px 14px; }
+
+  /* Sinash */
+  .try textarea { min-height: 110px; max-width: 860px; }
+  .result {
+    max-width: 860px; min-height: 140px; margin-top: 18px;
+    font: 350 30px/1.42 Bahnschrift, "Segoe UI", sans-serif; letter-spacing: .005em;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .result:empty::before { content: "Yuqoriga yozing — natija shu yerda chiqadi."; color: var(--kul); font-size: 17px; }
+  .w { border-radius: 4px; }
+  .w.click { cursor: pointer; }
+  .w.click:hover { background: var(--lojuvard-och); }
+  .w mark { background: none; color: var(--firuza); font-weight: 600; }
+  .w.anim mark { animation: carve .6s var(--ease); }
+  @keyframes carve { from { background: var(--firuza-och); } to { background: transparent; } }
+  .w[data-r="english"], .w[data-r="protected"] { text-decoration: underline dotted var(--oxra); text-underline-offset: 7px; text-decoration-thickness: 2px; }
+  .w[data-r="exception"] { color: var(--kul); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; color: var(--kul); font-size: 13px; margin-top: 12px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .legend .c::before { background: var(--firuza); }
+  .legend .e::before { background: none; border-bottom: 2px dotted var(--oxra); border-radius: 0; height: 6px; }
+  .legend .x::before { background: var(--kul); height: 2px; vertical-align: 3px; }
+  .samples { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
+  .samples button { border: 1px dashed var(--chiziq); background: none; border-radius: 999px; padding: 3px 12px; cursor: pointer; color: var(--kul); font-size: 13px; }
+  .samples button:hover { color: var(--siyoh); border-color: var(--kul); }
+
+  /* Matn */
+  .conv { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .conv textarea { min-height: 360px; }
+  .conv .out { background: var(--rail); }
+  .bar-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .bar-tools .grow { flex: 1; }
+  .meta { color: var(--kul); font-size: 13px; }
+
+  /* Ro'yxatlar */
+  .apps { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--chiziq); max-width: 760px; }
+  .apps li { display: grid; grid-template-columns: 34px 1fr auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--chiziq); }
+  .apps .av {
+    width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+    font: 600 15px Bahnschrift, "Segoe UI", sans-serif; color: var(--qogoz);
+  }
+  .apps .d { color: var(--kul); font-size: 12.5px; }
+  .apps li.offapp .name { color: var(--kul); }
+  .add { display: flex; gap: 8px; max-width: 520px; margin-top: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; max-width: 860px; }
+  .chips li {
+    display: inline-flex; align-items: center; gap: 2px; padding: 3px 3px 3px 12px; border-radius: 8px;
+    background: var(--qogoz); border: 1px solid var(--chiziq); font: 400 15px Bahnschrift, "Segoe UI", sans-serif;
+  }
+  .chips li button { border: 0; background: none; cursor: pointer; color: var(--kul); width: 24px; height: 24px; border-radius: 5px; font-size: 16px; line-height: 1; }
+  .chips li button:hover { background: var(--lojuvard-och); color: var(--siyoh); }
+  .chips li.new { animation: land .5s var(--ease); }
+  @keyframes land { from { transform: translateY(-6px); opacity: 0; } }
+
+  /* Lug'at */
+  .dict-add { max-width: 760px; padding: 18px; border-radius: 14px; border: 1px solid var(--chiziq); background: var(--qogoz); display: grid; gap: 14px; }
+  .dict-add .pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; }
+  .dict-add label { display: grid; gap: 4px; font-size: 12.5px; color: var(--kul); }
+  .dict-add input.text { font: 400 19px/1.3 Bahnschrift, "Segoe UI", sans-serif; padding: 9px 12px; }
+  .dict-add .arrow { font: 400 22px/44px Bahnschrift, "Segoe UI", sans-serif; color: var(--kul); }
+  .units { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 34px; }
+  .units .lbl { color: var(--kul); font-size: 12.5px; margin-right: 4px; }
+  .unit {
+    display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--chiziq); background: var(--tosh); font: 500 16px/1.2 Bahnschrift, "Segoe UI", sans-serif;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .unit .from { color: var(--kul); }
+  .unit .to { color: var(--firuza); font-weight: 600; }
+  .unit[aria-pressed="false"] { border-style: dashed; }
+  .unit[aria-pressed="false"] .to { color: var(--kul); text-decoration: line-through; font-weight: 400; }
+  .unit[aria-pressed="true"] { border-color: color-mix(in srgb, var(--firuza) 50%, var(--chiziq)); background: var(--firuza-och); }
+  .dict-add .foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .dict-add .foot .grow { flex: 1; }
+  .sample { color: var(--kul); font-size: 13px; }
+  .sample b { color: var(--siyoh); font-weight: 600; font-family: Bahnschrift, "Segoe UI", sans-serif; }
+  .dict-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 760px; margin: 22px 0 10px; }
+  .dict-tools input.text { flex: 1; min-width: 180px; }
+  .rules { list-style: none; padding: 0; margin: 0 0 18px; max-width: 760px; border-top: 1px solid var(--chiziq); }
+  .rules li { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) 32px; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--chiziq); font: 400 16px Bahnschrift, "Segoe UI", sans-serif; }
+  .rules li .a { color: var(--kul); }
+  .rules li .b { color: var(--firuza); font-weight: 600; }
+  .rules li .ar { color: var(--kul); text-align: center; }
+  .rules li button { border: 0; background: none; cursor: pointer; color: var(--kul); width: 28px; height: 28px; border-radius: 6px; font-size: 17px; }
+  .rules li button:hover { background: var(--lojuvard-och); color: var(--siyoh); }
+  .rules li.new { animation: land .5s var(--ease); }
+  .w[data-r="rule"] { box-shadow: inset 0 -2px 0 var(--lojuvard); }
+  .legend .r::before { background: none; border-bottom: 2px solid var(--lojuvard); border-radius: 0; height: 6px; }
+
+  /* Yangiliklar */
+  .upd {
+    max-width: 760px; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center;
+    padding: 16px 18px; border-radius: 14px; border: 1px solid var(--chiziq); background: var(--qogoz); margin-bottom: 26px;
+  }
+  .upd .ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--rail); }
+  .upd .ic svg { width: 20px; height: 20px; stroke: var(--kul); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .upd .t { font-weight: 600; display: block; }
+  .upd .d { color: var(--kul); font-size: 12.5px; display: block; }
+  .upd[data-state="available"] {
+    background: linear-gradient(var(--qogoz), var(--qogoz)) padding-box,
+      conic-gradient(from var(--spin, 0deg), var(--lojuvard), var(--firuza), var(--lojuvard)) border-box;
+    border: 1.5px solid transparent; animation: spin 6s linear infinite;
+  }
+  .upd[data-state="available"] .ic { background: var(--firuza-och); }
+  .upd[data-state="available"] .ic svg { stroke: var(--firuza); }
+  .upd[data-state="downloading"] .ic svg, .upd[data-state="checking"] .ic svg, .upd[data-state="installing"] .ic svg { animation: turn 1s linear infinite; }
+  .upd[data-state="error"] .ic svg { stroke: var(--xato); }
+  .upd ul { grid-column: 1 / -1; margin: 2px 0 0; padding-left: 20px; color: var(--siyoh); font-size: 13px; }
+  @property --spin { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+  @keyframes spin { to { --spin: 360deg; } }
+  @keyframes turn { to { transform: rotate(360deg); } }
+  .timeline { position: relative; max-width: 760px; display: grid; gap: 18px; padding-left: 26px; }
+  .timeline::before { content: ""; position: absolute; left: 6px; top: 10px; bottom: 10px; width: 2px; border-radius: 1px; background: var(--chiziq); }
+  .ver { position: relative; padding: 18px 20px; border-radius: 14px; border: 1px solid var(--chiziq); background: var(--qogoz); }
+  .ver::before { content: ""; position: absolute; left: -26px; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: var(--tosh); border: 2px solid var(--chiziq); }
+  .ver.cur { border-color: color-mix(in srgb, var(--lojuvard) 45%, var(--chiziq)); box-shadow: 0 10px 30px -18px color-mix(in srgb, var(--lojuvard) 70%, transparent); }
+  .ver.cur::before { background: var(--lojuvard); border-color: var(--lojuvard); box-shadow: 0 0 0 5px var(--lojuvard-och); }
+  .ver .head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .ver .v { font: 600 26px/1 Bahnschrift, "Segoe UI", sans-serif; letter-spacing: -.01em; }
+  .ver .date { color: var(--kul); font-size: 12.5px; }
+  .ver .badge { font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--lojuvard-och); color: var(--lojuvard); }
+  .ver .grp { margin-top: 10px; }
+  .chip { display: inline-block; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; padding: 2px 9px; border-radius: 6px; margin-bottom: 6px; }
+  .chip.new { background: var(--firuza-och); color: var(--firuza); }
+  .chip.better { background: var(--lojuvard-och); color: var(--lojuvard); }
+  .chip.fixed { background: color-mix(in srgb, var(--oxra) 16%, transparent); color: var(--oxra); }
+  .chip.other { background: var(--rail); color: var(--kul); }
+  .ver ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .ver li { line-height: 1.5; }
+  .ver li b { font-weight: 600; }
+  .ver li span { color: var(--kul); }
+  .ver.old li span { display: none; }
+  .ver.old li { color: var(--kul); }
+  .rise { animation: rise .42s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+  /* Xabar berish */
+  .fb { max-width: 760px; display: grid; gap: 16px; }
+  .fb > .seg { justify-self: start; }
+  .fb label.f { display: grid; gap: 4px; font-size: 12.5px; color: var(--kul); }
+  .fb textarea { min-height: 130px; }
+  .fb .trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .fb .trio input { font-family: Bahnschrift, "Segoe UI", sans-serif; font-size: 16px; }
+  .drop {
+    display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 14px; border-radius: 12px;
+    border: 1.5px dashed var(--chiziq); background: var(--qogoz); transition: border-color .15s, background .15s;
+  }
+  .drop.over { border-color: var(--lojuvard); background: var(--lojuvard-och); }
+  .drop .thumb { width: 120px; height: 76px; border-radius: 8px; background: var(--rail) center / cover no-repeat; display: grid; place-items: center; color: var(--kul); font-size: 22px; }
+  .drop .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .drop .d { color: var(--kul); font-size: 12.5px; width: 100%; }
+  .diag details { color: var(--kul); font-size: 12.5px; margin-top: 4px; }
+  .diag pre { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--rail); color: var(--siyoh); font: 12px/1.5 Consolas, monospace; white-space: pre-wrap; max-height: 220px; overflow: auto; }
+  .fb .send { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .fb .send .meta { flex: 1; }
+  .fb .send .err { color: var(--xato); }
+  .fb-done { max-width: 760px; padding: 28px; border-radius: 14px; border: 1px solid var(--chiziq); background: var(--qogoz); text-align: center; display: grid; gap: 6px; justify-items: center; }
+  .fb-done .tick { width: 56px; height: 56px; border-radius: 50%; background: var(--firuza); display: grid; place-items: center; animation: pop .5s var(--ease); }
+  .fb-done .tick svg { width: 28px; height: 28px; stroke: var(--qogoz); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw .5s .2s var(--ease) forwards; }
+  .fb-done .num { font-size: 20px; letter-spacing: .08em; }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .navdot { position: absolute; left: 25px; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--firuza); box-shadow: 0 0 0 2px var(--rail); }
+
+  /* Klaviatura */
+  .modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 860px; }
+  .mode {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: start; padding: 16px;
+    border-radius: 12px; border: 1px solid var(--chiziq); background: var(--qogoz); transition: border-color .2s;
+  }
+  .mode[data-on="true"] { border-color: color-mix(in srgb, var(--lojuvard) 55%, var(--chiziq)); }
+  .mode .t { font-weight: 600; }
+  .mode .d { grid-column: 1 / -1; color: var(--kul); font-size: 12.5px; line-height: 1.45; }
+  .mode .demo { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 8px; font: 400 17px/1 Bahnschrift, "Segoe UI", sans-serif; color: var(--kul); }
+  .mode .demo b { color: var(--firuza); font-weight: 600; }
+  .mode .demo { flex-wrap: wrap; }
+  .mode .demo kbd { white-space: nowrap; font: inherit; min-width: 28px; padding: 5px 7px; text-align: center; border-radius: 6px; border: 1px solid var(--chiziq); border-bottom-width: 2px; background: var(--tosh); color: var(--siyoh); }
+  .note { display: flex; gap: 8px; align-items: flex-start; max-width: 860px; margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; font-size: 13px; background: color-mix(in srgb, var(--oxra) 12%, transparent); color: var(--siyoh); }
+  .note::before { content: "!"; flex: none; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--oxra); color: var(--qogoz); font-weight: 700; font-size: 12px; }
+  .kb-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 860px; margin: 28px 0 8px; }
+  .kb-head h2 { margin: 0; }
+  .kb-head .grow { flex: 1; }
+  .kb-desc { color: var(--kul); font-size: 13px; margin: 0 0 14px; max-width: 860px; min-height: 20px; }
+  .kb-wrap { max-width: 860px; transition: opacity .2s; }
+  .kb-wrap.dim { opacity: .5; }
+  .kbd { display: grid; gap: 6px; padding: 12px; border-radius: 14px; background: var(--rail); border: 1px solid var(--chiziq); user-select: none; }
+  .kbd .r { display: flex; gap: 6px; }
+  .key {
+    position: relative; flex: 1 1 0; min-width: 0; height: 50px; border-radius: 8px; padding: 0;
+    border: 1px solid var(--chiziq); border-bottom-width: 2px; background: var(--qogoz); cursor: pointer;
+    transition: transform .12s var(--ease), background .15s, border-color .15s, box-shadow .15s;
+  }
+  .key:hover { border-color: var(--kul); }
+  .key:active, .key.down { transform: translateY(1px); border-bottom-width: 1px; }
+  .key.down { background: var(--lojuvard-och); }
+  .key .b { position: absolute; inset: 0; display: grid; place-items: center; font: 500 19px/1 Bahnschrift, "Segoe UI", sans-serif; }
+  .key .s, .key .a { position: absolute; font: 400 11.5px/1 "Segoe UI", sans-serif; color: var(--kul); }
+  .key .s { left: 6px; top: 5px; }
+  .key .a { right: 6px; bottom: 5px; color: var(--lojuvard); font-weight: 600; }
+  .key.mod { background: var(--firuza-och); border-color: color-mix(in srgb, var(--firuza) 45%, var(--chiziq)); }
+  .key.mod .b { color: var(--firuza); font-weight: 600; }
+  .key.pass .b { color: var(--chiziq); }
+  .key[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--lojuvard); border-color: var(--lojuvard); }
+  .key.fx { cursor: default; color: var(--kul); font-size: 11.5px; background: transparent; border-style: dashed; display: flex; align-items: flex-end; padding: 0 8px 6px; }
+  .key.fx:hover { border-color: var(--chiziq); }
+  .key.fx.hot { color: var(--lojuvard); border-color: var(--lojuvard); border-style: solid; font-weight: 600; }
+  .key.w15 { flex-grow: 1.5; } .key.w18 { flex-grow: 1.8; } .key.w22 { flex-grow: 2.3; } .key.w6 { flex-grow: 6.2; }
+  .kb-legend { display: flex; gap: 18px; flex-wrap: wrap; color: var(--kul); font-size: 12.5px; margin-top: 10px; }
+  .kb-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .kb-legend .l1 { background: var(--firuza-och); border: 1px solid var(--firuza); }
+  .kb-legend .l2 { background: var(--lojuvard); width: 8px; height: 8px; border-radius: 50%; vertical-align: 0; }
+  .editor { margin-top: 14px; padding: 16px; border-radius: 12px; border: 1px solid var(--chiziq); background: var(--qogoz); display: grid; gap: 14px; }
+  .editor .top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .editor .cap { font: 600 15px "Segoe UI Variable Display", "Segoe UI", sans-serif; }
+  .editor .cap kbd { font: 600 15px Bahnschrift, "Segoe UI", sans-serif; padding: 2px 8px; border-radius: 6px; border: 1px solid var(--chiziq); border-bottom-width: 2px; margin: 0 2px; }
+  .levels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .levels label { display: grid; gap: 4px; font-size: 12.5px; color: var(--kul); }
+  .levels input { text-align: center; font: 500 22px/1 Bahnschrift, "Segoe UI", sans-serif; padding: 8px 6px; }
+  .levels input::placeholder { color: var(--chiziq); }
+  .levels input.set { border-color: var(--firuza); color: var(--firuza); }
+  .picks { display: flex; gap: 4px; flex-wrap: wrap; }
+  .picks button { min-width: 34px; height: 32px; border-radius: 7px; border: 1px solid var(--chiziq); background: var(--tosh); cursor: pointer; font: 500 16px Bahnschrift, "Segoe UI", sans-serif; }
+  .picks button:hover { border-color: var(--lojuvard); background: var(--lojuvard-och); }
+  .kb-try { margin-top: 26px; max-width: 860px; }
+  .kb-try input { font: 400 20px/1.4 Bahnschrift, "Segoe UI", sans-serif; padding: 10px 14px; }
+
+  /* Haqida */
+  .about { display: grid; gap: 0; max-width: 760px; border-top: 1px solid var(--chiziq); }
+  .about .row .v { color: var(--kul); }
+  .law { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 8px 0 0; max-width: 760px; border: 1px solid var(--chiziq); border-radius: 12px; overflow: hidden; }
+  .law > div { padding: 16px; text-align: center; border-right: 1px solid var(--chiziq); background: var(--qogoz); }
+  .law > div:last-child { border-right: 0; }
+  .law .o { font: 400 24px Bahnschrift, "Segoe UI", sans-serif; color: var(--kul); }
+  .law .n { font: 600 40px/1.1 Bahnschrift, "Segoe UI", sans-serif; color: var(--firuza); }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 16px); opacity: 0;
+    background: var(--siyoh); color: var(--tosh); padding: 9px 16px; border-radius: 10px; font-size: 13px;
+    transition: transform .35s var(--ease), opacity .35s var(--ease); pointer-events: none; z-index: 5;
+  }
+  .toast.on { transform: translate(-50%, 0); opacity: 1; }
+
+  @media (max-width: 860px) {
+    .home { grid-template-columns: 1fr; }
+    .conv { grid-template-columns: 1fr; }
+    .conv textarea { min-height: 180px; }
+  }
+  @media (max-width: 680px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+    .rail { order: 2; flex-direction: row; padding: 6px 8px; border-right: 0; border-top: 1px solid var(--chiziq); gap: 0; }
+    .logo, .master, #saveState, nav .lbl, .navmark { display: none; }
+    nav { flex-direction: row; width: 100%; justify-content: space-between; }
+    nav button { justify-content: center; padding: 10px; }
+    nav button[aria-current="page"] { background: var(--lojuvard-och); }
+    .page { padding: 22px 16px 28px; }
+    .stage canvas { height: 260px; }
+    .where li { grid-template-columns: 110px 1fr 44px; }
+    .law { grid-template-columns: repeat(2, 1fr); }
+    .modes { grid-template-columns: 1fr; }
+    .kbd { padding: 6px; gap: 4px; } .kbd .r { gap: 4px; }
+    .key { height: 40px; border-radius: 6px; } .key .b { font-size: 15px; } .key .s, .key .a { font-size: 9.5px; }
+    .key.fx { font-size: 0; }
+    .levels { grid-template-columns: repeat(2, 1fr); }
+    .dict-add .pair { grid-template-columns: 1fr; }
+    .dict-add .arrow { display: none; }
+    .fb .trio { grid-template-columns: 1fr; }
+    .upd { grid-template-columns: auto 1fr; }
+    .upd > .btn, .upd > .act { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="rail">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7.4" fill="#1b1e26"/><path d="M10.748 8.2L10.748 23.8" fill="none" stroke="#f3efe7" stroke-width="2.912" stroke-linecap="round"/><path d="M11.476 18.912a4.888 4.888 0 1 1 9.776 0a4.888 4.888 0 1 1 -9.776 0z" fill="none" stroke="#f3efe7" stroke-width="2.912"/><circle cx="15.116" cy="9.552" r="1.664" fill="#8fb0ea"/><circle cx="19.276" cy="9.552" r="1.664" fill="#8fb0ea"/></svg>
+      <b>bitg</b>
+    </div>
+    <nav aria-label="Bo'limlar" id="nav">
+      <span class="navmark" id="navmark"></span>
+      <button data-page="home"><svg viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z"/></svg><span class="lbl">Asosiy</span></button>
+      <button data-page="try"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg><span class="lbl">Sinash</span></button>
+      <button data-page="text"><svg viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M9 11h6M9 15h4"/></svg><span class="lbl">Matnni o'girish</span></button>
+      <button data-page="rules"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span class="lbl">Qoidalar</span></button>
+      <button data-page="kb"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg><span class="lbl">Klaviatura</span></button>
+      <button data-page="apps"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span class="lbl">Dasturlar</span></button>
+      <button data-page="ex"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg><span class="lbl">Lug'at</span></button>
+      <button data-page="news"><svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.3L20 9l-4.4 3.8L17 19l-5-3-5 3 1.4-6.2L4 9l5.8-.7z"/></svg><span class="lbl">Yangiliklar</span></button>
+      <button data-page="fb"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span class="lbl">Xabar berish</span></button>
+      <button data-page="about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg><span class="lbl">Haqida</span></button>
+    </nav>
+    <div id="saveState" aria-live="polite"></div>
+    <div class="master">
+      <div class="top"><span id="masterLabel">Yoqilgan</span>
+        <button class="sw" role="switch" id="enabled" aria-checked="true" aria-labelledby="masterLabel"></button></div>
+      <small id="masterHint">Hamma dasturda ishlaydi. Oynani yopsangiz ham trayda qoladi.</small>
+    </div>
+  </aside>
+
+  <div class="pages">
+    <!-- Asosiy -->
+    <section class="page" id="p-home" aria-labelledby="h-home">
+      <div class="inner home">
+        <div>
+          <div class="hero-copy">
+            <h1 id="h-home">Odatdagidek yozing.</h1>
+            <p>Probel bosilganda so'z 2026-yilgi alifboga o'tadi — brauzerda, Telegram'da, Word'da. Inglizchaga tegmaydi, tushib qolgan apostrofni o'zi qo'yadi.</p>
+          </div>
+          <div class="stage">
+            <canvas id="morph" aria-hidden="true"></canvas>
+          </div>
+          <div class="pairs" id="pairs" role="group" aria-label="Harf almashinuvlari"></div>
+        </div>
+        <div class="side">
+          <div class="today">
+            <span class="big num" id="todayN">0</span>
+            <span class="lbl" id="todayLbl">so'z bugun o'girildi</span>
+            <div class="bars" id="bars" aria-hidden="true"></div>
+            <div class="bars-cap"><span id="barsFrom"></span><span id="weekN"></span></div>
+          </div>
+          <div class="checks" id="checks"></div>
+        </div>
+      </div>
+      <div class="inner where" id="whereBox">
+        <h2>Qayerda ko'p yozildi</h2>
+        <ol id="where"></ol>
+      </div>
+    </section>
+
+    <!-- Sinash -->
+    <section class="page try" id="p-try" aria-labelledby="h-try">
+      <div class="inner">
+        <h1 id="h-try">Sinab ko'ring</h1>
+        <p class="lead">Bu yerda yozilgani hech qayerga saqlanmaydi. Natijadagi so'zni bossangiz, u Lug'atda o'girilmaydigan bo'ladi.</p>
+        <div class="samples" id="samples"></div>
+        <textarea id="input" spellcheck="false" aria-label="Eski yozuvdagi matn">Ozbekiston shaharlari: Toshkent, Samarqand. Please check the schedule, keyin choy ichamiz. Togri yoldan bor, ma'no</textarea>
+        <div class="result" id="result" aria-live="polite"></div>
+        <div class="legend"><span class="c">yangi harf</span><span class="e">inglizcha yoki kod — tegilmadi</span><span class="r">lug'atingizdan</span><span class="x">o'girilmaydigan so'z</span></div>
+      </div>
+    </section>
+
+    <!-- Matn -->
+    <section class="page" id="p-text" aria-labelledby="h-text">
+      <div class="inner">
+        <h1 id="h-text">Matnni o'girish</h1>
+        <p class="lead">Hujjat, xat yoki sayt matnini to'liq o'giring. Kirillcha matn ham yangi lotinga o'tadi.</p>
+        <div class="bar-tools">
+          <div class="seg" role="radiogroup" aria-label="Yo'nalish" id="dir">
+            <button role="radio" data-v="new">Eski → yangi</button>
+            <button role="radio" data-v="old">Yangi → eski</button>
+          </div>
+          <div class="seg" role="radiogroup" aria-label="Eski yozuv belgisi" id="oldStyle" hidden>
+            <button role="radio" data-v="official">oʻ rasmiy</button>
+            <button role="radio" data-v="ascii">o' oddiy</button>
+          </div>
+          <span class="grow"></span>
+          <span class="meta" id="convMeta"></span>
+          <button class="btn ghost" id="clearText" type="button">Tozalash</button>
+          <button class="btn" id="copyText" type="button">Nusxalash</button>
+        </div>
+        <div class="conv">
+          <textarea id="convIn" spellcheck="false" aria-label="Asl matn" placeholder="Matnni shu yerga joylang"></textarea>
+          <textarea id="convOut" class="out" readonly aria-label="Natija"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Qoidalar -->
+    <section class="page" id="p-rules" aria-labelledby="h-rules">
+      <div class="inner">
+        <h1 id="h-rules">Qoidalar</h1>
+        <p class="lead">O'zgarish darhol saqlanadi va ochiq dasturlarda bir soniyada ishga tushadi.</p>
+        <div class="row" style="max-width:760px;border-bottom:0;padding-top:0"><span><span class="t" id="l-pr">Aqlli tuzatishlar</span>
+            <span class="d" id="presetDesc"></span></span>
+          <div class="seg" role="radiogroup" aria-labelledby="l-pr" id="preset">
+            <button role="radio" data-v="safe">Ehtiyotkor</button>
+            <button role="radio" data-v="smart">Tavsiya</button>
+            <button role="radio" data-v="custom">Maxsus</button>
+          </div></div>
+        <div class="group">
+          <div class="row"><span><span class="t" id="l-eg">Inglizcha so'zlarga tegmaslik</span>
+            <span class="d">check, show, Obama's o'zgarmaydi. O'zbekcha gap ichidagi «chat» esa çat bo'ladi.</span></span>
+            <button class="sw" role="switch" data-k="english_guard" aria-labelledby="l-eg"></button></div>
+          <div class="row"><span><span class="t" id="l-ra">Tushib qolgan apostrofni tiklash</span>
+            <span class="d">ozbek → özbek, togri → töğri. Lug'atdagi so'zni ham tuzatadi: Qirgiziston → Qirğiziston. Ikki ma'noli so'zlar (qol, oz, yoq) tegilmaydi. Yozganingiz aynan qolsin desangiz — o'chiring yoki so'zni Lug'atga qo'shing.</span></span>
+            <button class="sw" role="switch" data-k="restore_apostrophes" aria-labelledby="l-ra"></button></div>
+          <div class="row"><span><span class="t" id="l-cy">Kirill harflarni ham o'girish</span>
+            <span class="d">шаҳар → şahar. O'chirilsa, kirillcha so'zlar o'zgarmaydi.</span></span>
+            <button class="sw" role="switch" data-k="cyrillic" aria-labelledby="l-cy"></button></div>
+          <div class="row"><span><span class="t" id="l-ub">Backspace bilan bekor qilish</span>
+            <span class="d">So'z o'girilgandan keyin darhol Backspace — asl so'z qaytadi (shu dasturda boshqa o'girilmaydi).</span></span>
+            <button class="sw" role="switch" data-k="undo_backspace" aria-labelledby="l-ub"></button></div>
+          <div class="row"><span><span class="t" id="l-ur">Qaytarilgan so'zni istisnoga yozish</span>
+            <span class="d">Backspace bilan qaytarilgan so'z «Lug'at» ga doimiy qo'shiladi (o'girilmaydigan so'z sifatida).</span></span>
+            <button class="sw" role="switch" data-k="undo_remember" aria-labelledby="l-ur"></button></div>
+          <div class="row"><span><span class="t" id="l-tq">Tutuq belgisi</span>
+            <span class="d">ma'no, san'at so'zlaridagi belgi. Standart — U+02BC.</span></span>
+            <div class="seg" role="radiogroup" aria-labelledby="l-tq" id="tutuq">
+              <button role="radio" data-v="ʼ"><span class="g">ʼ</span>standart</button>
+              <button role="radio" data-v="’"><span class="g">’</span>tipografik</button>
+              <button role="radio" data-v="'"><span class="g">'</span>oddiy</button>
+            </div></div>
+        </div>
+        <h2>Belgilangan matn</h2>
+        <div class="group">
+          <div class="row"><span><span class="t" id="l-hk">Tugma bilan o'girish</span>
+            <span class="d">Istalgan dasturda matnni belgilab tugmani bosing — o'sha joyning o'zida yangi alifboga o'tadi. Clipboard'dagi narsa joyiga qaytariladi.</span></span>
+            <button class="sw" role="switch" data-k="hotkey" aria-labelledby="l-hk"></button></div>
+          <div class="row"><span><span class="t" id="l-hkk">Tugmalar</span>
+            <span class="d" id="hkState">bitg trayda turganda ishlaydi.</span></span>
+            <div class="seg" role="radiogroup" aria-labelledby="l-hkk" id="hotkeyKeys">
+              <button role="radio" data-v="ctrl+shift+y">Ctrl+Shift+Y</button>
+              <button role="radio" data-v="ctrl+shift+b">Ctrl+Shift+B</button>
+              <button role="radio" data-v="ctrl+shift+f8">Ctrl+Shift+F8</button>
+            </div></div>
+        </div>
+        <h2>Ilova</h2>
+        <div class="group">
+          <div class="row"><span><span class="t" id="l-as">Windows bilan ishga tushish</span>
+            <span class="d">bitg trayda turadi: belgini bosib bu oynani ochasiz, o'ng tugma bilan tez yoqib-o'chirasiz.</span></span>
+            <button class="sw" role="switch" id="autostart" aria-labelledby="l-as"></button></div>
+          <div class="row"><span><span class="t" id="l-uc">Yangilanishlarni tekshirish</span>
+            <span class="d" id="d-uc">Kuniga bir marta bitg.uz dan versiya raqami o'qiladi. Yangisi chiqsa — taklif qilinadi, o'zi o'rnatilmaydi.</span></span>
+            <button class="sw" role="switch" data-k="update_check" aria-labelledby="l-uc"></button></div>
+          <div class="row"><span><span class="t" id="l-wn">Yangilangandan keyin yangiliklarni ko'rsatish</span>
+            <span class="d">Yangi versiyada nima o'zgargani bir marta ochiladi.</span></span>
+            <button class="sw" role="switch" data-k="whats_new" aria-labelledby="l-wn"></button></div>
+          <div class="row"><span><span class="t" id="l-th">Ko'rinish</span></span>
+            <div class="seg" role="radiogroup" aria-labelledby="l-th" id="theme">
+              <button role="radio" data-v="system">Tizim</button>
+              <button role="radio" data-v="light">Yorug'</button>
+              <button role="radio" data-v="dark">Qorong'i</button>
+            </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Klaviatura -->
+    <section class="page" id="p-kb" aria-labelledby="h-kb">
+      <div class="inner">
+        <h1 id="h-kb">Klaviatura</h1>
+        <p class="lead">Yangi harflarni ikki usulda yozish mumkin: so'z o'zi o'girilsin yoki harf tugmaning o'zidan chiqsin. Ikkalasini birga yoqsa ham bo'ladi.</p>
+        <div class="modes">
+          <div class="mode" id="m-auto">
+            <span class="t" id="l-auto">Avtomatik o'girish</span>
+            <button class="sw" role="switch" data-k="auto_convert" aria-labelledby="l-auto"></button>
+            <span class="d">Odatdagidek yozasiz, probel bosilganda so'z yangi alifboga o'tadi.</span>
+            <span class="demo" aria-hidden="true">shahar <kbd>␣</kbd> → <span><b>ş</b>ahar</span></span>
+          </div>
+          <div class="mode" id="m-keys">
+            <span class="t" id="l-keys">Yangi harflar tugmada</span>
+            <button class="sw" role="switch" data-k="keymap" aria-labelledby="l-keys"></button>
+            <span class="d">Harf darhol yoziladi, hech narsa o'zgartirilmaydi. Ctrl bilan tezkor tugmalar inglizcha joyida.</span>
+            <span class="demo" aria-hidden="true" id="keysDemo"></span>
+          </div>
+        </div>
+        <p class="note" id="kbNote" hidden></p>
+
+        <div class="kb-head">
+          <h2 id="h-layout">Tartib</h2>
+          <div class="seg" role="radiogroup" aria-labelledby="h-layout" id="layout">
+            <button role="radio" data-v="tilmoch">Tilmoch</button>
+            <button role="radio" data-v="kiritish">kiritish.uz</button>
+            <button role="radio" data-v="tezyechim">TezYechim</button>
+            <button role="radio" data-v="turkish">Turkcha Q</button>
+            <button role="radio" data-v="altgr">Faqat AltGr</button>
+            <button role="radio" data-v="kirill">Kirill</button>
+            <button role="radio" data-v="taklif" title="Taklif qilingan (rasmiy emas)">Taklif (rasmiy emas)</button>
+            <button role="radio" data-v="custom">Maxsus</button>
+          </div>
+          <span class="grow"></span>
+          <div class="seg" role="radiogroup" aria-label="Ko'rsatilgan qatlam" id="layer">
+            <button role="radio" data-v="0">Oddiy</button>
+            <button role="radio" data-v="1">Shift</button>
+            <button role="radio" data-v="2">AltGr</button>
+          </div>
+        </div>
+        <p class="kb-desc" id="layoutDesc"></p>
+        <div class="kb-wrap" id="kbWrap">
+          <div class="kbd" id="kbd" role="group" aria-label="Klaviatura tartibi"></div>
+          <div class="kb-legend"><span><i class="l1"></i>o'zgargan tugma</span><span><i class="l2"></i>AltGr (o'ng Alt) bilan</span><span>Tugmani bosib, belgisini o'zgartiring</span></div>
+          <div class="editor" id="editor" hidden>
+            <div class="top">
+              <span class="cap" id="edCap"></span>
+              <span class="grow" style="flex:1"></span>
+              <button class="btn ghost" type="button" id="edReset">Inglizcha holiga qaytarish</button>
+              <button class="btn ghost" type="button" id="edClose">Yopish</button>
+            </div>
+            <div class="levels" id="levels"></div>
+            <div class="picks" id="picks" role="group" aria-label="Tez tanlash belgilari"></div>
+          </div>
+        </div>
+        <p class="meta" style="margin-top:10px" id="customTools" hidden><button class="link" type="button" id="customFromPreset">Maxsus tartibni Tilmoch'dan qayta boshlash</button></p>
+
+        <div class="kb-try">
+          <h2 id="h-kbtry">Shu yerda sinang</h2>
+          <input class="text" id="kbTry" spellcheck="false" autocomplete="off" aria-labelledby="h-kbtry" placeholder="Win + Probel bilan bitg'ni tanlang va yozing">
+          <p class="meta" style="margin-top:6px">Tartib bitg klaviaturasi tanlangan har qanday oynada ishlaydi — tray ilovasi yopiq bo'lsa ham.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dasturlar -->
+    <section class="page" id="p-apps" aria-labelledby="h-apps">
+      <div class="inner">
+        <h1 id="h-apps">Dasturlar</h1>
+        <p class="lead">bitg ishlagan dasturlar va qayerda o'chiq turishi. Terminallar standart holatda o'chiq: u yerda buyruq va parol yoziladi.</p>
+        <div class="group">
+          <div class="row"><span><span class="t" id="l-fb">Telegram kabi dasturlarda ham ishlash</span>
+            <span class="d">Matnni Windows'ga ko'rsatmaydigan dasturlarda so'z o'chirilib, yangisi yoziladi.</span></span>
+            <button class="sw" role="switch" data-k="fallback" aria-labelledby="l-fb"></button></div>
+        </div>
+        <h2>Ro'yxat</h2>
+        <ul class="apps" id="apps"></ul>
+        <form class="add" id="appForm">
+          <input class="text" id="appInput" placeholder="Dastur fayli, masalan termius.exe" aria-label="Dastur fayli nomi" autocomplete="off">
+          <button class="btn" type="submit">O'chirib qo'yish</button>
+        </form>
+        <p class="meta" style="margin-top:10px"><button class="link" type="button" id="appsReset">Terminallar ro'yxatini tiklash</button></p>
+      </div>
+    </section>
+
+    <!-- Lug'at -->
+    <section class="page" id="p-ex" aria-labelledby="h-ex">
+      <div class="inner">
+        <h1 id="h-ex">Lug'at</h1>
+        <p class="lead">bitg'ga o'z so'zlaringizni o'rgating. So'zni eski yozuvda kiriting, har bir harfni bosib qaysi biri o'girilishini tanlang. Qo'shimchali shakli ham shunday yoziladi, katta-kichik harf yozganingizdek qoladi.</p>
+        <form class="dict-add" id="exForm" autocomplete="off">
+          <div class="pair">
+            <label>So'z (eski yozuvda)<input class="text" id="exInput" placeholder="shamollash" spellcheck="false"></label>
+            <span class="arrow" aria-hidden="true">→</span>
+            <label>Qanday yozilsin<input class="text" id="exTo" placeholder="şamollaş" spellcheck="false"></label>
+          </div>
+          <div class="units" id="units" role="group" aria-label="O'giriladigan harflar"></div>
+          <div class="foot">
+            <span class="sample grow" id="exSample">Masalan: shamollash → şamollaş, bog'cha → bog'ça (g' qoladi), Shohruh → Shohruh (umuman o'girilmaydi).</span>
+            <button class="btn" type="submit" id="exAdd">Qo'shish</button>
+          </div>
+        </form>
+        <div class="dict-tools">
+          <input class="text" id="exFilter" placeholder="Lug'atdan qidirish" aria-label="Lug'at ichida qidirish">
+          <button class="btn ghost" type="button" id="exImport">Fayldan qo'shish</button>
+          <button class="btn ghost" type="button" id="exCopy">Nusxalash</button>
+          <input type="file" id="exFile" accept=".txt,text/plain" hidden>
+        </div>
+        <h2 id="h-rules-list">O'z yozuvi bilan</h2>
+        <ul class="rules" id="rulesList" aria-labelledby="h-rules-list"></ul>
+        <h2 id="h-never">O'girilmaydigan so'zlar</h2>
+        <ul class="chips" id="exceptions" aria-labelledby="h-never"></ul>
+      </div>
+    </section>
+
+    <!-- Yangiliklar -->
+    <section class="page" id="p-news" aria-labelledby="h-news">
+      <div class="inner">
+        <h1 id="h-news">Yangiliklar</h1>
+        <p class="lead">Har versiyada nima o'zgardi. bitg yangi versiyani o'zi tekshiradi va taklif qiladi — o'rnatish faqat siz bosganda.</p>
+        <div class="upd" id="upd" data-state="idle" aria-live="polite">
+          <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg></span>
+          <span><span class="t" id="updT">Yangilanish</span><span class="d" id="updD"></span></span>
+          <button class="btn ghost act" type="button" id="updBtn">Tekshirish</button>
+          <ul id="updNotes" hidden></ul>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </section>
+
+    <!-- Xabar berish -->
+    <section class="page" id="p-fb" aria-labelledby="h-fb">
+      <div class="inner">
+        <h1 id="h-fb">Xabar berish</h1>
+        <p class="lead">Xato, taklif yoki noto'g'ri o'girilgan so'z haqida yozing — to'g'ridan-to'g'ri jamoaga yetadi. Yozgan matnlaringiz o'zi yuborilmaydi: faqat shu shaklga yozganingiz ketadi.</p>
+        <form class="fb" id="fbForm" autocomplete="off">
+          <div class="seg" role="radiogroup" aria-label="Xabar turi" id="fbType">
+            <button role="radio" type="button" data-v="bug">Xato</button>
+            <button role="radio" type="button" data-v="idea">Taklif</button>
+            <button role="radio" type="button" data-v="conversion">Noto'g'ri o'girildi</button>
+          </div>
+          <div class="trio" id="fbTrio" hidden>
+            <label class="f">Nima yozdingiz<input class="text" id="fbTyped" placeholder="bog'cha" spellcheck="false"></label>
+            <label class="f">bitg nima qildi<input class="text" id="fbGot" placeholder="boğça" spellcheck="false"></label>
+            <label class="f">Qanday bo'lishi kerak<input class="text" id="fbExp" placeholder="bog'ça" spellcheck="false"></label>
+          </div>
+          <label class="f"><span id="fbTextLbl">Nima bo'ldi</span><textarea id="fbText" maxlength="4000" placeholder="Qaysi dasturda, nima qildingiz, nima kutgandingiz"></textarea></label>
+          <div class="drop" id="fbDrop">
+            <span class="thumb" id="fbThumb" aria-hidden="true">＋</span>
+            <span class="acts">
+              <button class="btn ghost" type="button" id="fbShot">Ekran parchasi</button>
+              <button class="btn ghost" type="button" id="fbPick">Rasm tanlash</button>
+              <button class="link" type="button" id="fbClear" hidden>Olib tashlash</button>
+              <span class="d" id="fbImgD">Yoki rasmni shu yerga tashlang / Ctrl+V bilan joylang. Rasm siqiladi (2 MB gacha).</span>
+            </span>
+            <input type="file" id="fbFile" accept="image/png,image/jpeg,image/webp,image/bmp" hidden>
+          </div>
+          <label class="f">Aloqa uchun (ixtiyoriy)<input class="text" id="fbContact" maxlength="200" placeholder="Telegram @username yoki email — javob kerak bo'lsa"></label>
+          <div class="group diag">
+            <div class="row"><span><span class="t" id="l-dg">Texnik ma'lumot qo'shish</span>
+              <span class="d">Versiya, Windows yig'ilishi va kalitlar holati. Matn, lug'at so'zlari va dastur nomlari yo'q.</span>
+              <details id="fbDiagBox"><summary>Nima yuboriladi?</summary><pre id="fbDiag">…</pre></details></span>
+              <button class="sw" role="switch" id="fbDiagOn" aria-checked="true" aria-labelledby="l-dg"></button></div>
+          </div>
+          <div class="send">
+            <span class="meta" id="fbState" aria-live="polite"></span>
+            <button class="btn" type="submit" id="fbSend">Yuborish</button>
+          </div>
+        </form>
+        <div class="fb-done" id="fbDone" hidden>
+          <span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          <h2 style="margin:10px 0 0">Rahmat! Xabaringiz yetdi.</h2>
+          <span class="meta">Raqami</span><span class="num" id="fbTicket"></span>
+          <span class="meta" id="fbDoneD"></span>
+          <button class="btn ghost" type="button" id="fbAgain" style="margin-top:10px">Yana yozish</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Haqida -->
+    <section class="page" id="p-about" aria-labelledby="h-about">
+      <div class="inner">
+        <h1 id="h-about">bitg haqida</h1>
+        <p class="lead">Bitig — qadimgi turkiy tilda «yozuv». O'RQ-1184 qonuni to'rtta harfni almashtirdi; qonun 2027-yil aprelida kuchga kiradi.</p>
+        <div class="law" aria-label="Almashgan harflar">
+          <div><div class="o">Oʻ</div><div class="n">Ö</div></div>
+          <div><div class="o">Gʻ</div><div class="n">Ğ</div></div>
+          <div><div class="o">Sh</div><div class="n">Ş</div></div>
+          <div><div class="o">Ch</div><div class="n">Ç</div></div>
+        </div>
+        <h2>Maxfiylik</h2>
+        <p class="lead" style="margin-bottom:0">Yozganingiz hech qayerga yuborilmaydi va saqlanmaydi. Log'da faqat vaqt, dastur nomi va natija bor — shu sahifadagi statistika ham o'shandan.</p>
+        <h2>Ma'lumot</h2>
+        <div class="about">
+          <div class="row"><span class="t">Versiya</span><span class="v num" id="ver">—</span></div>
+          <div class="row"><span class="t">Sayt</span><button class="link" type="button" data-url="https://bitg.uz">bitg.uz</button></div>
+          <div class="row"><span class="t">Manba kodi</span><button class="link" type="button" data-url="https://github.com/dtwinuz/bitg">github.com/dtwinuz/bitg</button></div>
+          <div class="row"><span class="t">Yangiliklar</span><button class="link" type="button" data-go="news">Nima o'zgardi va yangilanish</button></div>
+          <div class="row"><span class="t">Xato yoki taklif</span><button class="link" type="button" data-go="fb">Xabar berish</button></div>
+          <div class="row"><span class="t">Sozlamalar fayllari</span><button class="link" type="button" id="openFolder">Papkani ochish</button></div>
+          <div class="row"><span><span class="t">bitg'dan chiqish</span><span class="d">Tray belgisi yopiladi. Klaviatura ishlashda davom etadi.</span></span>
+            <button class="btn ghost" type="button" id="quit">Chiqish</button></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>window.__BITG_DEMO__ = {"version":"0.5.0","layouts":{"tilmoch":{"0":["","","’",""],"3":["","","","№"],"9":["","","‘",""],"`":["ʼ","\"","‘","`"],"-":["","","–","—"],"[":["ö","Ö","[","{"],"]":["ğ","Ğ","]","}"],"\\":[";",":","\\","|"],";":["ş","Ş",";",":"],"'":["ç","Ç","'","\""],",":[",","“","\u003c","«"],".":[".","”",">","»"]},"kiritish":{"`":["ʼ","\"","`","~"],"-":["","","—","–"],"[":["ö","Ö","[","{"],"]":["ğ","Ğ","]","}"],"\\":[";",":","\\","|"],"k":["","","“","‘"],"l":["","","”","’"],";":["ş","Ş",";",":"],"'":["ç","Ç","'","\""]},"tezyechim":{"-":["ğ","Ğ","-","_"],"=":["ş","Ş","=","+"],"[":["ç","Ç","[","{"],"]":["ö","Ö","]","}"],"'":["","","ʼ","\""]},"turkish":{"i":["ı","I","",""],"[":["ğ","Ğ","[","{"],"]":["ü","Ü","]","}"],"\\":[",",";","\\","|"],";":["ş","Ş",";",":"],"'":["i","İ","'","\""],",":["ö","Ö","\u003c",""],".":["ç","Ç",">",""],"/":[".",":","/","?"]},"altgr":{"-":["","","–","—"],"o":["","","ö","Ö"],"s":["","","ş","Ş"],"g":["","","ğ","Ğ"],"'":["","","ʼ","\""],"c":["","","ç","Ç"],",":["","","«","“"],".":["","","»","”"]},"kirill":{"2":["","\"","",""],"3":["","№","",""],"4":["",";","",""],"6":["",":","",""],"7":["","?","",""],"`":["ё","Ё","`","~"],"-":["ғ","Ғ","-","_"],"=":["ҳ","Ҳ","=","+"],"q":["й","Й","",""],"w":["ц","Ц","",""],"e":["у","У","",""],"r":["к","К","",""],"t":["е","Е","",""],"y":["н","Н","",""],"u":["г","Г","",""],"i":["ш","Ш","",""],"o":["ў","Ў","",""],"p":["з","З","",""],"[":["х","Х","[","{"],"]":["ъ","Ъ","]","}"],"a":["ф","Ф","",""],"s":["қ","Қ","",""],"d":["в","В","",""],"f":["а","А","",""],"g":["п","П","",""],"h":["р","Р","",""],"j":["о","О","",""],"k":["л","Л","",""],"l":["д","Д","",""],";":["ж","Ж",";",":"],"'":["э","Э","'","\""],"z":["я","Я","",""],"x":["ч","Ч","",""],"c":["с","С","",""],"v":["м","М","",""],"b":["и","И","",""],"n":["т","Т","",""],"m":["ь","Ь","",""],",":["б","Б",",","\u003c"],".":["ю","Ю",".",">"],"/":[".",",","/","?"]},"taklif":{"[":["ö","Ö","[","{"],"]":["ğ","Ğ","]","}"],"\\":["ʼ","ʼ","\\","|"],";":["ş","Ş",";",":"],"'":["ç","Ç","'","\""]},"custom":{"0":["","","’",""],"3":["","","","№"],"9":["","","‘",""],"`":["ʼ","\"","‘","`"],"-":["","","–","—"],"[":["ö","Ö","[","{"],"]":["ğ","Ğ","]","}"],"\\":[";",":","\\","|"],";":["ş","Ş",";",":"],"'":["ç","Ç","'","\""],",":[",","“","\u003c","«"],".":[".","”",">","»"]}},"default_apps":["logonui.exe","consent.exe","credentialuibroker.exe","keepass.exe","keepassxc.exe","1password.exe","bitwarden.exe","enpass.exe","termius.exe","windowsterminal.exe","openconsole.exe","conhost.exe","putty.exe","kitty.exe","mintty.exe","alacritty.exe","wezterm-gui.exe","mobaxterm.exe"],"news":[{"version":"0.5.0","date":"2026-11-17","groups":[{"kind":"new","title":"Yangi","items":[{"lead":"Yangi klaviatura tartibi (taklif).","text":"Senatda ko'rsatilgan maket asosida: [ → Ö, ] → Ğ, ; → Ş, ' → Ç, \\ → ʼ. Rasmiy standart hali chiqmagan, shuning uchun sozlamalarda «Taklif (rasmiy emas)» deb turibdi."},{"lead":"Arch Linux ombori.","text":"Arch, Manjaro va EndeavourOS uchun bitg.uz/arch: bir marta ulanadi, keyin pacman -Syu bilan yangilanadi."},{"lead":"Yangilanishni o'rnatishda tanlash.","text":"O'rnatuvchida «Yangilanishlarni avtomatik tekshirish» belgisi bor; tashkilot administratori uni o'chirib qo'yishi mumkin."},{"lead":"Ubuntu paneli: lug'at muharriri.","text":"Yuqori paneldagi bitg menyusidan istisnolar va lug'atni tahrirlaysiz."}]},{"kind":"fixed","title":"Tuzatildi","items":[{"lead":"Yolg'iz xorijiy ism.","text":"«Jordan keldi.» endi «Jördan» bo'lmaydi, «Michael Jordan» ham o'zgarmaydi."},{"lead":"Katta harfli so'zlar.","text":"OʻZBEKISTON, GʻALABA kabi ʻ bilan yozilgan katta harfli so'zlar endi o'giriladi."},{"lead":"Brendlar.","text":"Marshall, Shokz, Chigo, Shein, Bershka, Shiseido, Chirey, Changhe, Tchibo yozilganidek qoladi."},{"lead":"Parol maydonlari.","text":"Matn bermaydigan dasturlarda maydon parolga aylansa, bitg so'zni o'girmaydi va yig'ilgan harflarni darhol unutadi."}]}]},{"version":"0.4.0","date":"2026-11-13","groups":[{"kind":"new","title":"Yangi","items":[{"lead":"Shaxsiy lug'at.","text":"bitg bilmagan so'zni o'zingiz o'rgating: «shamollash» → «şamollaş». Qo'shimchali shakli ham shunday yoziladi (shamollashdan → şamollaşdan), katta-kichik harf yozganingizdek qoladi."},{"lead":"Bitta harfni saqlash.","text":"So'zning har bir harfini bosib, qaysi biri o'girilmasin — tanlaysiz: bog'cha → bog'ça (g' qoladi, ch o'giriladi)."},{"lead":"Ilova ichidan xabar berish.","text":"Xato, taklif yoki noto'g'ri o'girilgan so'z haqida bir tugma bilan yozing; ekran rasmini ham qo'shish mumkin. Brauzer ochilmaydi."},{"lead":"Avtomatik yangilanish.","text":"bitg yangi versiya chiqqanini o'zi aytadi va bir tugma bilan yangilanadi. Fayl GitHub'dan olinadi va SHA-256 bilan tekshiriladi."},{"lead":"Yangiliklar sahifasi.","text":"Yangilangandan keyin nima o'zgargani bir marta ko'rsatiladi. Sozlamalarda o'chirsa bo'ladi."},{"lead":"Lug'atni ko'chirish.","text":"«Nusxalash» bilan ro'yxatni oling, boshqa kompyuterda «Fayldan qo'shish» bilan yuklang."},{"lead":"Aqlli tuzatishlar uchun tayyor holat.","text":"«Ehtiyotkor» — faqat yozganingiz o'giriladi, so'zlar tuzatilmaydi; «Tavsiya» — apostrofsiz so'zni ham o'zi tuzatadi."},{"lead":"Ubuntu: yuqori paneldagi bitg belgisi.","text":"Ekranning yuqori panelida bitg ikonkasi va menyusi paydo bo'ladi: yoqish/o'chirish, avtomatik o'girish va kirillni o'girishni shu yerdan almashtirasiz, dasturlarni qayta ochish shart emas. bitg ilovalar menyusida ham bor va tizimga kirganda o'zi ishga tushadi."}]},{"kind":"better","title":"Yaxshilandi","items":[{"lead":"Aqlli tuzatishni boshqarish.","text":"«Tushib qolgan apostrofni tiklash» lug'at bo'yicha xato yozilgan so'zni ham tuzatadi (Qirgiziston → Qirğiziston). Endi tavsifda aniq yozilgan: yozganingiz aynan qolsin desangiz — o'chiring yoki so'zni lug'atga qo'shing."}]},{"kind":"fixed","title":"Tuzatildi","items":[{"lead":"Ko'proq xorijiy ism.","text":"2 000 dan ortiq yangi xorijiy ism va familiya (Chesney kabi) yozilganidek qoladi, bitg ularni o'zbekcha deb o'girmaydi."},{"lead":"Brend va texnik atamalar.","text":"fintech, edtech, Semrush, Genshin kabi 55 ta so'z endi buzilmaydi."},{"lead":"Kod yoki brend yonidagi so'z.","text":"«fetch() chaqiruvi», «Shohjahon McDonald's» kabi qisqa gapda o'zbekcha so'z inglizcha deb qolib ketardi — endi o'giriladi."}]}]},{"version":"0.3.1","date":"2026-11-13","groups":[{"kind":"fixed","title":"Tuzatildi","items":[{"lead":"Parol maydonlari.","text":"WPF va boshqa dasturlardagi parol va maxfiy maydonlarda bitg o'zi o'chadi."},{"lead":"Ishonchli o'rnatuvchi.","text":"Reliz fayllari imzolangan kelib chiqish ma'lumoti bilan chiqadi."}]}]},{"version":"0.3.0","date":"2026-11-12","groups":[{"kind":"new","title":"Yangi","items":[{"lead":"macOS (beta).","text":"Mac uchun klaviatura."},{"lead":"Ikki ma'noli so'zlar.","text":"«ochmaydi», «otdim» kabi so'zlar taxmin bilan o'zgartirilmaydi, «tekshiring» deb belgilanadi."}]},{"kind":"fixed","title":"Tuzatildi","items":[{"lead":"Xorijiy ismlar.","text":"Michelle, Chicago kabi nomlar o'girilmaydi."}]}]},{"version":"0.2.0","date":"2026-11-12","groups":[{"kind":"new","title":"Yangi","items":[{"lead":"Linux.","text":"IBus va Fcitx5 uchun klaviatura (.deb)."}]}]},{"version":"0.1.0","date":"2026-11-12","groups":[{"kind":"new","title":"Yangi","items":[{"lead":"Birinchi reliz.","text":"Windows klaviaturasi: probel bosilganda so'z yangi alifboga o'tadi, inglizchaga tegmaydi."}]}]}]};</script>
+<script src="mock-ipc.js"></script>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const send = (m) => window.ipc && window.ipc.postMessage(JSON.stringify(m));
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  let s = null, ex = [], rules = [], defaultApps = [], status = {}, stats = null;
+  let seq = 0, shown = 0, lastOut = [], saveTimer = 0, previewTimer = 0, convTimer = 0, convSeq = 0;
+  let page = "home";
+  const fold = (w) => w.toLowerCase().replace(/[‘’ʻʼ`´]/g, "'");
+  const core = (w) => w.replace(/^[^\p{L}]+|[^\p{L}'‘’ʻʼ]+$/gu, "");
+  const fmt = (n) => n.toLocaleString("uz-UZ").replace(/,/g, " ");
+
+  /* ---------- toast ---------- */
+  let toastTimer = 0;
+  function toast(t) {
+    const el = $("toast"); el.textContent = t; el.classList.add("on");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("on"), 1800);
+  }
+
+  /* ---------- mavzu ---------- */
+  function applyTheme(v) {
+    if (v === "light" || v === "dark") document.documentElement.dataset.theme = v;
+    else delete document.documentElement.dataset.theme;
+    radios($("theme"), v || "system");
+    morph && morph.recolor();
+  }
+
+  /* ---------- navigatsiya ---------- */
+  const navBtns = [...document.querySelectorAll("nav button")];
+  function go(p, focus) {
+    page = p;
+    for (const b of navBtns) {
+      const on = b.dataset.page === p;
+      b.toggleAttribute("aria-current", on);
+      if (on) { b.setAttribute("aria-current", "page"); $("navmark").style.transform = `translateY(${b.offsetTop + (b.offsetHeight - 22) / 2}px)`; }
+    }
+    for (const sec of document.querySelectorAll(".page")) sec.classList.toggle("on", sec.id === "p-" + p);
+    if (p === "home" || p === "apps") askStats();
+    if (p === "try") preview();
+    morph && (p === "home" ? morph.start() : morph.stop());
+    if (focus) $("p-" + p).querySelector("h1").focus?.();
+    store.set("bitg.page", p);
+  }
+  navBtns.forEach((b, i) => {
+    b.onclick = () => go(b.dataset.page);
+    b.onkeydown = (e) => {
+      const d = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
+      if (d) { e.preventDefault(); const n = navBtns[(i + d + navBtns.length) % navBtns.length]; n.focus(); go(n.dataset.page); }
+    };
+  });
+
+  /* ---------- umumiy boshqaruv ---------- */
+  function radios(group, v) {
+    for (const b of group.querySelectorAll("button")) {
+      const on = b.dataset.v === v;
+      b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1;
+    }
+  }
+  function radioGroup(group, onPick) {
+    const bs = [...group.querySelectorAll("button")];
+    bs.forEach((b, i) => {
+      b.onclick = () => onPick(b.dataset.v);
+      b.onkeydown = (e) => {
+        const d = ["ArrowRight", "ArrowDown"].includes(e.key) ? 1 : ["ArrowLeft", "ArrowUp"].includes(e.key) ? -1 : 0;
+        if (!d) return; e.preventDefault();
+        const n = bs[(i + d + bs.length) % bs.length]; onPick(n.dataset.v); n.focus();
+      };
+    });
+  }
+
+  function render() {
+    if (!s) return;
+    $("enabled").setAttribute("aria-checked", String(s.enabled));
+    $("masterLabel").textContent = s.enabled ? "Yoqilgan" : "O'chiq";
+    $("masterHint").textContent = s.enabled
+      ? "Hamma dasturda ishlaydi. Oynani yopsangiz ham trayda qoladi."
+      : "Hech qayerda o'girmaydi. Trayda turibdi — istalgan payt yoqing.";
+    document.body.classList.toggle("off", !s.enabled);
+    for (const b of document.querySelectorAll(".sw[data-k]")) b.setAttribute("aria-checked", String(!!s[b.dataset.k]));
+    // Administrator siyosati (SOFTWARE\Policies\bitg\UpdateCheck): tugma qulflanadi.
+    const uc = document.querySelector('.sw[data-k="update_check"]');
+    uc.disabled = !!s.update_check_locked;
+    $("d-uc").textContent = s.update_check_locked
+      ? "Administrator belgilagan, bu yerda o'zgartirib bo'lmaydi."
+      : "Kuniga bir marta bitg.uz dan versiya raqami o'qiladi. Yangisi chiqsa — taklif qilinadi, o'zi o'rnatilmaydi.";
+    radios($("tutuq"), s.tutuq);
+    renderPreset();
+    renderHotkey();
+    renderApps(); renderEx(); renderKb();
+    morph && morph.setActive(s.enabled);
+  }
+
+  function changed(msg) {
+    render();
+    const st = $("saveState"); st.dataset.state = ""; st.textContent = "Saqlanmoqda…";
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => send({ cmd: "save", settings: s, exceptions: ex, rules, custom: layouts.custom || {} }), 220);
+    if (msg) toast(msg);
+    preview(); convert();
+  }
+
+  $("enabled").onclick = () => { s.enabled = !s.enabled; changed(s.enabled ? "bitg yoqildi" : "bitg o'chirildi"); };
+  for (const b of document.querySelectorAll(".sw[data-k]")) b.onclick = () => { s[b.dataset.k] = !s[b.dataset.k]; changed(); };
+  radioGroup($("tutuq"), (v) => { s.tutuq = v; changed(); });
+
+  /* ---------- Aqlli tuzatishlar: tayyor to'plamlar ---------- */
+  const PRESETS = {
+    safe: { restore_apostrophes: false, english_guard: true, undo_backspace: true },
+    smart: { restore_apostrophes: true, english_guard: true, undo_backspace: true },
+  };
+  const PRESET_DESC = {
+    safe: "Faqat yozganingiz o'giriladi: tushib qolgan apostrof qo'yilmaydi, so'zlar tuzatilmaydi.",
+    smart: "Tavsiya: inglizchaga tegmaydi va apostrofsiz yozilgan so'zni (ozbek → özbek) o'zi tuzatadi.",
+    custom: "Pastdagi kalitlarni o'zingiz tanlagansiz.",
+  };
+  const presetOf = () => Object.keys(PRESETS).find((k) => Object.entries(PRESETS[k]).every(([key, v]) => s[key] === v)) || "custom";
+  function renderPreset() {
+    const p = presetOf();
+    radios($("preset"), p);
+    $("presetDesc").textContent = PRESET_DESC[p];
+  }
+  radioGroup($("preset"), (v) => {
+    if (!PRESETS[v]) { renderPreset(); return; }
+    Object.assign(s, PRESETS[v]);
+    changed(v === "safe" ? "Ehtiyotkor: so'zlar tuzatilmaydi" : "Tavsiya etilgan holat");
+  });
+
+  /* ---------- Belgilangan matn tugmasi ---------- */
+  const keyLabel = (v) => v.split("+").map((p) => p.length <= 1 ? p.toUpperCase() : p[0].toUpperCase() + p.slice(1)).join("+");
+  function renderHotkey() {
+    const g = $("hotkeyKeys"), v = s.hotkey_keys || "ctrl+shift+y";
+    // settings.ini da qo'lda yozilgan, ro'yxatda yo'q birikma — alohida tugma sifatida ko'rsatiladi.
+    g.querySelector("[data-extra]")?.remove();
+    if (![...g.querySelectorAll("button")].some((b) => b.dataset.v === v)) {
+      const b = document.createElement("button"); b.setAttribute("role", "radio"); b.type = "button";
+      b.dataset.v = v; b.dataset.extra = ""; b.textContent = keyLabel(v); g.append(b);
+    }
+    radioGroup(g, (k) => { s.hotkey_keys = k; changed(); });
+    radios(g, v);
+    g.style.opacity = s.hotkey ? "" : ".5";
+    const h = status.hotkey, st = $("hkState");
+    st.textContent = !s.hotkey ? "O'chiq: tugmalar boshqa dasturlarga o'tadi."
+      : !s.enabled ? "bitg o'chiq — tugma ham ishlamaydi."
+      : h && h.on && !h.valid ? "settings.ini dagi birikma noto'g'ri — ro'yxatdan tanlang."
+      : h && h.on && h.label && !h.ok ? `${h.label} boshqa dasturda band — boshqasini tanlang.`
+      : "bitg trayda turganda ishlaydi. Terminallarda (Dasturlar ro'yxati) ishlamaydi.";
+  }
+  radioGroup($("theme"), (v) => { store.set("bitg.theme", v); applyTheme(v); });
+  $("autostart").onclick = () => send({ cmd: "autostart", on: !status.autostart });
+
+  /* ---------- Asosiy: holat va statistika ---------- */
+  const OK = '<svg viewBox="0 0 12 12"><path d="M2.5 6.2l2.2 2.2 4.8-4.9"/></svg>';
+  const WARN = '<svg viewBox="0 0 12 12"><path d="M6 3v3.6M6 9h.01"/></svg>';
+  function renderStatus() {
+    const rows = [
+      [status.ime, "Klaviatura xizmati o'rnatilgan", status.ime ? "Windows bitg'ni taniydi." : "bitg_tsf.dll ro'yxatdan o'tmagan — o'rnatuvchini qayta ishga tushiring.", null],
+      [status.keyboard, status.keyboard ? "Klaviatura qo'shilgan" : "Klaviatura tillar ro'yxatida yo'q",
+        status.keyboard ? "Win + Probel bilan «bitg» ni tanlang." : "O'zbek (lotin) tiliga «bitg» klaviaturasini qo'shing.",
+        status.keyboard ? null : ["Klaviaturani qo'shish", () => send({ cmd: "add_keyboard" })]],
+      [status.autostart, status.autostart ? "Windows bilan ishga tushadi" : "Windows bilan ishga tushmaydi",
+        status.autostart ? "Tray belgisi doim joyida." : "Kompyuter yonganda trayda chiqmaydi.",
+        status.autostart ? null : ["Yoqish", () => send({ cmd: "autostart", on: true })]],
+    ];
+    const box = $("checks"); box.replaceChildren();
+    for (const [ok, t, d, act] of rows) {
+      const el = document.createElement("div"); el.className = "check"; el.dataset.ok = String(!!ok);
+      el.innerHTML = `<span class="dot">${ok ? OK : WARN}</span><span><span class="t"></span><span class="d"></span></span>`;
+      el.querySelector(".t").textContent = t; el.querySelector(".d").textContent = d;
+      if (act) { const b = document.createElement("button"); b.className = "link"; b.type = "button"; b.textContent = act[0]; b.onclick = act[1]; el.querySelector(".d").append(" ", b); }
+      box.append(el);
+    }
+    $("autostart").setAttribute("aria-checked", String(!!status.autostart));
+    $("ver").textContent = status.version || "—";
+    if (s) renderHotkey();
+  }
+
+  function askStats() { send({ cmd: "stats", tz: -new Date().getTimezoneOffset() * 60 }); }
+
+  function countTo(el, to) {
+    const from = Number(el.dataset.v || 0); el.dataset.v = to;
+    if (reduce || from === to) { el.textContent = fmt(to); return; }
+    const t0 = performance.now(), dur = from === 0 ? 1300 : 700;
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(Math.round(from + (to - from) * e));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const MONTHS = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr"];
+  const dayName = (back) => { const d = new Date(Date.now() - back * 864e5); return `${d.getDate()}-${MONTHS[d.getMonth()]}`; };
+
+  function renderStats() {
+    if (!stats) return;
+    countTo($("todayN"), stats.today);
+    $("todayN").setAttribute("aria-label", `${stats.today} so'z bugun o'girildi`);
+    const bars = $("bars");
+    if (bars.children.length !== 14) { bars.replaceChildren(); for (let i = 0; i < 14; i++) bars.append(document.createElement("i")); }
+    const max = Math.max(1, ...stats.days);
+    stats.days.forEach((n, i) => {
+      const b = bars.children[i];
+      b.title = `${dayName(13 - i)}: ${n} so'z`;
+      b.classList.toggle("zero", n === 0); b.classList.toggle("today", i === 13);
+      requestAnimationFrame(() => { b.style.transform = `scaleY(${n === 0 ? 0.04 : Math.max(0.08, n / max)})`; });
+    });
+    $("barsFrom").textContent = dayName(13);
+    $("weekN").textContent = `7 kunda ${fmt(stats.week)} so'z`;
+    const top = stats.apps.filter((a) => a.n > 0).sort((a, b) => b.n - a.n).slice(0, 5);
+    const ol = $("where"); ol.replaceChildren();
+    if (!top.length) {
+      const p = document.createElement("p"); p.className = "empty-note";
+      p.textContent = "Hali o'girilgan so'z yo'q. Istalgan dasturda Win + Probel bilan bitg'ni tanlab yozing.";
+      ol.append(p);
+    } else {
+      const m = top[0].n;
+      for (const a of top) {
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="name"></span><span class="bar"><i></i></span><span class="n num"></span>`;
+        li.querySelector(".name").textContent = prettyApp(a.exe);
+        li.querySelector(".n").textContent = fmt(a.n);
+        ol.append(li);
+        requestAnimationFrame(() => { li.querySelector("i").style.transform = `scaleX(${a.n / m})`; });
+      }
+    }
+    renderApps();
+  }
+
+  /* ---------- Dasturlar ---------- */
+  const KNOWN = { "telegram.exe": "Telegram", "chrome.exe": "Chrome", "msedge.exe": "Edge", "firefox.exe": "Firefox",
+    "winword.exe": "Word", "excel.exe": "Excel", "outlook.exe": "Outlook", "powerpnt.exe": "PowerPoint", "notepad.exe": "Bloknot",
+    "code.exe": "VS Code", "termius.exe": "Termius", "windowsterminal.exe": "Windows Terminal", "openconsole.exe": "Konsol",
+    "conhost.exe": "Konsol (conhost)", "putty.exe": "PuTTY", "kitty.exe": "KiTTY", "mintty.exe": "mintty", "alacritty.exe": "Alacritty",
+    "wezterm-gui.exe": "WezTerm", "mobaxterm.exe": "MobaXterm", "explorer.exe": "Explorer", "searchhost.exe": "Windows qidiruvi",
+    "slack.exe": "Slack", "discord.exe": "Discord", "whatsapp.exe": "WhatsApp", "msedgewebview2.exe": "WebView ilovalari",
+    "textinputhost.exe": "Windows matn kiritish", "bitg-settings.exe": "bitg",
+    "logonui.exe": "Windows kirish oynasi", "consent.exe": "Windows UAC oynasi", "credentialuibroker.exe": "Windows parol oynasi",
+    "keepass.exe": "KeePass", "keepassxc.exe": "KeePassXC", "1password.exe": "1Password", "bitwarden.exe": "Bitwarden",
+    "enpass.exe": "Enpass" };
+  const prettyApp = (exe) => KNOWN[exe.toLowerCase()] || exe.replace(/\.exe$/i, "");
+  const HUES = ["#2a4bb0", "#0c8475", "#7a4fb5", "#b0532a", "#2a7fb0", "#5f7a1f", "#a83a6a"];
+  const hue = (t) => HUES[[...t].reduce((a, c) => a + c.charCodeAt(0), 0) % HUES.length];
+  function ago(ts) {
+    const d = Math.floor((Date.now() / 1000 - ts) / 86400);
+    return d <= 0 ? "bugun" : d === 1 ? "kecha" : `${d} kun oldin`;
+  }
+  function renderApps() {
+    if (!s) return;
+    const ul = $("apps"); ul.replaceChildren();
+    const seen = new Map();
+    for (const a of (stats?.apps || [])) if (a.exe && a.exe !== "?") seen.set(a.exe.toLowerCase(), a);
+    for (const d of s.disabled_apps) if (!seen.has(d)) seen.set(d, { exe: d, n: 0, last: 0 });
+    const list = [...seen.values()].sort((a, b) => (b.last - a.last) || a.exe.localeCompare(b.exe));
+    for (const a of list) {
+      const key = a.exe.toLowerCase(), off = s.disabled_apps.includes(key), name = prettyApp(a.exe);
+      const li = document.createElement("li"); li.classList.toggle("offapp", off);
+      const av = document.createElement("span"); av.className = "av"; av.textContent = name.slice(0, 1).toUpperCase(); av.style.background = hue(key);
+      const mid = document.createElement("span");
+      const nm = document.createElement("span"); nm.className = "name"; nm.textContent = name;
+      const d = document.createElement("span"); d.className = "d";
+      d.textContent = [a.exe, a.n ? `${fmt(a.n)} so'z o'girildi` : null, a.last ? ago(a.last) : null, off ? "o'chiq" : null].filter(Boolean).join(", ");
+      mid.append(nm, document.createElement("br"), d);
+      const sw = document.createElement("button"); sw.className = "sw"; sw.setAttribute("role", "switch");
+      sw.setAttribute("aria-checked", String(!off)); sw.setAttribute("aria-label", `${name}da ishlash`);
+      sw.onclick = () => {
+        if (off) s.disabled_apps = s.disabled_apps.filter((x) => x !== key); else s.disabled_apps.push(key);
+        changed(off ? `${name}da yoqildi` : `${name}da o'chirildi`);
+      };
+      li.append(av, mid, sw); ul.append(li);
+    }
+  }
+  $("appForm").onsubmit = (e) => {
+    e.preventDefault();
+    let v = $("appInput").value.trim().toLowerCase();
+    if (!v) return;
+    if (!/\.exe$/.test(v)) v += ".exe";
+    if (/[\\/,;\s]/.test(v)) { toast("Faqat fayl nomi: masalan termius.exe"); return; }
+    if (!s.disabled_apps.includes(v)) s.disabled_apps.push(v);
+    $("appInput").value = ""; changed(`${prettyApp(v)}da o'chirildi`);
+  };
+  $("appsReset").onclick = () => {
+    for (const d of defaultApps) if (!s.disabled_apps.includes(d)) s.disabled_apps.push(d);
+    changed("Terminallar o'chirib qo'yildi");
+  };
+
+  /* ---------- Lug'at: o'girilmaydigan so'zlar va o'z yozuvi ---------- */
+  let justAdded = null;
+  const emptyNote = (ul, text) => {
+    const p = document.createElement("li"); p.className = "empty";
+    p.style.cssText = "border:0;background:none;padding:6px 0;font-family:inherit;font-size:14px;color:var(--kul);display:block";
+    p.textContent = text; ul.append(p);
+  };
+  function renderEx() {
+    const q = fold($("exFilter").value.trim());
+    const hit = (w) => !q || fold(w).includes(q);
+    const rl = $("rulesList"); rl.replaceChildren();
+    const rs = rules.map((r, i) => [r, i]).filter(([r]) => hit(r.from) || hit(r.to));
+    if (!rules.length) emptyNote(rl, "Hozircha yo'q. Yuqorida so'z qo'shing: bitg uni siz yozgandek yozadi.");
+    for (const [r, i] of rs) {
+      const li = document.createElement("li");
+      if (justAdded && fold(justAdded) === fold(r.from)) li.className = "new";
+      li.innerHTML = `<span class="a"></span><span class="ar">→</span><span class="b"></span>`;
+      li.querySelector(".a").textContent = r.from; li.querySelector(".b").textContent = r.to;
+      const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", `${r.from} — olib tashlash`);
+      x.onclick = () => { rules.splice(i, 1); changed(`«${r.from}» lug'atdan olindi`); };
+      li.append(x); rl.append(li);
+    }
+    const ul = $("exceptions"); ul.replaceChildren();
+    if (!ex.length) emptyNote(ul, "Hozircha yo'q. Ismlar, brendlar, atamalar — Sinash sahifasida so'zni bosib ham qo'shish mumkin.");
+    for (const [w, i] of ex.map((w, i) => [w, i]).filter(([w]) => hit(w))) {
+      const li = document.createElement("li"); li.append(w);
+      if (justAdded && fold(justAdded) === fold(w)) li.className = "new";
+      const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", `${w} — olib tashlash`);
+      x.onclick = () => { ex.splice(i, 1); changed(`«${w}» olib tashlandi`); };
+      li.append(x); ul.append(li);
+    }
+    justAdded = null;
+  }
+  $("exFilter").oninput = renderEx;
+
+  // Eski yozuvdagi o'zgaradigan harflar: o' g' sh ch (har bittasini alohida yoqib-o'chirish mumkin).
+  const UNIT = /([oOgG])['‘’ʻʼ`]|([sScC])([hH])/g;
+  const NEWL = { o: "ö", g: "ğ", s: "ş", c: "ç" };
+  function unitsOf(w) {
+    const out = []; let m; UNIT.lastIndex = 0;
+    while ((m = UNIT.exec(w))) {
+      const base = m[1] || m[2], to = NEWL[base.toLowerCase()];
+      out.push({ at: m.index, len: m[0].length, from: m[0], to: base === base.toUpperCase() ? to.toUpperCase() : to });
+    }
+    return out;
+  }
+  let units = [], unitOn = [], toEdited = false;
+  function buildTo(w) {
+    let out = "", i = 0;
+    units.forEach((u, k) => { out += w.slice(i, u.at) + (unitOn[k] ? u.to : u.from); i = u.at + u.len; });
+    return out + w.slice(i);
+  }
+  function renderUnits() {
+    const w = $("exInput").value.trim(), box = $("units"); box.replaceChildren();
+    if (units.length) {
+      const l = document.createElement("span"); l.className = "lbl"; l.textContent = "O'girilsinmi:"; box.append(l);
+    }
+    units.forEach((u, k) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "unit";
+      b.setAttribute("aria-pressed", String(unitOn[k]));
+      b.innerHTML = `<span class="from"></span><span class="to"></span>`;
+      b.querySelector(".from").textContent = u.from; b.querySelector(".to").textContent = u.to;
+      b.setAttribute("aria-label", `${u.from} → ${u.to}: ${unitOn[k] ? "o'giriladi" : "qoladi"}`);
+      b.onclick = () => { unitOn[k] = !unitOn[k]; toEdited = false; $("exTo").value = buildTo(w); renderUnits(); };
+      box.append(b);
+    });
+    const to = $("exTo").value.trim(), same = !!w && (to === w || !to);
+    $("exAdd").textContent = same ? "O'girilmasin" : "Qo'shish";
+    const sm = $("exSample"); sm.replaceChildren();
+    if (!w) { sm.textContent = "Masalan: shamollash → şamollaş, bog'cha → bog'ça (g' qoladi), Shohruh → Shohruh (umuman o'girilmaydi)."; return; }
+    if (same) { sm.append("«", Object.assign(document.createElement("b"), { textContent: w }), "» hech qachon o'girilmaydi."); return; }
+    const long = [...fold(w)].length >= 4;
+    sm.append(Object.assign(document.createElement("b"), { textContent: w }), " → ", Object.assign(document.createElement("b"), { textContent: to }));
+    if (long) sm.append(",  ", Object.assign(document.createElement("b"), { textContent: w + "dan" }), " → ",
+      Object.assign(document.createElement("b"), { textContent: to + "dan" }));
+  }
+  $("exInput").oninput = () => {
+    const w = $("exInput").value.trim();
+    units = unitsOf(w); unitOn = units.map(() => true);
+    const known = rules.find((r) => fold(r.from) === fold(w));
+    if (known) { toEdited = true; $("exTo").value = known.to; }
+    else if (!toEdited || !w) { toEdited = false; $("exTo").value = w ? buildTo(w) : ""; }
+    renderUnits();
+  };
+  $("exTo").oninput = () => { toEdited = true; renderUnits(); };
+  $("exForm").onsubmit = (e) => {
+    e.preventDefault();
+    const w = $("exInput").value.trim(), to = $("exTo").value.trim() || w;
+    if (!w) { $("exInput").focus(); return; }
+    if (/\s|=/.test(w)) { toast("Bitta so'z kiriting, bo'shliq va = belgisisiz"); return; }
+    if (/\s/.test(to)) { toast("Natija ham bitta so'z bo'lsin"); return; }
+    rules = rules.filter((r) => fold(r.from) !== fold(w));
+    ex = ex.filter((x) => fold(x) !== fold(w));
+    if (to === w) { ex.push(w); changed(`«${w}» o'girilmaydi`); }
+    else { rules.unshift({ from: w, to }); changed(`«${w}» → «${to}» lug'atga qo'shildi`); }
+    justAdded = w; toEdited = false;
+    $("exInput").value = ""; $("exTo").value = ""; units = []; unitOn = []; renderUnits(); renderEx();
+    $("exInput").focus();
+  };
+  function dictText() {
+    return ["# bitg lug'ati: so'z — o'girilmaydi, so'z=yozuv — shunday yoziladi", ...ex, ...rules.map((r) => `${r.from}=${r.to}`)].join("\n") + "\n";
+  }
+  $("exCopy").onclick = async () => {
+    try { await navigator.clipboard.writeText(dictText()); toast("Lug'at nusxalandi — boshqa kompyuterda «Fayldan qo'shish»"); }
+    catch { toast("Nusxalab bo'lmadi"); }
+  };
+  $("exImport").onclick = () => $("exFile").click();
+  $("exFile").onchange = async () => {
+    const f = $("exFile").files[0]; $("exFile").value = "";
+    if (!f) return;
+    if (f.size > 512 * 1024) { toast("Fayl juda katta"); return; }
+    let added = 0;
+    for (let line of (await f.text()).split(/\r?\n/)) {
+      line = line.replace(/^﻿/, "").trim();
+      if (!line || line.startsWith("#")) continue;
+      const eq = line.indexOf("=");
+      if (eq < 0) { if (!/\s/.test(line) && !ex.some((x) => fold(x) === fold(line))) { ex.push(line); added++; } continue; }
+      const from = line.slice(0, eq).trim(), to = line.slice(eq + 1).trim();
+      if (!from || !to || /\s/.test(from) || /\s/.test(to) || rules.some((r) => fold(r.from) === fold(from))) continue;
+      rules.push({ from, to }); added++;
+    }
+    changed(added ? `${added} ta so'z qo'shildi` : "Yangi so'z topilmadi");
+  };
+  function editWord(word) {
+    go("ex"); $("exInput").value = word; $("exInput").dispatchEvent(new Event("input")); $("exTo").focus();
+  }
+
+  /* ---------- Sinash ---------- */
+  const SAMPLES = [
+    ["Kundalik", "Assalomu alaykum! Ertaga soat uchda choy ichamiz, keyin shaharga chiqamiz."],
+    ["Apostrofsiz", "ozbek tili, togri yol, kop rahmat, ogil bola"],
+    ["Aralash", "Please check the report, keyin menga chat orqali yozing. Deadline — juma."],
+    ["Kirill", "Ўзбекистон — гўзал юрт. Шаҳар чиройли."],
+    ["Havolalar", "Batafsil: https://kun.uz/news, @shohrux_dev, #toshkent"],
+  ];
+  for (const [n, t] of SAMPLES) {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = n;
+    b.onclick = () => { $("input").value = t; preview(); };
+    $("samples").append(b);
+  }
+  function preview() {
+    if (!s) return;
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(() => send({ cmd: "preview", id: ++seq, text: $("input").value, settings: { ...s, enabled: true }, exceptions: ex, rules }), 50);
+  }
+  function marks(a, b) {
+    a = [...a]; b = [...b];
+    const n = a.length, m = b.length;
+    if (n * m > 4000) return b.map((c) => [c, false]);
+    const t = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--)
+      t[i][j] = a[i] === b[j] ? t[i + 1][j + 1] + 1 : Math.max(t[i + 1][j], t[i][j + 1]);
+    const out = []; let i = 0, j = 0;
+    while (j < m) {
+      if (i < n && a[i] === b[j]) { out.push([b[j], false]); i++; j++; }
+      else if (i < n && t[i + 1][j] >= t[i][j + 1]) i++;
+      else { out.push([b[j], true]); j++; }
+    }
+    return out;
+  }
+  const TITLES = { converted: "O'girildi. Bosing — o'girilmaydigan bo'ladi", english: "Inglizcha deb qoldirildi",
+    protected: "Havola, kod yoki ism — tegilmadi", exception: "O'girilmaydi. Bosing — lug'atdan olinadi",
+    rule: "Lug'atingizdan. Bosing — tahrirlash" };
+  function showPreview(p) {
+    if (p.id < shown) return;
+    shown = p.id;
+    const box = $("result"); box.replaceChildren();
+    const out = [];
+    p.segments.forEach((g, idx) => {
+      out.push(g.d);
+      if (!g.r) { box.append(g.d); return; }
+      const span = document.createElement("span"); span.className = "w"; span.dataset.r = g.r;
+      if (TITLES[g.r]) span.title = TITLES[g.r];
+      if (g.r === "converted" || g.r === "rule") {
+        for (const [ch, isNew] of marks(g.s, g.d)) {
+          if (isNew) { const mk = document.createElement("mark"); mk.textContent = ch; span.append(mk); } else span.append(ch);
+        }
+        if (lastOut[idx] !== g.d) span.classList.add("anim");
+      } else span.textContent = g.d;
+      const word = core(g.s);
+      if (word && (g.r === "converted" || g.r === "exception" || g.r === "rule")) {
+        span.classList.add("click"); span.tabIndex = 0; span.setAttribute("role", "button");
+        const toggle = () => {
+          if (g.r === "rule") { editWord(word); return; }
+          const i = ex.findIndex((e) => fold(e) === fold(word));
+          if (i >= 0) { ex.splice(i, 1); changed(`«${word}» endi o'giriladi`); }
+          else { ex.push(word); justAdded = word; changed(`«${word}» o'girilmaydi`); }
+        };
+        span.onclick = toggle;
+        span.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } };
+      }
+      box.append(span);
+    });
+    lastOut = out;
+  }
+  $("input").addEventListener("input", preview);
+
+  /* ---------- Matnni o'girish ---------- */
+  let dir = store.get("bitg.dir") || "new", oldStyle = store.get("bitg.oldStyle") || "official";
+  function convert() {
+    if (!s) return;
+    clearTimeout(convTimer);
+    convTimer = setTimeout(() => send({ cmd: "convert", id: ++convSeq, text: $("convIn").value, dir, style: oldStyle, settings: { ...s, enabled: true }, exceptions: ex, rules }), 80);
+  }
+  function renderDir() {
+    radios($("dir"), dir); radios($("oldStyle"), oldStyle);
+    $("oldStyle").hidden = dir !== "old";
+    $("convIn").placeholder = dir === "old" ? "Yangi alifbodagi matnni shu yerga joylang" : "Eski lotin yoki kirill matnni shu yerga joylang";
+  }
+  radioGroup($("dir"), (v) => { dir = v; store.set("bitg.dir", v); renderDir(); convert(); });
+  radioGroup($("oldStyle"), (v) => { oldStyle = v; store.set("bitg.oldStyle", v); renderDir(); convert(); });
+  $("convIn").addEventListener("input", convert);
+  $("clearText").onclick = () => { $("convIn").value = ""; $("convOut").value = ""; $("convMeta").textContent = ""; $("convIn").focus(); };
+  $("copyText").onclick = async () => {
+    const t = $("convOut").value;
+    if (!t) { toast("Avval matn kiriting"); return; }
+    try { await navigator.clipboard.writeText(t); }
+    catch { $("convOut").select(); document.execCommand("copy"); }
+    toast("Nusxalandi");
+  };
+
+  /* ---------- Klaviatura ---------- */
+  // US tartibidagi asl belgilar: [oddiy, Shift]. Tartibda bo'sh qatlam shu belgini beradi.
+  const US = { "`": "`~", "1": "1!", "2": "2@", "3": "3#", "4": "4$", "5": "5%", "6": "6^", "7": "7&", "8": "8*", "9": "9(", "0": "0)",
+    "-": "-_", "=": "=+", "[": "[{", "]": "]}", "\\": "\\|", ";": ";:", "'": "'\"", ",": ",<", ".": ".>", "/": "/?" };
+  const us = (k, lvl) => lvl >= 2 ? "" : (US[k] ? US[k][lvl] : lvl ? k.toUpperCase() : k);
+  const ROWS = [
+    ["`1234567890-=", [], ["Backspace", "w22"]],
+    ["qwertyuiop[]\\", [["Tab", "w15"]], []],
+    ["asdfghjkl;'", [["Caps", "w18"]], ["Enter", "w22"]],
+    ["zxcvbnm,./", [["Shift", "w22", "shift"]], ["Shift", "w22", "shift"]],
+  ];
+  const CODE = { Backquote: "`", Minus: "-", Equal: "=", BracketLeft: "[", BracketRight: "]", Backslash: "\\", Semicolon: ";", Quote: "'", Comma: ",", Period: ".", Slash: "/" };
+  const codeKey = (c) => CODE[c] || (/^Key[A-Z]$/.test(c) ? c.slice(3).toLowerCase() : /^Digit\d$/.test(c) ? c.slice(5) : null);
+  const LAYOUT_DESC = {
+    tilmoch: "tilmoch.ai tartibi: [ → ö, ] → ğ, ; → ş, ' → ç, ` → tutuq ʼ. Qavslar va ; ' : AltGr bilan, № — AltGr+Shift+3.",
+    kiritish: "kiritish.uz tartibi: [ → ö, ] → ğ, ; → ş, ' → ç, ` → tutuq ʼ, ; va : — \\ tugmasida. AltGr+K/L — “ ” ‘ ’.",
+    tezyechim: "TezYechim tartibi: [ → ç, ] → ö, - → ğ, = → ş. Tutuq — o'ng Alt + '. Qavslar, - va = o'ng Alt bilan.",
+    turkish: "Turkcha Q harflari: [ ğ, ] ü, ; ş, ' i, , ö, . ç, i tugmasida ı. Vergul \\ da, nuqta / da.",
+    altgr: "Hech bir tugma ko'chmaydi: o'ng Alt + O G S C → ö ğ ş ç, o'ng Alt + ' → ʼ. Dasturchilar uchun qulay.",
+    kirill: "Windows «O'zbek (kirill)» tartibi: o → ў, s → қ, - → ғ, = → ҳ. Kirillcha yozing — avto o'girish yoqiq bo'lsa so'z yangi lotinga o'tadi (шаҳар → şahar), o'chiq bo'lsa kirill qoladi. Qavslar AltGr bilan.",
+    taklif: "Taklif qilingan (rasmiy emas): mutaxassislar Senatda (10.09.2026) ko'rsatgan maket — [ → ö, ] → ğ, ; → ş, ' → ç, \\ → tutuq ʼ. Rasmiy standart hali chiqmagan; chiqsa bitg yangilanadi. Qavslar va ; ' \\ | AltGr bilan.",
+    custom: "O'z tartibingiz: tugmani bosing va istalgan belgini istalgan qatlamga qo'ying.",
+  };
+  const LEVEL_NAMES = ["Oddiy", "Shift", "AltGr", "AltGr + Shift"];
+  const PICKS = ["ö", "Ö", "ğ", "Ğ", "ş", "Ş", "ç", "Ç", "ʼ", "’", "‘", "«", "»", "“", "”", "„", "–", "—", "№", "…", "ü", "ı", "İ"];
+  let layouts = {}, layer = 0, selKey = null, shiftHeld = false, lastField = 0;
+
+  const cur = () => (layouts[s.layout] || {});
+  const cell = (k, lvl) => (cur()[k] || [])[lvl] || "";
+  const out = (k, lvl) => cell(k, lvl) || us(k, lvl);
+  const changedKey = (k) => [0, 1].some((l) => cell(k, l) && cell(k, l) !== us(k, l));
+
+  function buildKbd() {
+    const box = $("kbd"); box.replaceChildren();
+    for (const [keys, pre, post] of ROWS) {
+      const r = document.createElement("div"); r.className = "r";
+      const fx = ([t, w, role]) => { const d = document.createElement("span"); d.className = `key fx ${w}`; d.textContent = t; d.setAttribute("aria-hidden", "true"); if (role) d.dataset.role = role; return d; };
+      pre.forEach((p) => r.append(fx(p)));
+      for (const k of keys) {
+        const b = document.createElement("button"); b.type = "button"; b.className = "key"; b.dataset.k = k;
+        b.innerHTML = `<span class="s"></span><span class="b"></span><span class="a"></span>`;
+        b.onclick = () => select(k);
+        r.append(b);
+      }
+      if (post.length) r.append(fx(post));
+      box.append(r);
+    }
+    const last = document.createElement("div"); last.className = "r";
+    for (const [t, w, role] of [["Ctrl", "w15"], ["Win", ""], ["Alt", ""], ["", "w6"], ["AltGr", "w15", "altgr"], ["Ctrl", "w15"]]) {
+      const d = document.createElement("span"); d.className = `key fx ${w}`; d.textContent = t; d.setAttribute("aria-hidden", "true");
+      if (role) d.dataset.role = role; last.append(d);
+    }
+    box.append(last);
+    const all = () => [...box.querySelectorAll("button.key")];
+    box.onkeydown = (e) => {
+      const keys = all(), i = keys.indexOf(document.activeElement);
+      if (i < 0) return;
+      let n = null;
+      if (e.key === "ArrowRight") n = keys[i + 1];
+      else if (e.key === "ArrowLeft") n = keys[i - 1];
+      else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        const row = keys[i].parentElement, rows = [...box.children];
+        const target = rows[rows.indexOf(row) + (e.key === "ArrowDown" ? 1 : -1)];
+        const x = keys[i].getBoundingClientRect().left;
+        const cand = target ? [...target.querySelectorAll("button.key")] : [];
+        n = cand.sort((a, b) => Math.abs(a.getBoundingClientRect().left - x) - Math.abs(b.getBoundingClientRect().left - x))[0];
+      } else if (e.key === "Escape" && selKey) { select(null); return; }
+      if (n) { e.preventDefault(); n.focus(); }
+    };
+  }
+
+  function renderKb() {
+    if (!s) return;
+    const shown = shiftHeld ? (layer === 2 ? 3 : 1) : layer;
+    radios($("layout"), s.layout); radios($("layer"), String(layer));
+    $("layoutDesc").textContent = LAYOUT_DESC[s.layout] || "";
+    for (const b of $("kbd").querySelectorAll("button.key")) {
+      const k = b.dataset.k;
+      // AltGr qatlamida bo'sh tugma oddiy belgisini yozadi — xira ko'rsatiladi.
+      const pass = shown >= 2 && !cell(k, shown);
+      const big = pass ? out(k, shown - 2) : shown >= 2 ? cell(k, shown) : out(k, shown);
+      b.querySelector(".b").textContent = big;
+      b.classList.toggle("pass", pass);
+      const sh = shown === 0 ? out(k, 1) : shown === 2 ? cell(k, 3) : "";
+      b.querySelector(".s").textContent = sh && sh !== big.toUpperCase() ? sh : "";
+      b.querySelector(".a").textContent = shown < 2 ? cell(k, 2) : "";
+      b.classList.toggle("mod", shown < 2 ? changedKey(k) : !pass);
+      b.setAttribute("aria-pressed", String(selKey === k));
+      const parts = [0, 1, 2, 3].map((l) => [LEVEL_NAMES[l], l < 2 ? out(k, l) : cell(k, l)]).filter(([, c]) => c);
+      b.setAttribute("aria-label", `${k} tugmasi: ` + parts.map(([n, c]) => `${n} ${c}`).join(", "));
+    }
+    for (const fx of $("kbd").querySelectorAll(".key.fx[data-role]")) {
+      fx.classList.toggle("hot", fx.dataset.role === "altgr" ? layer === 2 : shiftHeld || layer === 1);
+    }
+    $("m-auto").dataset.on = String(!!s.auto_convert); $("m-keys").dataset.on = String(!!s.keymap);
+    $("kbWrap").classList.toggle("dim", !s.keymap);
+    const demo = $("keysDemo"); demo.replaceChildren();
+    const firsts = Object.keys(cur()).filter((k) => /\p{L}/u.test(cell(k, 0)) && cell(k, 0) !== us(k, 0)).slice(0, 4);
+    const altDemo = !firsts.length ? Object.keys(cur()).filter((k) => /\p{L}/u.test(cell(k, 2))).slice(0, 4) : [];
+    const alt = !firsts.length;
+    for (const k of alt ? altDemo : firsts) {
+      const kb = document.createElement("kbd"); kb.textContent = alt ? `AltGr+${k.toUpperCase()}` : k;
+      const b = document.createElement("b"); b.textContent = cell(k, alt ? 2 : 0);
+      demo.append(kb, b);
+    }
+    const note = $("kbNote");
+    note.hidden = !!(s.auto_convert || s.keymap) && s.enabled;
+    note.textContent = !s.enabled ? "bitg o'chiq — chap pastdagi tugma bilan yoqing." : "Ikkala usul o'chiq: bitg klaviaturasi oddiy inglizcha klaviaturadek ishlaydi.";
+    $("customTools").hidden = s.layout !== "custom";
+    renderEditor();
+  }
+
+  function select(k) {
+    selKey = selKey === k ? null : k;
+    renderKb();
+    if (selKey) {
+      $("levels").querySelector("input")?.focus({ preventScroll: true });
+      $("editor").scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+    }
+  }
+
+  // Tayyor tartib o'zgartirilsa — u maxsus tartibga nusxalanadi (tayyor tartiblar o'zgarmaydi).
+  function ensureCustom() {
+    if (s.layout === "custom") return;
+    layouts.custom = JSON.parse(JSON.stringify(layouts[s.layout] || {}));
+    s.layout = "custom";
+    toast("Maxsus tartibga nusxalandi");
+  }
+  function setCell(k, lvl, v) {
+    ensureCustom();
+    const row = (layouts.custom[k] || ["", "", "", ""]).slice();
+    row[lvl] = v;
+    if (row.every((c) => !c)) delete layouts.custom[k]; else layouts.custom[k] = row;
+    changed();
+  }
+
+  function renderEditor() {
+    const ed = $("editor");
+    ed.hidden = !selKey;
+    if (!selKey) return;
+    const k = selKey;
+    $("edCap").innerHTML = "Tugma <kbd></kbd>";
+    $("edCap").querySelector("kbd").textContent = k.toUpperCase() === k ? k : k.toUpperCase();
+    const box = $("levels");
+    if (box.dataset.k !== k || box.children.length !== 4) {
+      box.dataset.k = k; box.replaceChildren();
+      LEVEL_NAMES.forEach((n, l) => {
+        const lab = document.createElement("label"); lab.textContent = n;
+        const inp = document.createElement("input"); inp.className = "text"; inp.spellcheck = false; inp.autocomplete = "off";
+        inp.dataset.l = l;
+        inp.onfocus = () => { lastField = l; inp.select(); };
+        inp.oninput = () => {
+          const v = inp.value.replace(/^U\+([0-9a-f]{4,5})$/i, (_, h) => String.fromCodePoint(parseInt(h, 16)));
+          const ch = [...v].filter((c) => !/\p{Cc}/u.test(c)).pop() || "";
+          setCell(k, l, ch === us(k, l) ? "" : ch);
+        };
+        lab.append(inp); box.append(lab);
+      });
+    }
+    for (const inp of box.querySelectorAll("input")) {
+      const l = Number(inp.dataset.l), v = cell(k, l);
+      if (document.activeElement !== inp) inp.value = v;
+      inp.placeholder = us(k, l) || "—";
+      inp.classList.toggle("set", !!v);
+      inp.title = v ? `U+${v.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}` : "O'zgarmaydi";
+    }
+  }
+
+  PICKS.forEach((c) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = c;
+    b.setAttribute("aria-label", `${c} belgisini qo'yish`);
+    b.onclick = () => { if (!selKey) return; setCell(selKey, lastField, c); const inp = $("levels").children[lastField]?.querySelector("input"); if (inp) { inp.value = c; } lastField = Math.min(3, lastField + 1); };
+    $("picks").append(b);
+  });
+  $("edReset").onclick = () => {
+    if (!selKey) return;
+    ensureCustom(); delete layouts.custom[selKey];
+    changed(`${selKey} inglizcha holida`);
+  };
+  $("edClose").onclick = () => select(null);
+  $("customFromPreset").onclick = () => {
+    layouts.custom = JSON.parse(JSON.stringify(layouts.tilmoch || {}));
+    changed("Maxsus tartib Tilmoch'dan qayta boshlandi");
+  };
+  radioGroup($("layout"), (v) => { s.layout = v; changed(); });
+  radioGroup($("layer"), (v) => { layer = Number(v); renderKb(); });
+
+  // Bosilgan tugma klaviatura rasmida ham bosiladi; Shift ushlansa — Shift qatlami ko'rinadi.
+  function physical(e, on) {
+    if (page !== "kb") return;
+    if (e.key === "Shift") { if (shiftHeld !== on) { shiftHeld = on; renderKb(); } return; }
+    const k = codeKey(e.code);
+    const b = k && $("kbd").querySelector(`button.key[data-k="${CSS.escape(k)}"]`);
+    if (b) b.classList.toggle("down", on);
+  }
+  addEventListener("keydown", (e) => physical(e, true));
+  addEventListener("keyup", (e) => physical(e, false));
+  addEventListener("blur", () => { shiftHeld = false; for (const b of document.querySelectorAll(".key.down")) b.classList.remove("down"); if (s) renderKb(); });
+  buildKbd();
+
+  /* ---------- Yangiliklar va yangilanish ---------- */
+  let news = null, upd = { state: "idle" };
+  const GROUP = { new: "Yangi", better: "Yaxshilandi", fixed: "Tuzatildi" };
+  const human = (d) => { const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(d || ""); return m ? `${+m[3]}-${MONTHS[+m[2] - 1]}, ${m[1]}` : ""; };
+  function renderNews() {
+    if (!news) return;
+    const tl = $("timeline"); tl.replaceChildren();
+    let i = 0;
+    news.versions.forEach((v, vi) => {
+      const card = document.createElement("article");
+      card.className = "ver rise" + (v.version === news.current ? " cur" : "") + (vi > 1 ? " old" : "");
+      card.style.setProperty("--i", i++);
+      const head = document.createElement("div"); head.className = "head";
+      head.innerHTML = `<span class="v"></span><span class="date"></span>`;
+      head.querySelector(".v").textContent = "v" + v.version;
+      head.querySelector(".date").textContent = human(v.date);
+      if (v.version === news.current) head.append(Object.assign(document.createElement("span"), { className: "badge", textContent: "Sizda" }));
+      card.append(head);
+      for (const g of v.groups) {
+        const grp = document.createElement("div"); grp.className = "grp";
+        grp.append(Object.assign(document.createElement("span"), { className: "chip " + g.kind, textContent: GROUP[g.kind] || g.title }));
+        const ul = document.createElement("ul");
+        for (const it of g.items) {
+          const li = document.createElement("li");
+          if (vi < 2) { li.className = "rise"; li.style.setProperty("--i", i++); }
+          if (it.lead) li.append(Object.assign(document.createElement("b"), { textContent: it.lead }), " ");
+          li.append(Object.assign(document.createElement("span"), { textContent: it.text }));
+          if (!it.lead) li.querySelector("span").style.display = "inline";
+          ul.append(li);
+        }
+        grp.append(ul); card.append(grp);
+      }
+      tl.append(card);
+    });
+  }
+  const mb = (n) => (n / 1048576).toFixed(1).replace(".", ",") + " MB";
+  function renderUpd() {
+    const box = $("upd"), b = $("updBtn"), notes = $("updNotes"), u = upd.update;
+    box.dataset.state = upd.state;
+    notes.hidden = true; b.hidden = false; b.disabled = false; b.className = "btn ghost act";
+    const cur = status.version || news?.current || "";
+    const T = {
+      idle: ["Yangilanish", s && !s.update_check ? (s.update_check_locked ? "Tekshiruvni administrator o'chirgan." : "Avtomatik tekshirish o'chiq (Qoidalar → Ilova).") : "bitg kuniga bir marta o'zi tekshiradi.", "Tekshirish"],
+      checking: ["Tekshirilmoqda…", "bitg.uz dan oxirgi versiya so'raldi.", null],
+      latest: ["Sizda eng yangi versiya", `v${cur} — eng so'nggisi.`, "Qayta tekshirish"],
+      error: ["Bo'lmadi", upd.error || "Keyinroq urinib ko'ring.", "Qayta urinish"],
+      downloading: ["Yuklab olinmoqda…", u ? `v${u.version}, ${mb(u.size)}. Fayl GitHub'dan olinadi va SHA-256 bilan tekshiriladi.` : "", null],
+      installing: ["O'rnatilmoqda…", "Windows ruxsat so'rashi mumkin. bitg bir necha soniyada qayta ochiladi.", null],
+      available: [u ? `v${u.version} chiqdi` : "Yangi versiya", u ? [`Sizda v${cur}`, human(u.date), mb(u.size)].filter(Boolean).join(" · ") : "", "Yangilash"],
+    }[upd.state] || ["Yangilanish", "", "Tekshirish"];
+    $("updT").textContent = T[0]; $("updD").textContent = T[1];
+    if (!T[2]) b.hidden = true; else b.textContent = T[2];
+    if (upd.state === "available") {
+      b.className = "btn act";
+      if (u.notes?.length) {
+        notes.replaceChildren(...u.notes.map((n) => Object.assign(document.createElement("li"), { textContent: n.replace(/\*\*/g, "") })));
+        notes.hidden = false;
+      }
+    }
+    const dot = document.querySelector('nav [data-page="news"] .navdot');
+    if (upd.state === "available" && !dot) document.querySelector('nav [data-page="news"]').append(Object.assign(document.createElement("span"), { className: "navdot" }));
+    if (upd.state !== "available" && dot) dot.remove();
+  }
+  $("updBtn").onclick = () => {
+    if (upd.state === "available") { upd = { ...upd, state: "downloading" }; renderUpd(); send({ cmd: "install_update" }); }
+    else send({ cmd: "check_update" });
+  };
+
+  /* ---------- Xabar berish ---------- */
+  let fbType = store.get("bitg.fbType") || "bug", fbImage = "";
+  const FB_LBL = { bug: ["Nima bo'ldi", "Qaysi dasturda, nima qildingiz, nima kutgandingiz"],
+    idea: ["Taklifingiz", "Nima qo'shilsa yoki o'zgarsa qulay bo'lardi"],
+    conversion: ["Izoh (ixtiyoriy)", "Qaysi dasturda yoki qanday gapda bo'ldi"] };
+  function renderFb() {
+    radios($("fbType"), fbType);
+    $("fbTrio").hidden = fbType !== "conversion";
+    $("fbTextLbl").textContent = FB_LBL[fbType][0]; $("fbText").placeholder = FB_LBL[fbType][1];
+    const t = $("fbThumb");
+    t.style.backgroundImage = fbImage ? `url("${fbImage}")` : ""; t.textContent = fbImage ? "" : "＋";
+    $("fbClear").hidden = !fbImage;
+    $("fbImgD").textContent = fbImage ? `Rasm qo'shildi (${mb(fbImage.length * 0.75)}).` : "Yoki rasmni shu yerga tashlang / Ctrl+V bilan joylang. Rasm siqiladi (2 MB gacha).";
+  }
+  radioGroup($("fbType"), (v) => { fbType = v; store.set("bitg.fbType", v); renderFb(); });
+  for (const id of ["fbText", "fbContact", "fbTyped", "fbGot", "fbExp"]) {
+    const el = $(id); el.value = store.get("bitg.fb." + id) || "";
+    el.addEventListener("input", () => store.set("bitg.fb." + id, el.value));
+  }
+  // Har qanday rasm → JPEG (eng uzun tomoni 1920 px, ~2 MB gacha).
+  function compress(src) {
+    return new Promise((ok, no) => {
+      const img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, 1920 / Math.max(img.width, img.height));
+        const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        let q = 0.85, out = c.toDataURL("image/jpeg", q);
+        while (out.length > 2.6e6 && q > 0.4) { q -= 0.15; out = c.toDataURL("image/jpeg", q); }
+        out.length > 3.3e6 ? no() : ok(out);
+      };
+      img.onerror = no; img.src = src;
+    });
+  }
+  async function setImage(src) {
+    try { fbImage = await compress(src); renderFb(); } catch { toast("Bu rasmni ochib bo'lmadi"); }
+  }
+  const readFile = (f) => new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(f); });
+  $("fbPick").onclick = () => $("fbFile").click();
+  $("fbFile").onchange = async () => { const f = $("fbFile").files[0]; $("fbFile").value = ""; if (f) setImage(await readFile(f)); };
+  $("fbClear").onclick = () => { fbImage = ""; renderFb(); };
+  $("fbShot").onclick = () => { $("fbImgD").textContent = "Ekrandan kerakli joyni belgilang…"; send({ cmd: "screenshot" }); };
+  const drop = $("fbDrop");
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
+  drop.ondragleave = () => drop.classList.remove("over");
+  drop.ondrop = async (e) => {
+    e.preventDefault(); drop.classList.remove("over");
+    const f = [...e.dataTransfer.files].find((x) => x.type.startsWith("image/"));
+    if (f) setImage(await readFile(f));
+  };
+  addEventListener("paste", async (e) => {
+    if (page !== "fb") return;
+    const f = [...(e.clipboardData?.files || [])].find((x) => x.type.startsWith("image/"));
+    if (f) { e.preventDefault(); setImage(await readFile(f)); }
+  });
+  $("fbDiagOn").onclick = () => { const b = $("fbDiagOn"); b.setAttribute("aria-checked", String(b.getAttribute("aria-checked") !== "true")); };
+  $("fbDiagBox").ontoggle = () => { if ($("fbDiagBox").open) send({ cmd: "feedback_diag" }); };
+  $("fbForm").onsubmit = (e) => {
+    e.preventDefault();
+    const v = (id) => $(id).value.trim();
+    if (fbType === "conversion" ? !(v("fbTyped") && v("fbGot")) : v("fbText").length < 3) {
+      const st = $("fbState"); st.className = "meta err";
+      st.textContent = fbType === "conversion" ? "Nima yozganingizni va bitg nima chiqarganini kiriting." : "Bir-ikki gap yozing.";
+      return;
+    }
+    $("fbSend").disabled = true; $("fbState").className = "meta"; $("fbState").textContent = "Yuborilmoqda…";
+    send({ cmd: "feedback", type: fbType, text: v("fbText"), contact: v("fbContact"), typed: v("fbTyped"), got: v("fbGot"),
+      expected: v("fbExp"), image: fbImage, diag: $("fbDiagOn").getAttribute("aria-checked") === "true" });
+  };
+  $("fbAgain").onclick = () => { $("fbDone").hidden = true; $("fbForm").hidden = false; };
+  function fbResult(m) {
+    $("fbSend").disabled = false;
+    if (!m.ok) { $("fbState").className = "meta err"; $("fbState").textContent = m.error; return; }
+    $("fbState").textContent = "";
+    for (const id of ["fbText", "fbTyped", "fbGot", "fbExp"]) { $(id).value = ""; store.set("bitg.fb." + id, ""); }
+    fbImage = ""; renderFb();
+    $("fbTicket").textContent = m.ticket || "";
+    $("fbDoneD").textContent = $("fbContact").value.trim() ? "Javob kerak bo'lsa, ko'rsatgan manzilingizga yozamiz." : "Jamoa har xabarni o'qiydi.";
+    $("fbForm").hidden = true; $("fbDone").hidden = false;
+  }
+  for (const b of document.querySelectorAll("[data-go]")) b.onclick = () => go(b.dataset.go);
+  renderFb();
+
+  /* ---------- Rust'dan kelgan javoblar ---------- */
+  let firstLoad = true;
+  window.bitg = {
+    recv(m) {
+      switch (m.kind) {
+        case "loaded":
+          s = m.settings; ex = m.exceptions; rules = m.rules || []; defaultApps = m.default_apps; layouts = m.layouts || {};
+          render(); preview(); convert(); renderUpd();
+          if (firstLoad) { firstLoad = false; askStats(); send({ cmd: "news" }); }
+          break;
+        case "status": status = m; renderStatus(); renderUpd(); break;
+        case "news":
+          news = m; renderNews();
+          if (m.show) {
+            // Yangilangandan keyin bir marta: «nima o'zgardi».
+            go("news"); send({ cmd: "news_seen" }); if (s) s.last_seen = m.current;
+          }
+          break;
+        case "update": upd = m; renderUpd(); if (m.state === "available" && page !== "news") toast(`bitg v${m.update.version} chiqdi — Yangiliklar bo'limida`); break;
+        case "goto": go(m.page); break;
+        case "feedback_result": fbResult(m); break;
+        case "feedback_diag": $("fbDiag").textContent = JSON.stringify(m.diag, null, 2); break;
+        case "screenshot":
+          if (m.image) setImage(m.image); else { renderFb(); toast(m.error || "Rasm olinmadi"); }
+          break;
+        case "stats": stats = m; renderStats(); break;
+        case "saved": $("saveState").dataset.state = "saved"; $("saveState").textContent = "Saqlandi"; break;
+        case "save_failed":
+          $("saveState").dataset.state = "error"; $("saveState").textContent = "Saqlab bo'lmadi";
+          toast(m.error); break;
+        case "preview": showPreview(m); break;
+        case "converted":
+          if (m.id !== convSeq) break;
+          $("convOut").value = m.out;
+          $("convMeta").textContent = $("convIn").value.trim() ? `${fmt(m.changed)} so'z o'zgardi` : "";
+          break;
+        case "hidden": morph && morph.stop(); break;
+      }
+    },
+  };
+
+  for (const b of document.querySelectorAll("[data-url]")) b.onclick = () => send({ cmd: "open_url", url: b.dataset.url });
+  $("openFolder").onclick = () => send({ cmd: "open_folder" });
+  $("quit").onclick = () => send({ cmd: "quit" });
+  setInterval(() => { if (!document.hidden && (page === "home" || page === "apps")) askStats(); }, 30000);
+
+  /* ---------- Jonli harf: zarrachalar ---------- */
+  const PAIRS = [
+    { from: "Oʻ", to: "Ö", base: "O" },
+    { from: "Gʻ", to: "Ğ", base: "G" },
+    { from: "Sh", to: "Ş", base: "S" },
+    { from: "Ch", to: "Ç", base: "C" },
+  ];
+  PAIRS.forEach((p, i) => {
+    const b = document.createElement("button"); b.type = "button";
+    b.innerHTML = `<span></span> → <b></b>`;
+    b.querySelector("span").textContent = p.from; b.querySelector("b").textContent = p.to;
+    b.setAttribute("aria-label", `${p.from} harfi ${p.to} bo'ladi`);
+    b.onclick = () => morph && morph.jump(i);
+    $("pairs").append(b);
+  });
+
+  const morph = (() => {
+    const cv = $("morph");
+    const ctx = cv.getContext("2d", { alpha: true });
+    if (!ctx) return null;
+    const NB = 1900, NX = 520, N = NB + NX;   // asos va o'zgaradigan qism zarralari
+    const px = new Float32Array(N), py = new Float32Array(N), vx = new Float32Array(N), vy = new Float32Array(N);
+    const tx = new Float32Array(N), ty = new Float32Array(N), seed = new Float32Array(N);
+    let W = 0, H = 0, dpr = 1, raf = 0, running = false, active = true;
+    let shapes = [];       // har holat uchun {x: Float32Array, y: Float32Array}
+    let state = 0, nextAt = 0, mouse = { x: -1e4, y: -1e4, on: false };
+    let ink = "#18212d", accent = "#0c8475", mute = "#5a6470";
+
+    function recolor() {
+      const cs = getComputedStyle(document.documentElement);
+      ink = cs.getPropertyValue("--siyoh").trim(); accent = cs.getPropertyValue("--firuza").trim(); mute = cs.getPropertyValue("--kul").trim();
+    }
+
+    // Matnni rasm qilib, nuqtalarni ajratadi: asos harf va qo'shimcha (apostrof, h, nuqtalar, dumcha).
+    const FONT = (px) => `600 ${px}px Bahnschrift, "Segoe UI", sans-serif`;
+    // Juftlikning ikkala shakli bir o'lchamda: asos harf joyidan sakramasin.
+    function fitSize(p) {
+      const g = document.createElement("canvas").getContext("2d");
+      const s0 = H * 0.62; g.font = FONT(s0);   // tepada nuqta/qosh, pastda dumcha uchun joy
+      const w = Math.max(g.measureText(p.from).width, g.measureText(p.to).width);
+      return Math.min(s0, s0 * (W * 0.8) / w);
+    }
+    function sample(full, base, size) {
+      const c = document.createElement("canvas"); c.width = W; c.height = H;
+      const g = c.getContext("2d", { willReadFrequently: true });
+      g.font = FONT(size);
+      g.textBaseline = "alphabetic";
+      const fw = g.measureText(full).width, x0 = (W - fw) / 2, y0 = H * 0.5 + size * 0.42;
+      g.fillStyle = "#000"; g.fillText(full, x0, y0);
+      const A = g.getImageData(0, 0, W, H).data;
+      g.clearRect(0, 0, W, H); g.fillText(base, x0, y0);
+      const B = g.getImageData(0, 0, W, H).data;
+      const bs = [], xs = [], step = Math.max(2, Math.round(Math.sqrt((W * H) / 26000)));
+      for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) {
+        const i = (y * W + x) * 4 + 3;
+        if (A[i] > 120) (B[i] > 120 ? bs : xs).push([x + (Math.random() - .5) * step, y + (Math.random() - .5) * step]);
+      }
+      return { bs, xs };
+    }
+    function pick(pts, n, cx, cy) {
+      if (!pts.length) pts = [[cx, cy]];
+      const out = [];
+      for (let i = 0; i < n; i++) out.push(pts[(i * 7919) % pts.length]);
+      // burchak bo'yicha tartib: zarralar aylanma oqim bilan ko'chadi
+      const mx = out.reduce((a, p) => a + p[0], 0) / n, my = out.reduce((a, p) => a + p[1], 0) / n;
+      out.sort((a, b) => Math.atan2(a[1] - my, a[0] - mx) - Math.atan2(b[1] - my, b[0] - mx));
+      return out;
+    }
+    function build() {
+      shapes = [];
+      for (const p of PAIRS) for (const txt of [p.from, p.to]) {
+        const { bs, xs } = sample(txt, p.base, fitSize(p));
+        const b = pick(bs, NB, W / 2, H / 2), x = pick(xs, NX, W / 2, H * .3);
+        const X = new Float32Array(N), Y = new Float32Array(N);
+        b.concat(x).forEach(([a, c], i) => { X[i] = a; Y[i] = c; });
+        shapes.push({ X, Y });
+      }
+    }
+    function setTargets(k, snap) {
+      const sh = shapes[k]; if (!sh) return;
+      tx.set(sh.X); ty.set(sh.Y);
+      if (snap) { px.set(sh.X); py.set(sh.Y); vx.fill(0); vy.fill(0); }
+      const pair = Math.floor(k / 2);
+      [...$("pairs").children].forEach((b, i) => b.setAttribute("aria-pressed", String(i === pair)));
+    }
+    function resize() {
+      const r = cv.getBoundingClientRect();
+      if (!r.width || !r.height) return false;
+      dpr = Math.min(1.5, devicePixelRatio || 1);
+      const nw = Math.round(r.width * dpr), nh = Math.round(r.height * dpr);
+      if (nw === W && nh === H && shapes.length) return true;
+      W = cv.width = nw; H = cv.height = nh;
+      build();
+      if (!px.some((v) => v)) for (let i = 0; i < N; i++) { px[i] = W / 2 + (Math.random() - .5) * W * .9; py[i] = H / 2 + (Math.random() - .5) * H * .9; seed[i] = Math.random() * 6.28; }
+      setTargets(state, reduce);
+      return true;
+    }
+    let last = 0;
+    function frame(t) {
+      raf = 0;
+      if (!running) return;
+      const dt = Math.min(2.5, last ? (t - last) / 16.67 : 1); last = t;
+      if (active && !reduce && t > nextAt) {
+        state = (state + 1) % shapes.length;
+        nextAt = t + (state % 2 ? 3400 : 1900);   // yangi harf uzoqroq turadi
+        setTargets(state);
+      }
+      const k = 0.022 * dt, damp = Math.pow(0.86, dt), R = 90 * dpr, R2 = R * R;
+      ctx.clearRect(0, 0, W, H);
+      const ox = Math.sin(t / 3100) * 1.2 * dpr;
+      for (let pass = 0; pass < 2; pass++) {
+        ctx.fillStyle = !active ? mute : pass === 0 ? ink : accent;
+        const a = pass === 0 ? 0 : NB, b = pass === 0 ? NB : N, sz = (pass === 0 ? 2.1 : 2.6) * dpr;
+        for (let i = a; i < b; i++) {
+          let fx = (tx[i] + ox - px[i]) * k, fy = (ty[i] - py[i]) * k;
+          if (mouse.on) {
+            const dx = px[i] - mouse.x, dy = py[i] - mouse.y, d2 = dx * dx + dy * dy;
+            if (d2 < R2) { const f = (1 - d2 / R2) * 1.6 * dt; const d = Math.sqrt(d2) || 1; fx += dx / d * f; fy += dy / d * f; }
+          }
+          // nafas: juda kichik tebranish
+          fx += Math.sin(t / 900 + seed[i]) * 0.012 * dt; fy += Math.cos(t / 1100 + seed[i]) * 0.012 * dt;
+          vx[i] = (vx[i] + fx) * damp; vy[i] = (vy[i] + fy) * damp;
+          px[i] += vx[i] * dt; py[i] += vy[i] * dt;
+          ctx.fillRect(px[i] - sz / 2, py[i] - sz / 2, sz, sz);
+        }
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    cv.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse") return;
+      const r = cv.getBoundingClientRect(); mouse.x = (e.clientX - r.left) * dpr; mouse.y = (e.clientY - r.top) * dpr; mouse.on = true;
+    });
+    cv.addEventListener("pointerleave", () => { mouse.on = false; });
+    new ResizeObserver(() => { if (running) resize(); }).observe(cv);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) api.stop(); else if (page === "home") api.start(); });
+
+    const api = {
+      start() {
+        if (running) return;
+        recolor();
+        if (!resize()) { requestAnimationFrame(() => api.start()); return; }
+        running = true; last = 0; nextAt = performance.now() + 1600;
+        if (reduce) { setTargets(state, true); running = false; frame(performance.now()); drawStatic(); return; }
+        raf = requestAnimationFrame(frame);
+      },
+      stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; },
+      jump(i) { state = i * 2; setTargets(state); nextAt = performance.now() + 2400; if (reduce) { setTargets(state + 1, true); drawStatic(); } else setTimeout(() => { state = i * 2 + 1; setTargets(state); nextAt = performance.now() + 3600; }, 900); },
+      setActive(on) { active = on; },
+      recolor() { recolor(); if (reduce) drawStatic(); },
+    };
+    function drawStatic() {
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 0; i < N; i++) { ctx.fillStyle = !active ? mute : i < NB ? ink : accent; ctx.fillRect(px[i] - dpr, py[i] - dpr, 2.2 * dpr, 2.2 * dpr); }
+    }
+    return api;
+  })();
+
+  /* ---------- boshlash ---------- */
+  applyTheme(store.get("bitg.theme") || "system");
+  renderDir();
+  go(store.get("bitg.page") || "home");
+  send({ cmd: "load" });
+  // IME istisno qo'shgan bo'lishi mumkin (Backspace bilan qaytarish) — oynaga qaytganda ro'yxat yangilanadi.
+  window.addEventListener("focus", () => send({ cmd: "load" }));
+})();
+</script>
+<div class="demo-pill" role="note">Demo · namuna ma'lumotlar, qayta yuklanganda tiklanadi
+  <a href="https://bitg.uz/yuklab-olish/" target="_blank" rel="noopener">Yuklab olish</a></div>
+<div class="demo-toast" id="demoToast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+import{t as e}from"./Board-I7tMGbcf.js";import{k as t}from"./utils-Dl5EWQvV.js";import{A as n}from"./ui-PDQ8JDjt.js";var r=n();function i({page:n}){return(0,r.jsx)(e,{page:n,defaults:[],date:t()})}export{i as t};

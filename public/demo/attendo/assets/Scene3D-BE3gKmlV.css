@@ -1,0 +1,1 @@
+.s3-wrap{pointer-events:none;position:fixed;inset:0}.s3-canvas{opacity:0;width:100%;height:100%;transition:opacity 1.4s;display:block}.s3-canvas.s3-on{opacity:1}.s3-fallback{place-items:center;display:grid;position:absolute;inset:0}.s3-fallback img{opacity:.5;filter:drop-shadow(0 0 60px #ff9a4580);width:min(40vmin,320px)}

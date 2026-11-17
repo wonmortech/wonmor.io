@@ -9,6 +9,8 @@ import { ui } from '../../i18n/ui';
 import { clusters, pageKey } from '../../data/ecosystem';
 import { productMedia, sceneVariant } from '../../data/media';
 import { products, productKeyOf, productUi as U, wrlLabel } from '../../data/products';
+import { demosOf, demoPath } from '../../data/demos';
+import { demoUi } from '../../i18n/demos';
 
 interface Props { locale: Locale; page: PageDef }
 const { locale, page } = Astro.props;
@@ -21,6 +23,7 @@ const order = clusters.flatMap((c) => c.products);
 const i = order.indexOf(key);
 const more = [1, 2, 3].map((d) => order[(i + d) % order.length]).map((k) => ({ k, pg: pageByKey[pageKey(k)], m: productMedia(k) }));
 const t = (x: { en: string; uz: string; ru: string }) => x[locale];
+const live = demosOf(key);
 ---
 <article class="pp" style={`--acc:${p?.accent ?? cluster?.color ?? '#c9a45c'}`}>
   <header class="container page-top pp__head">
@@ -35,6 +38,11 @@ const t = (x: { en: string; uz: string; ru: string }) => x[locale];
             {ui.visit[locale]} {host}<Icon name="arrow-up-right" /><span class="sr-only">{ui.external[locale]}</span>
           </a>
         )}
+        {live.map((d) => (
+          <a class="btn btn--secondary btn--medium btn--rounded btn--trailing" href={demoPath(d.slug)}>
+            {demoUi.liveDemo[locale]}{live.length > 1 && ` · ${d.title}`}<Icon name="arrow-right" />
+          </a>
+        ))}
         {p?.repo && (
           <a class="btn btn--secondary btn--medium btn--rounded btn--trailing" href={p.repo} target="_blank" rel="noopener">
             <Icon name="github" />GitHub<span class="sr-only">{ui.external[locale]}</span>

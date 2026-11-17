@@ -1,0 +1,1 @@
+function e(e,t){if(e?.inherit&&t){let{inherit:n,...r}=e;return{...t,...r}}return e}export{e as t};

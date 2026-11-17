@@ -1,0 +1,40 @@
+cyrillic_lower,cyrillic_upper,latin_lower,latin_upper,condition
+а,А,a,A,
+б,Б,b,B,
+в,В,v,V,
+г,Г,g,G,
+д,Д,d,D,
+е,Е,ye,Ye,at the start of a word or after a vowel (а е ё и о у ў э ю я ы) or after ъ or ь
+е,Е,e,E,elsewhere
+ё,Ё,yo,Yo,
+ж,Ж,j,J,
+з,З,z,Z,
+и,И,i,I,
+й,Й,y,Y,
+к,К,k,K,
+л,Л,l,L,
+м,М,m,M,
+н,Н,n,N,
+о,О,o,O,
+п,П,p,P,
+р,Р,r,R,
+с,С,s,S,
+т,Т,t,T,
+у,У,u,U,
+ф,Ф,f,F,
+х,Х,x,X,
+ц,Ц,ts,Ts,after a vowel (а е ё и о у ў э ю я ы)
+ц,Ц,s,S,elsewhere
+ч,Ч,ç,Ç,
+ш,Ш,ş,Ş,
+щ,Щ,şç,Şç,
+ъ,Ъ,ʼ,ʼ,tutuq sign; output character U+02BC MODIFIER LETTER APOSTROPHE (bitg default)
+ь,Ь,,,dropped
+ы,Ы,i,I,
+э,Э,e,E,
+ю,Ю,yu,Yu,
+я,Я,ya,Ya,
+ў,Ў,ö,Ö,
+қ,Қ,q,Q,
+ғ,Ғ,ğ,Ğ,
+ҳ,Ҳ,h,H,

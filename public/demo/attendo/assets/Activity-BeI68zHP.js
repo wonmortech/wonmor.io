@@ -1,0 +1,1 @@
+export{t as default,n as describe,r as pageLabel}from"./Activity-DpkeKcZp.js";

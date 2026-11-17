@@ -1,0 +1,6 @@
+3D models in this folder
+
+kit/    Furniture Kit 2.0 by Kenney (www.kenney.nl), CC0 1.0
+        https://creativecommons.org/publicdomain/zero/1.0/
+
+Credit is not required by the licence; it is given here anyway.

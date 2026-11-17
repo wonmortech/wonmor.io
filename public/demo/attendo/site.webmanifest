@@ -1,0 +1,16 @@
+{
+  "name": "Attendo",
+  "short_name": "Attendo",
+  "description": "Face ID davomat: keldi-ketdi, ish vaqti, kechikish",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#120D0A",
+  "theme_color": "#120D0A",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
+
+

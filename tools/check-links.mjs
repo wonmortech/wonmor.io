@@ -6,7 +6,10 @@ import { join, sep } from 'node:path';
 
 const ROOT = 'site';
 const walk = (d) => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; });
-const pages = walk(ROOT).filter((f) => f.endsWith('.html') && !f.startsWith(join(ROOT, 'pagefind') + sep));
+// /demo/<slug>/ are static copies of other products with their own SPA routes (deploy/Caddyfile falls back to their
+// index.html), so their internals are not crawled; links from the gallery into them are still checked.
+const skip = (f) => f.startsWith(join(ROOT, 'pagefind') + sep) || /^demo[\\/](?!_covers)[^\\/]+[\\/]/.test(f.slice(ROOT.length + 1));
+const pages = walk(ROOT).filter((f) => f.endsWith('.html') && !skip(f));
 const ids = new Map();
 const idsOf = (file) => {
   if (!ids.has(file)) ids.set(file, new Set([...readFileSync(file, 'utf8').matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])));

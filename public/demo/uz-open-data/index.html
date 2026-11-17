@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>uz-open-data · explorer</title>
+  <meta name="description" content="Explore the uz-open-data datasets: 2,289 mosques in Uzbekistan from OpenStreetMap on a map and in a table, and the Uzbek Cyrillic to 2026 Latin letter table with a live converter.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="app.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="#/" aria-label="uz-open-data, overview"><img src="favicon.svg" alt="" width="24" height="24"><span>uz-open-data</span><span class="tag">explorer</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#/">Overview</a>
+      <a href="#/map">Map</a>
+      <a href="#/table">Table</a>
+      <a href="#/regions">Regions</a>
+      <a href="#/quality">Data quality</a>
+      <a href="#/pinned">Pinned <span class="count" id="pincount"></span></a>
+      <a href="#/alphabet">Alphabet</a>
+      <a href="#/about">Sources</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Toggle dark theme">◐</button>
+  </header>
+  <main id="main" tabindex="-1"><p class="loading">Loading 2,289 mosques and the letter table…</p></main>
+  <footer class="foot">Mosque data © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>, ODbL 1.0 · Borders: Natural Earth (public domain) · Letter table derived from bitg (MIT)</footer>
+  <div class="demo-pill" role="note"><span class="dot" aria-hidden="true"></span>Demo · real open data; pins and notes reset on reload</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

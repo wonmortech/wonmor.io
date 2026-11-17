@@ -20,6 +20,19 @@
 	@static path /fonts/* /brand/* /og/* /film/* /js/* /favicon.svg /apple-touch-icon.png /site.webmanifest /robots.txt /pagefind/*
 	header @static Cache-Control "public, max-age=86400"
 
+	# Product demos (public/demo/<slug>/, src/data/demos.ts): static copies of other apps under their own path.
+	# Vite chunk names carry an 8-character content hash; everything else in a demo may change on the next deploy.
+	@demo path_regexp demo ^/demo/([a-z0-9-]+)/
+	@demo_hashed path_regexp ^/demo/[a-z0-9-]+/assets/.+-[A-Za-z0-9_-]{8}\.[a-z0-9]+$
+	@demo_fresh path_regexp ^/demo/[a-z0-9-]+/(?:[^.]*|.*\.html|(?:.*/)?(?:mockServiceWorker|sw)\.js)$
+	@demo_files {
+		path_regexp ^/demo/[a-z0-9-]+/.+\.[a-z0-9]+$
+		not path_regexp ^/demo/[a-z0-9-]+/(?:assets/.+-[A-Za-z0-9_-]{8}\.[a-z0-9]+|.*\.html|(?:.*/)?(?:mockServiceWorker|sw)\.js)$
+	}
+	header @demo_hashed Cache-Control "public, max-age=31536000, immutable"
+	header @demo_fresh Cache-Control "no-cache"
+	header @demo_files Cache-Control "public, max-age=3600"
+
 	header {
 		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
 		Referrer-Policy strict-origin-when-cross-origin
@@ -30,7 +43,10 @@
 
 	# The public site: no third-party origins at all.
 	# 'wasm-unsafe-eval' is required by the Pagefind search index (WebAssembly).
-	@site not path /admin /admin/*
+	@site {
+		not path /admin /admin/*
+		not path_regexp ^/demo/[a-z0-9-]+/
+	}
 	header @site Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
 
 	# Sveltia CMS at /admin: talks to the GitHub API with the editor's own token, previews images
@@ -41,6 +57,22 @@
 		X-Robots-Tag "noindex, nofollow"
 		Cache-Control "no-store"
 	}
+
+	# Demos keep what their real apps need, and nothing from the main site's origin list changes:
+	# inline boot scripts, WebAssembly, blob workers and MSW service workers (scoped to /demo/<slug>/ by their own path),
+	# Google Fonts, OpenFreeMap / OpenStreetMap map tiles, the Telegram WebApp SDK (oilaviy, Mini App mode only)
+	# and same-origin iframes (TeleTwin apps, Mini App previews). They are not indexed: the real products are.
+	header @demo {
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://telegram.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tiles.openfreemap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org; media-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' data: blob: https://tiles.openfreemap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+		X-Robots-Tag "noindex"
+	}
+
+	# Client-side routes inside a demo (no file extension) fall back to that demo's index.html.
+	@demo_route {
+		path_regexp route ^/demo/([a-z0-9-]+)/[^.]*$
+		not file
+	}
+	rewrite @demo_route /demo/{re.route.1}/index.html
 
 	file_server
 

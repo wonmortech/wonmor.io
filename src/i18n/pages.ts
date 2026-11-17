@@ -1,4 +1,5 @@
 import type { T } from './config';
+import { demoUi } from './demos';
 
 /** Every section page on the site. P1 renders these through one template;
  *  later phases replace a page's body without changing its URL or nav entry. */
@@ -256,9 +257,9 @@ export const pages: PageDef[] = [
       ru: 'Условия, конфиденциальность и политики wonmor.io. У каждого продукта свои условия на его собственном сайте.' } },
   { key: 'privacy', path: '/legal/privacy', group: 'legal',
     title: { en: 'Privacy', uz: 'Maxfiylik', ru: 'Конфиденциальность' },
-    lede: { en: 'wonmor.io sets no cookies, runs no third-party trackers and loads no external scripts or fonts. The only record of a visit is a standard server log, kept for at most 30 days.',
-      uz: 'wonmor.io cookie oʻrnatmaydi, uchinchi tomon kuzatuvchilarini ishlatmaydi, tashqi skript va shrift yuklamaydi. Tashrifning yagona izi — oddiy server logi, u koʻpi bilan 30 kun saqlanadi.',
-      ru: 'wonmor.io не ставит cookie, не использует сторонние трекеры и не загружает внешние скрипты и шрифты. Единственный след визита — обычный серверный лог, он хранится не дольше 30 дней.' } },
+    lede: { en: 'wonmor.io sets no cookies, runs no third-party trackers and loads no external scripts or fonts outside the product demos. The only record of a visit is a standard server log, kept for at most 30 days.',
+      uz: 'wonmor.io cookie oʻrnatmaydi, uchinchi tomon kuzatuvchilarini ishlatmaydi, mahsulot demolaridan tashqarida tashqi skript va shrift yuklamaydi. Tashrifning yagona izi — oddiy server logi, u koʻpi bilan 30 kun saqlanadi.',
+      ru: 'wonmor.io не ставит cookie, не использует сторонние трекеры и не загружает внешние скрипты и шрифты за пределами демо продуктов. Единственный след визита — обычный серверный лог, он хранится не дольше 30 дней.' } },
   { key: 'terms', path: '/legal/terms', group: 'legal',
     title: { en: 'Terms of use', uz: 'Foydalanish shartlari', ru: 'Условия использования' },
     lede: { en: 'Written content is CC BY 4.0 and code snippets in posts are MIT, unless a page says otherwise. The Wonmor name and mark are not covered by these licences.',
@@ -282,8 +283,10 @@ export const navStart: NavMenu[] = [
   { id: 'products', label: groups.products, cols: 2, items: [
     { key: 'p-dtwin' }, { key: 'p-bitg' }, { key: 'p-teletwin' }, { key: 'p-gateway' }, { key: 'p-tunnel' },
     { key: 'p-fam' }, { key: 'p-operobot' }, { key: 'p-faktura-twin' }, { key: 'p-oilaviy' },
+    { label: demoUi.title, href: '/demo' },
     { label: { en: 'All products', uz: 'Barcha mahsulotlar', ru: 'Все продукты' }, href: '/products' },
   ] },
+  { id: 'demos', label: demoUi.nav, href: '/demo' },
   { id: 'commitments', label: groups.commitments, items: [
     { key: 'charter' }, { key: 'rrp' }, { key: 'open-source' }, { key: 'transparency' }, { key: 'security' },
   ] },
@@ -302,7 +305,7 @@ export const navEnd: NavMenu[] = [
 
 export const footerGroups: { label: T; items: NavItem[] }[] = [
   { label: groups.research, items: [{ key: 'research' }, { key: 'research-agents' }, { key: 'research-language' }, { key: 'research-infrastructure' }, { key: 'research-supply-chain' }, { key: 'research-interfaces' }, { key: 'research-faith-society' }, { key: 'engineering' }] },
-  { label: groups.products, items: [{ key: 'p-dtwin' }, { key: 'p-bitg' }, { key: 'p-teletwin' }, { key: 'p-gateway' }, { key: 'p-tunnel' }, { key: 'p-fam' }, { label: { en: 'All products', uz: 'Barcha mahsulotlar', ru: 'Все продукты' }, href: '/products' }] },
+  { label: groups.products, items: [{ key: 'p-dtwin' }, { key: 'p-bitg' }, { key: 'p-teletwin' }, { key: 'p-gateway' }, { key: 'p-tunnel' }, { key: 'p-fam' }, { label: { en: 'All products', uz: 'Barcha mahsulotlar', ru: 'Все продукты' }, href: '/products' }, { label: demoUi.title, href: '/demo' }] },
   { label: groups.commitments, items: [{ key: 'charter' }, { key: 'rrp' }, { key: 'open-source' }, { key: 'transparency' }] },
   { label: groups.company, items: [{ key: 'company' }, { key: 'founder' }, { key: 'sponsorship' }, { key: 'timeline' }, { key: 'careers' }, { key: 'events' }, { key: 'brand' }, { label: groups.news, href: '/news' }, { key: 'changelog' }] },
   { label: { en: 'Help and security', uz: 'Yordam va xavfsizlik', ru: 'Помощь и безопасность' }, items: [
